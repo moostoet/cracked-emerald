@@ -7797,7 +7797,7 @@ BattleScript_NobleAura_WaitString:
 	waitmessage B_WAIT_TIME_LONG
 	copybyte sBATTLER, gBattlerTarget
 	call BattleScript_TryIntimidateHoldEffects
-BattleScript_NobleAuraIncrement:
+BattleScript_NobleAuraLoopIncrement:
 	addbyte gBattlerTarget, 1
 	jumpifbytenotequal gBattlerTarget, gBattlersCount, BattleScript_NobleAuraLoop
 BattleScript_NobleAuraEnd:

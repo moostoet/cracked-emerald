@@ -315,7 +315,7 @@ Route103_Text_MayTimeToHeadBack:
 	.string "You might be able to befriend any\n"
 	.string "kind of POKéMON easily.\p"
 	.string "Well, it's time to head back to\n"
-	.string "the LAB.\n"
+	.string "the LAB.\p"
 	.string "Oh, right, I think you should take\n"
 	.string "this CANDY with you.$"
 
@@ -342,7 +342,7 @@ Route103_Text_BrendanTimeToHeadBack:
 	.string "even though you just got it.\p"
 	.string "{PLAYER}, I get the feeling that you\n"
 	.string "could befriend any POKéMON with ease.\p"
-	.string "We should head back to the LAB.\n"
+	.string "We should head back to the LAB.\p"
 	.string "Oh, right, I think you should take\n"
 	.string "this CANDY with you.$"
 

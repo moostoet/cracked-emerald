@@ -6503,7 +6503,7 @@ static const struct TrainerMon sParty_BrendanRoute103Torchic[] = {
     .lvl = 7,
     .species = SPECIES_CYNDAQUIL,
     .ability = ABILITY_ADAPTABILITY,
-    .moves = {MOVE_EMBER, MOVE_TACKLE, MOVE_NONE, MOVE_NONE},
+    .moves = {MOVE_SMOKESCREEN, MOVE_TACKLE, MOVE_NONE, MOVE_NONE},
     .nature = NATURE_MILD,
     },
 };
@@ -6549,7 +6549,7 @@ static const struct TrainerMon sParty_MayRoute103Mudkip[] = {
     .lvl = 7,
     .species = SPECIES_SNIVY,
     .ability = ABILITY_NOBLE_AURA,
-    .moves = {MOVE_VINE_WHIP, MOVE_TWISTER, MOVE_NONE, MOVE_NONE},
+    .moves = {MOVE_TACKLE, MOVE_LEER, MOVE_NONE, MOVE_NONE},
     .nature = NATURE_MILD,
     },
 };
@@ -6638,7 +6638,7 @@ static const struct TrainerMon sParty_MayRoute103Torchic[] = {
     .lvl = 7,
     .species = SPECIES_QUAXLY,
     .ability = ABILITY_DAZZLING,
-    .moves = {MOVE_AQUA_JET, MOVE_POUND, MOVE_NONE, MOVE_NONE},
+    .moves = {MOVE_POUND, MOVE_GROWL, MOVE_NONE, MOVE_NONE},
     .nature = NATURE_ADAMANT,
     },
 };

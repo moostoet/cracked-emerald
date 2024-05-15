@@ -6500,8 +6500,18 @@ static const struct TrainerMon sParty_BrendanRoute119Treecko[] = {
 
 static const struct TrainerMon sParty_BrendanRoute103Torchic[] = {
     {
-    .lvl = 5,
-    .species = SPECIES_MUDKIP,
+    .lvl = 7,
+    .species = SPECIES_CYNDAQUIL,
+    .ability = ABILITY_ADAPTABILITY,
+    .moves = {MOVE_EMBER, MOVE_TACKLE, MOVE_NONE, MOVE_NONE},
+    .nature = NATURE_MILD,
+    },
+    {
+    .lvl = 7,
+    .species = SPECIES_EEVEE,
+    .ability = ABILITY_ADAPTABILITY,
+    .moves = {MOVE_TACKLE, MOVE_TAIL_WHIP, MOVE_NONE, MOVE_NONE},
+    .nature = NATURE_ADAMANT,
     }
 };
 
@@ -6543,8 +6553,18 @@ static const struct TrainerMon sParty_BrendanRoute119Torchic[] = {
 
 static const struct TrainerMon sParty_MayRoute103Mudkip[] = {
     {
-    .lvl = 5,
-    .species = SPECIES_TREECKO,
+    .lvl = 7,
+    .species = SPECIES_SNIVY,
+    .ability = ABILITY_NOBLE_AURA,
+    .moves = {MOVE_LEAFAGE, MOVE_TWISTER, MOVE_NONE, MOVE_NONE},
+    .nature = NATURE_MILD,
+    },
+    {
+    .lvl = 7,
+    .species = SPECIES_EEVEE,
+    .ability = ABILITY_ADAPTABILITY,
+    .moves = {MOVE_TACKLE, MOVE_TAIL_WHIP, MOVE_NONE, MOVE_NONE},
+    .nature = NATURE_ADAMANT,
     }
 };
 
@@ -6629,8 +6649,18 @@ static const struct TrainerMon sParty_MayRoute119Treecko[] = {
 
 static const struct TrainerMon sParty_MayRoute103Torchic[] = {
     {
-    .lvl = 5,
-    .species = SPECIES_MUDKIP,
+    .lvl = 7,
+    .species = SPECIES_QUAXLY,
+    .ability = ABILITY_DAZZLING,
+    .moves = {MOVE_AQUA_JET, MOVE_POUND, MOVE_NONE, MOVE_NONE},
+    .nature = NATURE_ADAMANT,
+    },
+    {
+    .lvl = 7,
+    .species = SPECIES_EEVEE,
+    .ability = ABILITY_ADAPTABILITY,
+    .moves = {MOVE_TACKLE, MOVE_TAIL_WHIP, MOVE_NONE, MOVE_NONE},
+    .nature = NATURE_ADAMANT,
     }
 };
 

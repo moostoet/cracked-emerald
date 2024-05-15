@@ -5550,7 +5550,6 @@ void ItemUseCB_RareCandy(u8 taskId, TaskFunc task)
 
         if (targetSpecies != SPECIES_NONE)
         {
-            RemoveBagItem(gSpecialVar_ItemId, 1);
             FreePartyPointers();
             gCB2_AfterEvolution = gPartyMenu.exitCallback;
             BeginEvolutionScene(mon, targetSpecies, TRUE, gPartyMenu.slotId);

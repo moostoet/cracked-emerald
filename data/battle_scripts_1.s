@@ -7771,6 +7771,11 @@ BattleScript_IntimidateInReverse:
 	call BattleScript_TryIntimidateHoldEffects
 	goto BattleScript_IntimidateLoopIncrement
 
+BattleScript_TryNobleAuraHoldEffect:
+	goto BattleScript_TryNobleAuraHoldEffectsRet
+BattleScript_TryNobleAuraHoldEffectsRet:
+	return
+
 BattleScript_NobleAuraActivates::
 	copybyte sSAVED_BATTLER, gBattlerTarget
 .if B_ABILITY_POP_UP == TRUE
@@ -7780,7 +7785,7 @@ BattleScript_NobleAuraActivates::
 .endif
 	setbyte gBattlerTarget, 0
 BattleScript_NobleAuraLoop:
-	jumpifbyteequal gBattlerTarget, gBattlerAttacker, BattleScript_NobleAuraLoop
+	jumpifbyteequal gBattlerTarget, gBattlerAttacker, BattleScript_NobleAuraLoopIncrement
 	jumpiftargetally BattleScript_NobleAuraLoopIncrement
 	jumpifabsent BS_TARGET, BattleScript_NobleAuraLoopIncrement
 	jumpifstatus2 BS_TARGET, STATUS2_SUBSTITUTE, BattleScript_NobleAuraLoopIncrement

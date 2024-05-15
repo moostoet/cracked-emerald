@@ -7771,6 +7771,15 @@ BattleScript_IntimidateInReverse:
 	call BattleScript_TryIntimidateHoldEffects
 	goto BattleScript_IntimidateLoopIncrement
 
+BattleScript_NobleAuraActivates:
+	copybyte sSAVED_BATTLER, gBattlerTarget
+.if B_ABILITY_POP_UP == TRUE
+	showabilitypopup BS_ATTACKER
+	pause B_WAIT_TIME_LONG
+	destroyabilitypopup
+.endif
+	setbyte gBattlerTarget, 0
+
 BattleScript_SupersweetSyrupActivates::
  	copybyte sSAVED_BATTLER, gBattlerTarget
 .if B_ABILITY_POP_UP == TRUE

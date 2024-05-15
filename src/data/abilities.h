@@ -2602,4 +2602,11 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
         .cantBeSwapped = TRUE,
         .cantBeTraced = TRUE,
     },
+
+    [ABILITY_NOBLE_AURA] =
+    {
+        .name = _("Noble Aura"),
+        .description = COMPOUND_STRING("Lowers foe's Special Attack."),
+        .aiRating = 7,
+    },
 };

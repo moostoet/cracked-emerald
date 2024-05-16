@@ -4027,9 +4027,19 @@ static const struct TrainerMon sParty_Shelby5[] = {
 
 static const struct TrainerMon sParty_Calvin1[] = {
     {
-    .lvl = 5,
-    .species = SPECIES_POOCHYENA,
-    }
+    .lvl = 7,
+    .species = SPECIES_SHROODLE,
+    .ability = ABILITY_PICKPOCKET,
+    .moves = {MOVE_FURY_SWIPES, MOVE_POISON_STING, MOVE_NONE, MOVE_NONE},
+    .nature = NATURE_JOLLY,
+    },
+    {
+    .lvl = 7,
+    .species = SPECIES_PIDOVE,
+    .ability = ABILITY_SUPER_LUCK,
+    .moves = {MOVE_GUST, MOVE_QUICK_ATTACK, MOVE_NONE, MOVE_NONE},
+    .nature = NATURE_LAX,
+    },
 };
 
 static const struct TrainerMon sParty_Billy[] = {
@@ -7730,12 +7740,46 @@ static const struct TrainerMon sParty_Crissy[] = {
 
 static const struct TrainerMon sParty_Rick[] = {
     {
-    .lvl = 4,
-    .species = SPECIES_WURMPLE,
+    .lvl = 8,
+    .species = SPECIES_METAPOD,
+    .ability = ABILITY_STAMINA,
+    .moves = {MOVE_BUG_BITE, MOVE_IRON_DEFENSE, MOVE_TACKLE, MOVE_NONE},
+    .nature = NATURE_IMPISH
     },
     {
-    .lvl = 4,
-    .species = SPECIES_WURMPLE,
+    .lvl = 8,
+    .species = SPECIES_KAKUNA,
+    .ability = ABILITY_ANGER_SHELL,
+    .moves = {MOVE_BUG_BITE, MOVE_POISON_STING, MOVE_TACKLE, MOVE_NONE},
+    .nature = NATURE_ADAMANT
+    },
+    {
+    .lvl = 9,
+    .species = SPECIES_CASCOON,
+    .ability = ABILITY_POISON_TOUCH,
+    .moves = {MOVE_BUG_BITE, MOVE_POISON_STING, MOVE_ELECTROWEB, MOVE_NONE},
+    .nature = NATURE_BRAVE
+    },
+    {
+    .lvl = 9,
+    .species = SPECIES_SILCOON,
+    .ability = ABILITY_POISON_TOUCH,
+    .moves = {MOVE_BUG_BITE, MOVE_POISON_STING, MOVE_ELECTROWEB, MOVE_NONE},
+    .nature = NATURE_BRAVE
+    },
+    {
+    .lvl = 9,
+    .species = SPECIES_SPEWPA,
+    .ability = ABILITY_COMPOUND_EYES,
+    .moves = {MOVE_STUN_SPORE, MOVE_STRUGGLE_BUG, MOVE_ELECTROWEB, MOVE_NONE},
+    .nature = NATURE_MODEST
+    },
+    {
+    .lvl = 10,
+    .species = SPECIES_PUPITAR,
+    .ability = ABILITY_ROCK_HEAD,
+    .moves = {MOVE_TAKE_DOWN},
+    .nature = NATURE_MODEST
     }
 };
 

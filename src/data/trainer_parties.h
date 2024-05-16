@@ -4211,13 +4211,28 @@ static const struct TrainerMon sParty_Eddie[] = {
 
 static const struct TrainerMon sParty_Allen[] = {
     {
-    .lvl = 4,
-    .species = SPECIES_ZIGZAGOON,
+    .lvl = 9,
+    .species = SPECIES_PIKIPEK,
+    .heldItem = ITEM_METRONOME,
+    .ability = ABILITY_SKILL_LINK,
+    .moves = {MOVE_FURY_ATTACK, MOVE_NONE, MOVE_NONE, MOVE_NONE},
+    .nature = NATURE_CAREFUL
     },
     {
-    .lvl = 3,
-    .species = SPECIES_TAILLOW,
-    }
+    .lvl = 10,
+    .species = SPECIES_PATRAT,
+    .heldItem = ITEM_ZOOM_LENS,
+    .ability = ABILITY_ANALYTIC,
+    .moves = {MOVE_HYPNOSIS, MOVE_COVET, MOVE_DETECT},
+    .nature = NATURE_BRAVE
+    },
+    {
+    .lvl = 10,
+    .species = SPECIES_YUNGOOS,
+    .ability = ABILITY_STRONG_JAW,
+    .moves = {MOVE_BITE, MOVE_YAWN, MOVE_TRAILBLAZE, MOVE_SUPER_FANG},
+    .nature = NATURE_ADAMANT
+    },
 };
 
 static const struct TrainerMon sParty_Timmy[] = {

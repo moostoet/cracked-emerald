@@ -7607,14 +7607,29 @@ static const struct TrainerMon sParty_MaxieMtChimney[] = {
 };
 
 static const struct TrainerMon sParty_Tiana[] = {
-    {
-    .lvl = 4,
-    .species = SPECIES_ZIGZAGOON,
-    },
-    {
-    .lvl = 4,
-    .species = SPECIES_SHROOMISH,
-    }
+   {
+    .lvl = 11,
+    .species = SPECIES_VULPIX,
+    .ability = ABILITY_FLASH_FIRE,
+    .nature = NATURE_GENTLE,
+    .heldItem = ITEM_HEAT_ROCK,
+    .moves = {MOVE_EMBER, MOVE_WILL_O_WISP, MOVE_CONFUSE_RAY, MOVE_SUNNY_DAY},
+   },
+   {
+    .lvl = 11,
+    .species = SPECIES_EXEGGCUTE,
+    .ability = ABILITY_HARVEST,
+    .nature = NATURE_RELAXED,
+    .heldItem = ITEM_ORAN_BERRY,
+    .moves = {MOVE_LEECH_SEED, MOVE_MEGA_DRAIN, MOVE_CONFUSION, MOVE_PROTECT},
+   },
+   {
+    .lvl = 11,
+    .species = SPECIES_CHERUBI,
+    .ability = ABILITY_CHLOROPHYLL,
+    .nature = NATURE_MODEST,
+    .moves = {MOVE_DRAINING_KISS, MOVE_MAGICAL_LEAF, MOVE_GROWTH, MOVE_NONE},
+   }
 };
 
 static const struct TrainerMon sParty_Haley1[] = {

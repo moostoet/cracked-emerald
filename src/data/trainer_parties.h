@@ -4044,12 +4044,19 @@ static const struct TrainerMon sParty_Calvin1[] = {
 
 static const struct TrainerMon sParty_Billy[] = {
     {
-    .lvl = 5,
-    .species = SPECIES_ZIGZAGOON,
+    .lvl = 12,
+    .species = SPECIES_SANDYGAST,
+    .ability = ABILITY_WATER_COMPACTION,
+    .moves = {MOVE_MEGA_DRAIN, MOVE_MUD_BOMB, MOVE_HEX, MOVE_TOXIC},
+    .heldItem = ITEM_PASSHO_BERRY,
+    .nature = NATURE_MODEST,
     },
     {
-    .lvl = 7,
-    .species = SPECIES_SEEDOT,
+    .lvl = 13,
+    .species = SPECIES_LOMBRE,
+    .ability = ABILITY_OWN_TEMPO,
+    .moves = {MOVE_FAKE_OUT, MOVE_BUBBLE_BEAM, MOVE_ICY_WIND, MOVE_MAGICAL_LEAF},
+    .nature = NATURE_MILD,
     }
 };
 
@@ -8996,8 +9003,50 @@ static const struct TrainerMon sParty_Sarah[] = {
 
 static const struct TrainerMon sParty_Darian[] = {
     {
-    .lvl = 9,
+    .lvl = 10,
+    .species = SPECIES_REMORAID,
+    .heldItem = ITEM_RINDO_BERRY,
+    .ability = ABILITY_SNIPER,
+    .moves = {MOVE_RAIN_DANCE, MOVE_BRINE, MOVE_ICY_WIND, MOVE_INCINERATE},
+    .nature = NATURE_TIMID
+    },
+    {
+    .lvl = 11,
+    .species = SPECIES_GOLDEEN,
+    .heldItem = ITEM_MYSTIC_WATER,
+    .ability = ABILITY_SWIFT_SWIM,
+    .moves = {MOVE_WATER_PULSE, MOVE_ICY_WIND, MOVE_HEADBUTT, MOVE_NONE},
+    .nature = NATURE_NAUGHTY
+    },
+    {
+    .lvl = 12,
+    .species = SPECIES_FINNEON,
+    .heldItem = ITEM_DAMP_ROCK,
+    .ability = ABILITY_SWIFT_SWIM,
+    .moves = {MOVE_RAIN_DANCE, MOVE_CHILLING_WATER, MOVE_ACROBATICS, MOVE_NONE},
+    .nature = NATURE_MILD
+    },
+    {
+    .lvl = 13,
+    .species = SPECIES_FEEBAS,
+    .ability = ABILITY_ADAPTABILITY,
+    .moves = {MOVE_BRINE, MOVE_ATTRACT, MOVE_CONFUSE_RAY, MOVE_FLAIL},
+    .nature = NATURE_TIMID
+    },
+    {
+    .lvl = 14,
+    .species = SPECIES_BARBOACH,
+    .ability = ABILITY_HYDRATION,
+    .moves = {MOVE_RAIN_DANCE, MOVE_MUD_BOMB, MOVE_WATER_PULSE, MOVE_ICY_WIND},
+    .nature = NATURE_MODEST
+    },
+    {
+    .lvl = 15,
     .species = SPECIES_MAGIKARP,
+    .heldItem = ITEM_CHOICE_BAND,
+    .ability = ABILITY_SWIFT_SWIM,
+    .moves = {MOVE_BOUNCE, MOVE_NONE, MOVE_NONE, MOVE_NONE},
+    .nature = NATURE_ADAMANT
     }
 };
 

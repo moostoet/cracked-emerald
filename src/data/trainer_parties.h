@@ -1386,9 +1386,20 @@ static const struct TrainerMon sParty_Valerie5[] = {
 
 static const struct TrainerMon sParty_Cindy1[] = {
     {
-    .lvl = 7,
-    .species = SPECIES_ZIGZAGOON,
-    .heldItem = ITEM_NUGGET
+    .lvl = 14,
+    .species = SPECIES_FLOETTE,
+    .heldItem = ITEM_PETAYA_BERRY,
+    .ability = ABILITY_SYMBIOSIS,
+    .moves = {MOVE_DRAINING_KISS, MOVE_HELPING_HAND, MOVE_AROMATHERAPY, MOVE_TEARFUL_LOOK},
+    .nature = NATURE_CALM,
+    },
+    {
+    .lvl = 14,
+    .species = SPECIES_HATTREM,
+    .heldItem = ITEM_CUSTAP_BERRY,
+    .ability = ABILITY_MAGIC_BOUNCE,
+    .moves = {MOVE_DRAINING_KISS, MOVE_PSYBEAM, MOVE_SUBSTITUTE, MOVE_NONE},
+    .nature = NATURE_SASSY,
     }
 };
 

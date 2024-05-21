@@ -87,8 +87,28 @@ static const struct TrainerMon sParty_Gabrielle1[] = {
 
 static const struct TrainerMon sParty_GruntPetalburgWoods[] = {
     {
-    .lvl = 9,
-    .species = SPECIES_POOCHYENA,
+    .lvl = 15,
+    .species = SPECIES_SCRAGGY,
+    .ability = ABILITY_INTIMIDATE,
+    .moves = {MOVE_THIEF, MOVE_POWER_UP_PUNCH, MOVE_FAKE_OUT, MOVE_ROCK_THROW},
+    .nature = NATURE_ADAMANT,
+    .heldItem = ITEM_MUSCLE_BAND
+    },
+    {
+    .lvl = 15,
+    .species = SPECIES_QWILFISH_HISUIAN,
+    .ability = ABILITY_POISON_POINT,
+    .moves = {MOVE_POISON_TAIL, MOVE_BITE, MOVE_PAIN_SPLIT, MOVE_AQUA_JET},
+    .nature = NATURE_JOLLY,
+    .heldItem = ITEM_POISON_BARB
+    },
+    {
+    .lvl = 16,
+    .species = SPECIES_DRIZZILE,
+    .ability = ABILITY_STAKEOUT,
+    .moves = {MOVE_WATER_PULSE, MOVE_SWIFT, MOVE_AQUA_JET, MOVE_ICE_SHARD},
+    .nature = NATURE_HASTY,
+    .heldItem = ITEM_WISE_GLASSES
     }
 };
 
@@ -7826,27 +7846,35 @@ static const struct TrainerMon sParty_Rick[] = {
     .lvl = 10,
     .species = SPECIES_PUPITAR,
     .ability = ABILITY_ROCK_HEAD,
-    .moves = {MOVE_TAKE_DOWN},
+    .moves = {MOVE_TAKE_DOWN, MOVE_NONE, MOVE_NONE, MOVE_NONE},
     .nature = NATURE_MODEST
     }
 };
 
 static const struct TrainerMon sParty_Lyle[] = {
     {
-    .lvl = 3,
-    .species = SPECIES_WURMPLE,
+    .lvl = 14,
+    .species = SPECIES_DEWPIDER,
+    .ability = ABILITY_WATER_BUBBLE,
+    .moves = {MOVE_BUBBLE_BEAM, MOVE_BUG_BITE, MOVE_STICKY_WEB, MOVE_GIGA_DRAIN},
+    .nature = NATURE_CALM,
+    .heldItem = ITEM_WAVE_INCENSE
     },
     {
-    .lvl = 3,
-    .species = SPECIES_WURMPLE,
+    .lvl = 14,
+    .species = SPECIES_LEDYBA,
+    .ability = ABILITY_IRON_FIST,
+    .moves = {MOVE_COMET_PUNCH, MOVE_MACH_PUNCH, MOVE_WING_ATTACK, MOVE_BUG_BITE},
+    .nature = NATURE_ADAMANT,
+    .heldItem = ITEM_MUSCLE_BAND
     },
     {
-    .lvl = 3,
-    .species = SPECIES_WURMPLE,
-    },
-    {
-    .lvl = 3,
-    .species = SPECIES_WURMPLE,
+    .lvl = 14,
+    .species = SPECIES_SIZZLIPEDE,
+    .ability = ABILITY_FLASH_FIRE,
+    .moves = {MOVE_BUG_BITE, MOVE_FLAME_WHEEL, MOVE_BITE, MOVE_WRAP},
+    .nature = NATURE_ADAMANT,
+    .heldItem = ITEM_CHARTI_BERRY
     }
 };
 

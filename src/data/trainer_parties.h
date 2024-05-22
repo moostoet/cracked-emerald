@@ -7922,12 +7922,33 @@ static const struct TrainerMon sParty_Kent[] = {
 
 static const struct TrainerMon sParty_James1[] = {
     {
-    .lvl = 6,
-    .species = SPECIES_NINCADA,
+    .lvl = 15,
+    .species = SPECIES_BEEDRILL,
+    .ability = ABILITY_ADAPTABILITY,
+    .moves = {MOVE_POISON_STING, MOVE_TWINEEDLE, MOVE_ACROBATICS, MOVE_TOXIC_SPIKES},
+    .nature = NATURE_JOLLY,
     },
     {
-    .lvl = 6,
-    .species = SPECIES_NINCADA,
+    .lvl = 15,
+    .species = SPECIES_BUTTERFREE,
+    .ability = ABILITY_TINTED_LENS,
+    .moves = {MOVE_GUST, MOVE_STRUGGLE_BUG, MOVE_STUN_SPORE, MOVE_MEGA_DRAIN},
+    .nature = NATURE_TIMID,
+    },
+    {
+    .lvl = 16,
+    .species = SPECIES_DUSTOX,
+    .ability = ABILITY_SHIELD_DUST,
+    .moves = {MOVE_VENOSHOCK, MOVE_SILVER_WIND, MOVE_POISON_POWDER, MOVE_MOONLIGHT},
+    .nature = NATURE_MODEST,
+    },
+    {
+    .lvl = 15,
+    .species = SPECIES_BEAUTIFLY,
+    .ability = ABILITY_RIVALRY,
+    .moves = {MOVE_AERIAL_ACE, MOVE_BUG_BITE, MOVE_POISON_STING, MOVE_REST},
+    .nature = NATURE_ADAMANT,
+    .heldItem = ITEM_CHESTO_BERRY
     }
 };
 

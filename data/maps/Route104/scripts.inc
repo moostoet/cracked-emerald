@@ -848,7 +848,22 @@ Route104_Movement_BrineyExitBoat:
 
 Route104_EventScript_Ivan::
 	trainerbattle_single TRAINER_IVAN, Route104_Text_IvanIntro, Route104_Text_IvanDefeat
-	msgbox Route104_Text_IvanPostBattle, MSGBOX_AUTOCLOSE
+	msgbox Route104_Text_IvanPostBattle, MSGBOX_DEFAULT
+	goto_if_unset FLAG_BADGE01_GET, Route104_EventScript_Ivan_PostBattle_NoBadge
+	release
+	end
+
+Route104_EventScript_Ivan_PostBattle_NoBadge::
+	goto_if_set FLAG_RECEIVED_HDB, Route104_EventScript_Ivan_PostBattle_NoBadge_ReceivedBoots
+	msgbox Route104_Text_IvanPostBattle_NoBadge, MSGBOX_DEFAULT
+	giveitem ITEM_HEAVY_DUTY_BOOTS
+	setflag FLAG_RECEIVED_HDB
+	release
+	end
+
+Route104_EventScript_Ivan_PostBattle_NoBadge_ReceivedBoots::
+	msgbox Route104_Text_IvanPostBattle_NoBadge_ReceivedBoots, MSGBOX_DEFAULT
+	release
 	end
 
 Route104_EventScript_Billy::

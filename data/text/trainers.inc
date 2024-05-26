@@ -294,6 +294,14 @@ Route104_Text_IvanPostBattle:
 	.string "I got too into fishing.\n"
 	.string "I forgot I had to raise my POKéMON…$"
 
+Route104_Text_IvanPostBattle_NoBadge:
+	.string "You look like an aspiring trainer.\n"
+	.string "Take these with you.$"
+
+Route104_Text_IvanPostBattle_NoBadge_ReceivedBoots:
+	.string "ROXANNE's lead POKéMON uses hazards.\n"
+	.string "Those boots should help you out!$"
+
 Route104_Text_BillyIntro:
 	.string "Leaving footprints in the sand is\n"
 	.string "so fun!$"

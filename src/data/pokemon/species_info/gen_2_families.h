@@ -1838,7 +1838,7 @@ const struct SpeciesInfo gSpeciesInfoGen2[] =
         .baseSpeed     = 10,
         .baseSpAttack  = 10,
         .baseSpDefense = 45,
-        .types = MON_TYPES(TYPE_ROCK),
+        .types = MON_TYPES(TYPE_ROCK, TYPE_GRASS),
         .catchRate = 255,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 58 : 68,
         .evYield_Defense = 1,

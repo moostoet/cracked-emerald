@@ -1,5 +1,43 @@
 RustboroCity_Gym_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, RustboroCity_Gym_OnTransition
 	.byte 0
+
+RustboroCity_Gym_OnTransition:
+	call RustboroCity_Gym_EventScript_CheckStopSandStorm_IfBeatAllTrainers_Transition
+	end
+
+RustboroCity_Gym_EventScript_CheckStopSandStorm_IfBeatAllTrainers_Transition::
+	goto_if_defeated TRAINER_ROXANNE_1, RustboroCity_Gym_EventScript_StopSandstorm_NoMessage
+	call RustboroCity_Gym_EventScript_CountTrainersDefeated
+	goto_if_eq VAR_0x8000, 3, RustboroCity_Gym_EventScript_StopSandstorm_NoMessage
+
+RustboroCity_Gym_EventScript_CheckStopSandStorm_IfBeatAllTrainers::
+	goto_if_defeated TRAINER_ROXANNE_1, RustboroCity_Gym_EventScript_StopSandstorm
+	call RustboroCity_Gym_EventScript_CountTrainersDefeated
+	goto_if_eq VAR_0x8000, 3, RustboroCity_Gym_EventScript_StopSandstorm
+
+RustboroCity_Gym_EventScript_CountTrainersDefeated::
+	setvar VAR_0x8000, 0
+	goto_if_not_defeated TRAINER_JOSH, RustboroCity_Gym_EventScript_CheckTommy
+	addvar VAR_0x8000, 1
+RustboroCity_Gym_EventScript_CheckTommy::
+	goto_if_not_defeated TRAINER_TOMMY, RustboroCity_Gym_EventScript_CheckMarc
+	addvar VAR_0x8000, 1
+RustboroCity_Gym_EventScript_CheckMarc::
+	goto_if_not_defeated TRAINER_MARC, RustboroCity_Gym_EventScript_StopCountingTrainers
+	addvar VAR_0x8000, 1
+RustboroCity_Gym_EventScript_StopCountingTrainers::
+	return
+
+RustboroCity_Gym_EventScript_StopSandstorm_NoMessage::
+	setweather WEATHER_NONE
+	end
+
+RustboroCity_Gym_EventScript_StopSandstorm::
+	setweather WEATHER_NONE
+	doweather
+	msgbox RustboroCity_Gym_Text_SandstormEnd, MSGBOX_AUTOCLOSE
+	end
 
 RustboroCity_Gym_EventScript_Roxanne::
 	trainerbattle_single TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneIntro, RustboroCity_Gym_Text_RoxanneDefeat, RustboroCity_Gym_EventScript_RoxanneDefeated, NO_MUSIC
@@ -39,18 +77,30 @@ RustboroCity_Gym_EventScript_RoxanneRematch::
 	end
 
 RustboroCity_Gym_EventScript_Josh::
-	trainerbattle_single TRAINER_JOSH, RustboroCity_Gym_Text_JoshIntro, RustboroCity_Gym_Text_JoshDefeat
+	trainerbattle_single TRAINER_JOSH, RustboroCity_Gym_Text_JoshIntro, RustboroCity_Gym_Text_JoshDefeat, RustboroCity_Gym_EventScript_Josh_Check
 	msgbox RustboroCity_Gym_Text_JoshPostBattle, MSGBOX_AUTOCLOSE
 	end
 
+RustboroCity_Gym_EventScript_Josh_Check::
+	call RustboroCity_Gym_EventScript_CheckStopSandStorm_IfBeatAllTrainers
+	end
+
 RustboroCity_Gym_EventScript_Tommy::
-	trainerbattle_single TRAINER_TOMMY, RustboroCity_Gym_Text_TommyIntro, RustboroCity_Gym_Text_TommyDefeat
+	trainerbattle_single TRAINER_TOMMY, RustboroCity_Gym_Text_TommyIntro, RustboroCity_Gym_Text_TommyDefeat, RustboroCity_Gym_EventScript_Tommy_Check 
 	msgbox RustboroCity_Gym_Text_TommyPostBattle, MSGBOX_AUTOCLOSE
 	end
 
+RustboroCity_Gym_EventScript_Tommy_Check::
+	call RustboroCity_Gym_EventScript_CheckStopSandStorm_IfBeatAllTrainers
+	end
+
 RustboroCity_Gym_EventScript_Marc::
-	trainerbattle_single TRAINER_MARC, RustboroCity_Gym_Text_MarcIntro, RustboroCity_Gym_Text_MarcDefeat
+	trainerbattle_single TRAINER_MARC, RustboroCity_Gym_Text_MarcIntro, RustboroCity_Gym_Text_MarcDefeat, RustboroCity_Gym_EventScript_Marc_Check
 	msgbox RustboroCity_Gym_Text_MarcPostBattle, MSGBOX_AUTOCLOSE
+	end
+
+RustboroCity_Gym_EventScript_Marc_Check::
+	call RustboroCity_Gym_EventScript_CheckStopSandStorm_IfBeatAllTrainers
 	end
 
 RustboroCity_Gym_EventScript_GymGuide::
@@ -281,3 +331,6 @@ RustboroCity_Gym_Text_RoxanneRematchNeedTwoMons:
 	.string "You only have one POKéMON with you?\p"
 	.string "Please return with at least one more\n"
 	.string "POKéMON.$"
+
+RustboroCity_Gym_Text_SandstormEnd:
+	.string "The SANDSTORM subsided.$"

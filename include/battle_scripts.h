@@ -467,6 +467,7 @@ extern const u8 BattleScript_ScaleShot[];
 extern const u8 BattleScript_MultiHitPrintStrings[];
 extern const u8 BattleScript_RemoveFireType[];
 extern const u8 BattleScript_TargetAbilityStatRaiseRet[];
+extern const u8 BattleScript_TargetAbilityActivateMagmaCore[];
 extern const u8 BattleScript_RemoveElectricType[];
 extern const u8 BattleScript_SeedSowerActivates[];
 extern const u8 BattleScript_AngerShellActivates[];

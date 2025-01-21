@@ -5601,6 +5601,21 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                 effect++;
             }
             break;
+        case ABILITY_MAGMA_CORE:
+            if ((!gDisableStructs[battler].magmaCoreBoosted)
+             && (!(gMoveResultFlags & MOVE_RESULT_NO_EFFECT))
+             && TARGET_TURN_DAMAGED
+             && (moveType == TYPE_WATER)
+             && IsBattlerAlive(battler))
+             {
+                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_MAGMA_CORE_BOOST;
+                gEffectBattler = battler;
+                gDisableStructs[battler].magmaCoreBoosted = TRUE;
+                BattleScriptPushCursor(); 
+                gBattlescriptCurrInstr = BattleScript_TargetAbilityActivateMagmaCore; 
+                effect++;
+             }
+             break;
         case ABILITY_BERSERK:
             if (!(gMoveResultFlags & MOVE_RESULT_NO_EFFECT)
              && TARGET_TURN_DAMAGED
@@ -9478,6 +9493,11 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct DamageCalculationData *
                 RecordAbilityBattle(battlerDef, defAbility);
         }
         break;
+    case ABILITY_MAGMA_CORE:
+        if (moveType == TYPE_WATER)
+        {
+            modifier = uq4_12_multiply(modifier, UQ_4_12(0.667));
+        }
     case ABILITY_DRY_SKIN:
         if (moveType == TYPE_FIRE)
             modifier = uq4_12_multiply(modifier, UQ_4_12(1.25));
@@ -9691,6 +9711,9 @@ static inline u32 CalcAttackStat(struct DamageCalculationData *damageCalcData, u
         if (moveType == TYPE_FIRE && gBattleResources->flags->flags[battlerAtk] & RESOURCE_FLAG_FLASH_FIRE)
             modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
         break;
+    case ABILITY_MAGMA_CORE:
+        if (moveType == TYPE_FIRE && gDisableStructs[battlerAtk].magmaCoreBoosted)
+            modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
     case ABILITY_SWARM:
         if (moveType == TYPE_BUG && gBattleMons[battlerAtk].hp <= (gBattleMons[battlerAtk].maxHP / 3))
             modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
@@ -9702,6 +9725,11 @@ static inline u32 CalcAttackStat(struct DamageCalculationData *damageCalcData, u
     case ABILITY_BLAZE:
         if (moveType == TYPE_FIRE && gBattleMons[battlerAtk].hp <= (gBattleMons[battlerAtk].maxHP / 3))
             modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
+        break;
+    case ABILITY_PRIMAL_INSTINCT:
+        if ((moveType == GetBattlerType(battlerAtk, 0, FALSE) || moveType == GetBattlerType(battlerAtk, 1, FALSE)) 
+        && gBattleMons[battlerAtk].hp <= (gBattleMons[battlerAtk].maxHP / 2))
+            modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.3));
         break;
     case ABILITY_OVERGROW:
         if (moveType == TYPE_GRASS && gBattleMons[battlerAtk].hp <= (gBattleMons[battlerAtk].maxHP / 3))

@@ -825,7 +825,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_FIELD),
     #if P_UPDATED_ABILITIES >= GEN_4
-        .abilities = { ABILITY_RUN_AWAY, ABILITY_QUICK_FEET, ABILITY_RATTLED },
+        .abilities = { ABILITY_INTIMIDATE, ABILITY_RATTLED, ABILITY_MOXIE },
     #else
         .abilities = { ABILITY_RUN_AWAY, ABILITY_NONE, ABILITY_RATTLED },
     #endif
@@ -892,7 +892,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_FIELD),
     #if P_UPDATED_ABILITIES >= GEN_4
-        .abilities = { ABILITY_INTIMIDATE, ABILITY_QUICK_FEET, ABILITY_MOXIE },
+        .abilities = { ABILITY_INTIMIDATE, ABILITY_MOXIE, ABILITY_QUICK_FEET },
     #else
         .abilities = { ABILITY_INTIMIDATE, ABILITY_NONE, ABILITY_MOXIE },
     #endif
@@ -1016,7 +1016,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .teachableLearnset = sZigzagoonTeachableLearnset,
         .eggMoveLearnset = sZigzagoonEggMoveLearnset,
         .formSpeciesIdTable = sZigzagoonFormSpeciesIdTable,
-        .evolutions = EVOLUTION({EVO_LEVEL, 20, SPECIES_LINOONE}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 16, SPECIES_LINOONE}),
     },
 
     [SPECIES_LINOONE] =
@@ -1150,7 +1150,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .teachableLearnset = sZigzagoonGalarTeachableLearnset,
         .eggMoveLearnset = sZigzagoonGalarEggMoveLearnset,
         .formSpeciesIdTable = sZigzagoonFormSpeciesIdTable,
-        .evolutions = EVOLUTION({EVO_LEVEL, 20, SPECIES_LINOONE_GALAR}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 16, SPECIES_LINOONE_GALAR}),
     },
 
     [SPECIES_LINOONE_GALAR] =
@@ -3052,7 +3052,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_SLOW,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_FIELD),
-        .abilities = { ABILITY_TRUANT, ABILITY_NONE, ABILITY_NONE },
+        .abilities = { ABILITY_COMATOSE, ABILITY_NONE, ABILITY_NONE },
         .bodyColor = BODY_COLOR_BROWN,
         .speciesName = _("Slakoth"),
         .cryId = CRY_SLAKOTH,
@@ -3095,7 +3095,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sSlakothLevelUpLearnset,
         .teachableLearnset = sSlakothTeachableLearnset,
         .eggMoveLearnset = sSlakothEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 18, SPECIES_VIGOROTH}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 16, SPECIES_VIGOROTH}),
     },
 
     [SPECIES_VIGOROTH] =

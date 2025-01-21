@@ -11501,12 +11501,12 @@
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_PIDOVE"
+                "species": "SPECIES_PANSEAR"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_LILLIPUP"
+                "species": "SPECIES_NUMEL"
               },
               {
                 "min_level": 5,
@@ -11521,7 +11521,7 @@
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_MEOWTH"
+                "species": "SPECIES_DARUMAKA"
               },
               {
                 "min_level": 5,
@@ -11531,32 +11531,32 @@
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_MINCCINO"
+                "species": "SPECIES_CHARCADET"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_RATTATA"
+                "species": "SPECIES_EEVEE"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_TREECKO"
+                "species": "SPECIES_CHIMCHAR"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_SQUIRTLE"
+                "species": "SPECIES_TORCHIC"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_TREECKO"
+                "species": "SPECIES_CHIMCHAR"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_SQUIRTLE"
+                "species": "SPECIES_TORCHIC"
               }
             ]
           }

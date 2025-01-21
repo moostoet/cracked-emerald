@@ -9789,6 +9789,14 @@ BattleScript_TargetAbilityStatRaiseRet_End:
 	copybyte gBattlerAttacker, sSAVED_BATTLER
 	return
 
+BattleScript_TargetAbilityActivateMagmaCore::
+	attackstring
+	pause B_WAIT_TIME_SHORT
+	call BattleScript_AbilityPopUp
+	printfromtable gMagmaCoreStringIds
+	waitmessage B_WAIT_TIME_LONG
+	goto BattleScript_MoveEnd
+
 @@@ MAX MOVES @@@
 BattleScript_EffectMaxMove::
 	attackcanceler

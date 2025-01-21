@@ -911,6 +911,9 @@
 #define B_MSG_FLASH_FIRE_BOOST    0
 #define B_MSG_FLASH_FIRE_NO_BOOST 1
 
+// gMagmaCoreStringIds
+#define B_MSG_MAGMA_CORE_BOOST    0
+
 // gBerryEffectStringIds
 #define B_MSG_CURED_PROBLEM     0
 #define B_MSG_NORMALIZED_STATUS 1

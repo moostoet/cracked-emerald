@@ -4014,7 +4014,7 @@ void SetMoveEffect(bool32 primary, bool32 certain)
                 if (!(gSideStatuses[side] & SIDE_STATUS_REFLECT))
                 {
                     gSideStatuses[side] |= SIDE_STATUS_REFLECT;
-                    if (GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+                    if (GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_LIGHT_CLAY || GetBattlerAbility(gBattlerAttacker) == ABILITY_PROTECTOR)
                         gSideTimers[side].reflectTimer = 8;
                     else
                         gSideTimers[side].reflectTimer = 5;
@@ -4034,7 +4034,7 @@ void SetMoveEffect(bool32 primary, bool32 certain)
                 if (!(gSideStatuses[side] & SIDE_STATUS_LIGHTSCREEN))
                 {
                     gSideStatuses[side] |= SIDE_STATUS_LIGHTSCREEN;
-                    if (GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+                    if (GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_LIGHT_CLAY || GetBattlerAbility(gBattlerAttacker) == ABILITY_PROTECTOR)
                         gSideTimers[side].lightscreenTimer = 8;
                     else
                         gSideTimers[side].lightscreenTimer = 5;
@@ -10431,7 +10431,7 @@ static void Cmd_various(void)
         else
         {
             gSideStatuses[GetBattlerSide(battler)] |= SIDE_STATUS_AURORA_VEIL;
-            if (GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+            if (GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_LIGHT_CLAY || GetBattlerAbility(battler) == ABILITY_PROTECTOR)
                 gSideTimers[GetBattlerSide(battler)].auroraVeilTimer = 8;
             else
                 gSideTimers[GetBattlerSide(battler)].auroraVeilTimer = 5;
@@ -11338,7 +11338,7 @@ static void Cmd_setreflect(void)
     else
     {
         gSideStatuses[GetBattlerSide(gBattlerAttacker)] |= SIDE_STATUS_REFLECT;
-        if (GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+        if (GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_LIGHT_CLAY || GetBattlerAbility(gBattlerAttacker) == ABILITY_PROTECTOR)
             gSideTimers[GetBattlerSide(gBattlerAttacker)].reflectTimer = 8;
         else
             gSideTimers[GetBattlerSide(gBattlerAttacker)].reflectTimer = 5;
@@ -12387,7 +12387,7 @@ static void Cmd_setlightscreen(void)
     else
     {
         gSideStatuses[GetBattlerSide(gBattlerAttacker)] |= SIDE_STATUS_LIGHTSCREEN;
-        if (GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+        if (GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_LIGHT_CLAY || GetBattlerAbility(gBattlerAttacker) == ABILITY_PROTECTOR)
             gSideTimers[GetBattlerSide(gBattlerAttacker)].lightscreenTimer = 8;
         else
             gSideTimers[GetBattlerSide(gBattlerAttacker)].lightscreenTimer = 5;
@@ -15407,7 +15407,7 @@ static void Cmd_handleballthrow(void)
         if (gBattleResults.catchAttempts[ballId] < 255)
             gBattleResults.catchAttempts[ballId]++;
 
-        if (odds > 254) // mon caught
+        if (odds > 1) // mon caught
         {
             BtlController_EmitBallThrowAnim(gBattlerAttacker, BUFFER_A, BALL_3_SHAKES_SUCCESS);
             MarkBattlerForControllerExec(gBattlerAttacker);

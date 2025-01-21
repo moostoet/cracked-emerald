@@ -1418,14 +1418,14 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .evolutions = EVOLUTION({EVO_LEVEL, 10, SPECIES_BEEDRILL}),
     },
 
-#define BEEDRILL_ATTACK (P_UPDATED_STATS >= GEN_6 ? 90 : 80)
+#define BEEDRILL_ATTACK (P_UPDATED_STATS >= GEN_6 ? 105 : 105)
 
     [SPECIES_BEEDRILL] =
     {
         .baseHP        = 65,
         .baseAttack    = BEEDRILL_ATTACK,
         .baseDefense   = 40,
-        .baseSpeed     = 75,
+        .baseSpeed     = 95,
         .baseSpAttack  = 45,
         .baseSpDefense = 80,
         .types = MON_TYPES(TYPE_BUG, TYPE_POISON),
@@ -5598,7 +5598,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .baseSpeed     = 25,
         .baseSpAttack  = 45,
         .baseSpDefense = 55,
-        .types = MON_TYPES(TYPE_BUG, TYPE_GRASS),
+        .types = MON_TYPES(TYPE_BUG),
         .catchRate = 190,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 57 : 70,
         .evYield_Attack = 1,
@@ -5610,7 +5610,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_BUG, EGG_GROUP_GRASS),
     #if P_UPDATED_ABILITIES >= GEN_4
-        .abilities = { ABILITY_EFFECT_SPORE, ABILITY_DRY_SKIN, ABILITY_DAMP },
+        .abilities = { ABILITY_POISON_HEAL, ABILITY_DRY_SKIN, ABILITY_DAMP },
     #else
         .abilities = { ABILITY_EFFECT_SPORE, ABILITY_NONE, ABILITY_DAMP },
     #endif
@@ -5662,13 +5662,13 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
 
     [SPECIES_PARASECT] =
     {
-        .baseHP        = 60,
-        .baseAttack    = 95,
-        .baseDefense   = 80,
+        .baseHP        = 110,
+        .baseAttack    = 115,
+        .baseDefense   = 90,
         .baseSpeed     = 30,
-        .baseSpAttack  = 60,
-        .baseSpDefense = 80,
-        .types = MON_TYPES(TYPE_BUG, TYPE_GRASS),
+        .baseSpAttack  = 50,
+        .baseSpDefense = 90,
+        .types = MON_TYPES(TYPE_BUG, TYPE_GHOST),
         .catchRate = 75,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 142 : 128,
         .evYield_Attack = 2,
@@ -5681,7 +5681,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_BUG, EGG_GROUP_GRASS),
     #if P_UPDATED_ABILITIES >= GEN_4
-        .abilities = { ABILITY_EFFECT_SPORE, ABILITY_DRY_SKIN, ABILITY_DAMP },
+        .abilities = { ABILITY_POISON_HEAL, ABILITY_DRY_SKIN, ABILITY_DAMP },
     #else
         .abilities = { ABILITY_EFFECT_SPORE, ABILITY_NONE, ABILITY_DAMP },
     #endif
@@ -8115,7 +8115,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .levelUpLearnset = sBellsproutLevelUpLearnset,
         .teachableLearnset = sBellsproutTeachableLearnset,
         .eggMoveLearnset = sBellsproutEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 21, SPECIES_WEEPINBELL}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 20, SPECIES_WEEPINBELL}),
     },
 
     [SPECIES_WEEPINBELL] =
@@ -13728,11 +13728,11 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
 #if P_FAMILY_GOLDEEN
     [SPECIES_GOLDEEN] =
     {
-        .baseHP        = 45,
+        .baseHP        = 47,
         .baseAttack    = 67,
         .baseDefense   = 60,
-        .baseSpeed     = 63,
-        .baseSpAttack  = 35,
+        .baseSpeed     = 75,
+        .baseSpAttack  = 51,
         .baseSpDefense = 50,
         .types = MON_TYPES(TYPE_WATER),
         .catchRate = 225,

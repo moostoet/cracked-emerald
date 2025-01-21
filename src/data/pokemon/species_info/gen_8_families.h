@@ -762,7 +762,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_FIELD),
-        .abilities = { ABILITY_CHEEK_POUCH, ABILITY_NONE, ABILITY_GLUTTONY },
+        .abilities = { ABILITY_CHEEK_POUCH, ABILITY_THICK_FAT, ABILITY_GLUTTONY },
         .bodyColor = BODY_COLOR_BROWN,
         .speciesName = _("Skwovet"),
         .cryId = CRY_SKWOVET,
@@ -804,7 +804,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .levelUpLearnset = sSkwovetLevelUpLearnset,
         .teachableLearnset = sSkwovetTeachableLearnset,
         .eggMoveLearnset = sSkwovetEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 24, SPECIES_GREEDENT}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 20, SPECIES_GREEDENT}),
     },
 
     [SPECIES_GREEDENT] =
@@ -825,7 +825,7 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_MEDIUM_FAST,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_FIELD),
-        .abilities = { ABILITY_CHEEK_POUCH, ABILITY_NONE, ABILITY_GLUTTONY },
+        .abilities = { ABILITY_CHEEK_POUCH, ABILITY_THICK_FAT, ABILITY_GLUTTONY },
         .bodyColor = BODY_COLOR_BROWN,
         .speciesName = _("Greedent"),
         .cryId = CRY_GREEDENT,

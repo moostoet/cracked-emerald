@@ -93,12 +93,14 @@ Route103_EventScript_StartBrendanBattleMudkip::
 Route103_EventScript_AfterMayBattle::
 	msgbox Route103_Text_MayTimeToHeadBack, MSGBOX_DEFAULT
 	giveitem ITEM_RARE_CANDY
+	giveitem ITEM_INFINITE_REPEL
 	goto Route103_EventScript_RivalExit
 	end
 
 Route103_EventScript_AfterBrendanBattle::
 	msgbox Route103_Text_BrendanTimeToHeadBack, MSGBOX_DEFAULT
 	giveitem ITEM_RARE_CANDY
+	giveitem ITEM_INFINITE_REPEL
 	goto Route103_EventScript_RivalExit
 	end
 
@@ -317,7 +319,7 @@ Route103_Text_MayTimeToHeadBack:
 	.string "Well, it's time to head back to\n"
 	.string "the LAB.\p"
 	.string "Oh, right, I think you should take\n"
-	.string "this CANDY with you.$"
+	.string "these with you.$"
 
 Route103_Text_BrendanRoute103Pokemon:
 	.string "BRENDAN: Okay, so it's this one and\n"

@@ -2415,4 +2415,25 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
         .description = COMPOUND_STRING("Lowers foe's Special Attack."),
         .aiRating = 7,
     },
+
+    [ABILITY_PROTECTOR] =
+    {
+        .name = _("Protector"),
+        .description = COMPOUND_STRING("Screen moves last longer."),
+        .aiRating = 4,
+    },
+
+    [ABILITY_PRIMAL_INSTINCT] =
+    {
+        .name = _("Primal Instinct"),
+        .description = COMPOUND_STRING("Ups STAB & Speed in a pinch."),
+        .aiRating = 7
+    },
+
+    [ABILITY_MAGMA_CORE] =
+    {
+        .name = _("Magma Core"),
+        .description = COMPOUND_STRING("Weakens water, +Fire when doused."),
+        .aiRating = 7,
+    }
 };

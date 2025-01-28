@@ -366,6 +366,7 @@ Jolly Nature
 Croconaw @ Sitrus Berry  
 Ability: Sheer Force  
 Level: 21   
+Adamant Nature
 - Ice Fang  
 - Aqua Jet  
 - Dragon Dance  
@@ -4937,33 +4938,72 @@ Class: Leader
 Pic: Leader Brawly
 Gender: Male
 Music: Male
-Items: Super Potion / Super Potion
 Double Battle: No
-AI: Basic Trainer
+AI: Smart Trainer
+Starting Status: Rising Tide
 
-Machop
-Level: 16
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
-- Karate Chop
-- Low Kick
-- Seismic Toss
-- Bulk Up
+Monferno @ Focus Sash  
+Ability: Iron Fist  
+Level: 25  
+Tera Type: Fire  
+EVs: 150 Spe  
+Jolly Nature  
+- Fake Out  
+- Stealth Rock  
+- Fire Punch  
+- Mach Punch  
 
-Meditite
-Level: 16
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
-- Focus Punch
-- Light Screen
-- Reflect
-- Bulk Up
+Pawmot @ Punching Glove  
+Ability: Iron Fist  
+Level: 25  
+Tera Type: Electric  
+Adamant Nature  
+- Knock Off  
+- Thunder Punch  
+- Drain Punch  
+- Ice Punch  
 
-Makuhita @ Sitrus Berry
-Level: 19
-IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
-- Arm Thrust
-- Vital Throw
-- Reversal
-- Bulk Up
+Hariyama @ Flame Orb  
+Ability: Guts  
+Level: 25  
+Tera Type: Fighting  
+EVs: 4 HP / 150 Atk / 50 Spe  
+- Facade  
+- Drain Punch  
+- Knock Off  
+- Bullet Punch  
+
+Grapploct @ Assault Vest  
+Ability: Analytic  
+Level: 26  
+Tera Type: Fighting  
+Adamant Nature  
+- Sucker Punch  
+- Poison Jab  
+- Drain Punch  
+- Ice Punch  
+
+Lucario @ Wise Glasses  
+Ability: Inner Focus  
+Level: 26  
+Tera Type: Fighting  
+EVs: 50 SpA / 150 Spe  
+Timid Nature  
+IVs: 0 Atk  
+- Flash Cannon  
+- Aura Sphere  
+- Water Pulse  
+- Dark Pulse  
+
+Floatzel @ White Herb  
+Ability: Technician  
+Level: 27  
+Tera Type: Water  
+Jolly Nature  
+- Jet Punch  
+- Force Palm  
+- Ice Punch  
+- Bulk Up  
 
 === TRAINER_WATTSON_1 ===
 Name: WATTSON
@@ -6609,19 +6649,27 @@ Pic: Fisherman
 Gender: Male
 Music: Hiker
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Magikarp
-Level: 10
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Pelipper @ Damp Rock  
+Ability: Drizzle  
+Level: 23  
+Tera Type: Water  
+Bold Nature  
+- Roost  
+- U-turn  
+- Air Cutter  
+- Brine  
 
-Tentacool
-Level: 7
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
-
-Magikarp
-Level: 10
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Wishiwashi @ Leftovers  
+Ability: Schooling  
+Level: 25  
+Tera Type: Water  
+Bold Nature  
+- Scald  
+- U-turn  
+- Rest  
+- Sleep Talk  
 
 === TRAINER_NED ===
 Name: NED
@@ -6630,11 +6678,35 @@ Pic: Fisherman
 Gender: Male
 Music: Hiker
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Tentacool
-Level: 11
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Buizel @ Mystic Water  
+Ability: Technician  
+Level: 23   
+Jolly Nature  
+- Aqua Jet  
+- Ice Fang  
+- Flip Turn  
+- Brick Break  
+
+Seadra @ Scope Lens  
+Ability: Sniper  
+Level: 23  
+Timid Nature  
+IVs: 0 Atk  
+- Focus Energy  
+- Brine  
+- Aurora Beam  
+- Flash Cannon  
+
+Gyarados @ Wacan Berry  
+Ability: Intimidate  
+Level: 24   
+Hasty Nature  
+- Bite  
+- Scald  
+- Taunt  
+- Ice Fang
 
 === TRAINER_DALE ===
 Name: DALE
@@ -8094,9 +8166,30 @@ Double Battle: No
 AI: Check Bad Move
 Starting Status: Rising Tide
 
-Meditite
-Level: 13
-IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+Mienfoo @ Eviolite  
+Ability: Regenerator  
+Level: 23   
+Adamant Nature  
+- Fake Out  
+- Drain Punch  
+- Knock Off  
+- U-turn  
+
+Machoke @ Eviolite  
+Ability: Guts  
+Level: 23    
+- Bulk Up  
+- Bullet Punch  
+- Brick Break  
+- Fire Punch  
+
+Gurdurr @ Eviolite  
+Ability: Sheer Force  
+Level: 23    
+- Thunder Punch  
+- Ice Punch  
+- Drain Punch  
+- Rock Slide
 
 === TRAINER_CYNDY_1 ===
 Name: CYNDY
@@ -11192,6 +11285,7 @@ AI: Smart Trainer
 Marshtomp @ Rindo Berry  
 Ability: Torrent  
 Level: 21    
+Adamant Nature  
 - Stealth Rock  
 - Waterfall  
 - Counter  
@@ -11217,13 +11311,13 @@ Jolly Nature
 
 Quilava @ Wise Glasses  
 Ability: Adaptability  
-Level: 23    
+Level: 23   
 Timid Nature  
 IVs: 0 Atk  
 - Flame Burst  
 - Swift  
 - Mud Shot  
-- Attract
+- Attract  
 
 === TRAINER_BRENDAN_RUSTBORO_MUDKIP ===
 Name: BRENDAN
@@ -11236,7 +11330,8 @@ AI: Smart Trainer
 
 Combusken @ Muscle Band  
 Ability: Speed Boost  
-Level: 21    
+Level: 21   
+Adamant Nature  
 - Protect  
 - Brick Break  
 - Blaze Kick  
@@ -11244,7 +11339,7 @@ Level: 21
 
 Vigoroth @ Lum Berry  
 Ability: Vital Spirit  
-Level: 22                             
+Level: 22   
 Jolly Nature  
 - Body Slam  
 - Brick Break  
@@ -11253,7 +11348,8 @@ Jolly Nature
 
 Murkrow @ Eviolite  
 Ability: Prankster  
-Level: 22   
+Level: 22    
+Modest Nature  
 IVs: 0 Atk  
 - Thunder Wave  
 - Snarl  
@@ -11262,7 +11358,7 @@ IVs: 0 Atk
 
 Servine @ Miracle Seed  
 Ability: No Guard  
-Level: 23    
+Level: 23   
 Timid Nature  
 IVs: 1 Atk / 30 SpA / 30 SpD  
 - Leaf Tornado  
@@ -11417,6 +11513,7 @@ AI: Smart Trainer
 Combusken @ Muscle Band  
 Ability: Speed Boost  
 Level: 21   
+Adamant Nature  
 - Protect  
 - Brick Break  
 - Blaze Kick  
@@ -11433,7 +11530,8 @@ Jolly Nature
 
 Murkrow @ Eviolite  
 Ability: Prankster  
-Level: 22    
+Level: 22   
+Modest Nature  
 IVs: 0 Atk  
 - Thunder Wave  
 - Snarl  
@@ -11442,13 +11540,13 @@ IVs: 0 Atk
 
 Servine @ Miracle Seed  
 Ability: No Guard  
-Level: 23    
+Level: 23   
 Timid Nature  
 IVs: 1 Atk / 30 SpA / 30 SpD  
 - Leaf Tornado  
 - Growth  
 - Shock Wave  
-- Hidden Power  
+- Hidden Power   
 
 === TRAINER_MAXIE_MAGMA_HIDEOUT ===
 Name: MAXIE
@@ -14801,7 +14899,8 @@ AI: Smart Trainer
 
 Marshtomp @ Rindo Berry  
 Ability: Torrent  
-Level: 21  
+Level: 21    
+Adamant Nature  
 - Stealth Rock  
 - Waterfall  
 - Counter  
@@ -14809,7 +14908,7 @@ Level: 21
 
 Vigoroth @ Lum Berry  
 Ability: Vital Spirit  
-Level: 22    
+Level: 22   
 Jolly Nature  
 - Body Slam  
 - Brick Break  
@@ -14827,7 +14926,7 @@ Jolly Nature
 
 Quilava @ Wise Glasses  
 Ability: Adaptability  
-Level: 23    
+Level: 23   
 Timid Nature  
 IVs: 0 Atk  
 - Flame Burst  
@@ -15089,6 +15188,7 @@ Music: Male
 Items: Full Restore / Full Restore / Full Restore
 Double Battle: Yes
 AI: Basic Trainer
+s
 
 Machamp @ Sitrus Berry
 Level: 33

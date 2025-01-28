@@ -10462,6 +10462,7 @@ static const struct LevelUpMove sBuizelLevelUpLearnset[] = {
 };
 
 static const struct LevelUpMove sFloatzelLevelUpLearnset[] = {
+    LEVEL_UP_MOVE( 0, MOVE_FORCE_PALM),
     LEVEL_UP_MOVE( 1, MOVE_GROWL),
     LEVEL_UP_MOVE( 1, MOVE_QUICK_ATTACK),
     LEVEL_UP_MOVE( 1, MOVE_CRUNCH),

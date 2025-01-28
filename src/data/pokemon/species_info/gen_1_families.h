@@ -13804,10 +13804,10 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
 
     [SPECIES_SEAKING] =
     {
-        .baseHP        = 80,
-        .baseAttack    = 92,
+        .baseHP        = 85,
+        .baseAttack    = 105,
         .baseDefense   = 65,
-        .baseSpeed     = 68,
+        .baseSpeed     = 85,
         .baseSpAttack  = 65,
         .baseSpDefense = 80,
         .types = MON_TYPES(TYPE_WATER),

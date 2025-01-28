@@ -236,7 +236,7 @@ Ability: Intimidate
 Level: 15  
 Adamant Nature  
 - Thief  
-- Power-Up Punch  
+- Force Palm  
 - Fake Out  
 - Rock Throw  
 
@@ -343,11 +343,33 @@ Pic: Aqua Grunt M
 Gender: Male
 Music: Aqua
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Poochyena
-Level: 11
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Sneasel-Hisui @ Iron Ball  
+Ability: Pickpocket  
+Level: 21    
+Jolly Nature  
+- Fake Out  
+- Poison Tail 
+- Low Sweep  
+- Fling  
+
+Mightyena @ Kings Rock  
+Ability: Intimidate  
+Level: 21   
+Jolly Nature  
+- Crunch  
+- Howl  
+- Ice Fang  
+- Taunt  
+
+Croconaw @ Sitrus Berry  
+Ability: Sheer Force  
+Level: 21   
+- Ice Fang  
+- Aqua Jet  
+- Dragon Dance  
+- Bite  
 
 === TRAINER_GRUNT_WEATHER_INST_1 ===
 Name: GRUNT
@@ -4850,7 +4872,7 @@ Music: Female
 Double Battle: No
 AI: Smart Trainer
 
-Glimmet @ Eviolite  
+Glimmet @ Focus Sash  
 Ability: Toxic Debris  
 Level: 17   
 Modest Nature  
@@ -4860,7 +4882,7 @@ IVs: 0 Atk
 - Mud Shot  
 - Spikes  
 
-Lileep @ Leftovers  
+Lileep @ Eviolite  
 Ability: Storm Drain  
 Level: 17  
 Calm Nature  
@@ -4870,11 +4892,11 @@ IVs: 0 Atk
 - Toxic  
 - Recover  
 
-Growlithe-Hisui @ Quick Claw  
+Growlithe-Hisui @ Passho Berry  
 Ability: Intimidate  
 Level: 18   
 Adamant Nature  
-- Rock Blast  
+- Accelerock  
 - Fire Fang  
 - Retaliate  
 - Howl  
@@ -4899,14 +4921,14 @@ IVs: 0 Atk
 - Will-O-Wisp  
 - Night Shade  
 
-Minior @ Passho Berry  
+Minior @ Charti Berry  
 Ability: Shields Down  
 Level: 20   
 EVs: 150 Atk / 150 Spe 
 Adamant Nature  
 - Acrobatics  
-- Rock Blast  
-- Facade  
+- Rock Tomb  
+- Sandstorm  
 - U-turn  
 
 === TRAINER_BRAWLY_1 ===
@@ -6152,7 +6174,7 @@ Impish Nature
 - Stealth Rock  
 - Spikes  
 - Endure  
-- Rock Blast 
+- Rock Tomb 
 
 Geodude-Alola @ Muscle Band  
 Ability: Galvanize  
@@ -8070,6 +8092,7 @@ Gender: Female
 Music: Intense
 Double Battle: No
 AI: Check Bad Move
+Starting Status: Rising Tide
 
 Meditite
 Level: 13
@@ -9689,6 +9712,41 @@ Shiftry
 Level: 35
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+=== TRAINER_WALLY_PETALBURG ===
+Name: WALLY
+Class: Rival
+Pic: Wally
+Gender: Male
+Music: Male
+Double Battle: No
+AI: Smart Trainer
+
+Phanpy  
+Ability: Sturdy  
+Level: 11    
+Adamant Nature
+- Bulldoze  
+- Slam  
+- Ice Shard  
+- Rollout  
+
+Basculin-White-Striped  
+Ability: Mold Breaker  
+Level: 11   
+Naive Nature
+- Aqua Jet  
+- Tackle  
+
+Kirlia
+Ability: Synchronize  
+Level: 13    
+Modest Nature  
+IVs: 0 Atk  
+- Fairy Wind  
+- Confusion  
+- Confuse Ray  
+- Disable
+
 === TRAINER_WALLY_VR_1 ===
 Name: WALLY
 Class: Rival
@@ -11129,15 +11187,43 @@ Pic: Brendan
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Lotad
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Marshtomp @ Rindo Berry  
+Ability: Torrent  
+Level: 21    
+- Stealth Rock  
+- Waterfall  
+- Counter  
+- Ice Punch  
 
-Torchic
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Lum Berry  
+Ability: Vital Spirit  
+Level: 22   
+Jolly Nature  
+- Body Slam  
+- Brick Break  
+- Yawn  
+- Rock Slide  
+
+Staravia @ Muscle Band  
+Ability: Intimidate  
+Level: 22   
+Jolly Nature  
+- Dual Wingbeat  
+- Double Kick  
+- U-turn  
+- Pursuit  
+
+Quilava @ Wise Glasses  
+Ability: Adaptability  
+Level: 23    
+Timid Nature  
+IVs: 0 Atk  
+- Flame Burst  
+- Swift  
+- Mud Shot  
+- Attract
 
 === TRAINER_BRENDAN_RUSTBORO_MUDKIP ===
 Name: BRENDAN
@@ -11146,15 +11232,43 @@ Pic: Brendan
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Wingull
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Combusken @ Muscle Band  
+Ability: Speed Boost  
+Level: 21    
+- Protect  
+- Brick Break  
+- Blaze Kick  
+- Aerial Ace  
 
-Treecko
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Lum Berry  
+Ability: Vital Spirit  
+Level: 22                             
+Jolly Nature  
+- Body Slam  
+- Brick Break  
+- Yawn  
+- Rock Slide  
+
+Murkrow @ Eviolite  
+Ability: Prankster  
+Level: 22   
+IVs: 0 Atk  
+- Thunder Wave  
+- Snarl  
+- Air Cutter  
+- Roost  
+
+Servine @ Miracle Seed  
+Ability: No Guard  
+Level: 23    
+Timid Nature  
+IVs: 1 Atk / 30 SpA / 30 SpD  
+- Leaf Tornado  
+- Growth  
+- Shock Wave  
+- Hidden Power
 
 === TRAINER_PAXTON ===
 Name: PAXTON
@@ -11253,15 +11367,43 @@ Pic: Brendan
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Basic Trainer
+AI: Smart Trainer
 
-Slugma
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Grovyle @ Sitrus Berry  
+Ability: Unburden  
+Level: 21   
+Adamant Nature  
+- Acrobatics  
+- Leaf Blade  
+- Thunder Punch  
+- Swords Dance  
 
-Mudkip
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Lum Berry  
+Ability: Vital Spirit  
+Level: 22    
+Jolly Nature  
+- Body Slam  
+- Brick Break  
+- Yawn  
+- Rock Slide  
+
+Gligar @ Eviolite  
+Ability: Hyper Cutter  
+Level: 22    
+Adamant Nature  
+- Aerial Ace  
+- Bug Bite  
+- Bulldoze  
+- U-turn  
+
+Quaxwell @ Mystic Water  
+Ability: Moxie  
+Level: 23    
+Adamant Nature  
+- Aqua Jet  
+- Wing Attack  
+- Flip Turn  
+- Work Up   
 
 === TRAINER_MAY_RUSTBORO_MUDKIP ===
 Name: MAY
@@ -11270,15 +11412,43 @@ Pic: May
 Gender: Female
 Music: Female
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Force Setup First Turn
+AI: Smart Trainer
 
-Wingull
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Combusken @ Muscle Band  
+Ability: Speed Boost  
+Level: 21   
+- Protect  
+- Brick Break  
+- Blaze Kick  
+- Aerial Ace  
 
-Treecko
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Lum Berry  
+Ability: Vital Spirit  
+Level: 22    
+Jolly Nature  
+- Body Slam  
+- Brick Break  
+- Yawn  
+- Rock Slide  
+
+Murkrow @ Eviolite  
+Ability: Prankster  
+Level: 22    
+IVs: 0 Atk  
+- Thunder Wave  
+- Snarl  
+- Air Cutter  
+- Roost  
+
+Servine @ Miracle Seed  
+Ability: No Guard  
+Level: 23    
+Timid Nature  
+IVs: 1 Atk / 30 SpA / 30 SpD  
+- Leaf Tornado  
+- Growth  
+- Shock Wave  
+- Hidden Power  
 
 === TRAINER_MAXIE_MAGMA_HIDEOUT ===
 Name: MAXIE
@@ -11334,13 +11504,14 @@ Double Battle: Yes
 AI: Smart Trainer
 
 Vulpix @ Heat Rock  
-Ability: Drought  
+Ability: Flash Fire  
 Level: 11    
 Gentle Nature  
 IVs: 0 Atk  
 - Ember  
 - Will-O-Wisp  
-- Confuse Ray  
+- Confuse Ray
+- Sunny Day  
 
 Exeggcute @ Berry Juice  
 Ability: Harvest  
@@ -14626,15 +14797,43 @@ Pic: May
 Gender: Female
 Music: Female
 Double Battle: No
-AI: Basic Trainer
+AI: Smart Trainer
 
-Lotad
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Marshtomp @ Rindo Berry  
+Ability: Torrent  
+Level: 21  
+- Stealth Rock  
+- Waterfall  
+- Counter  
+- Ice Punch  
 
-Torchic
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Lum Berry  
+Ability: Vital Spirit  
+Level: 22    
+Jolly Nature  
+- Body Slam  
+- Brick Break  
+- Yawn  
+- Rock Slide  
+
+Staravia @ Muscle Band  
+Ability: Intimidate  
+Level: 22   
+Jolly Nature  
+- Dual Wingbeat  
+- Double Kick  
+- U-turn  
+- Pursuit  
+
+Quilava @ Wise Glasses  
+Ability: Adaptability  
+Level: 23    
+Timid Nature  
+IVs: 0 Atk  
+- Flame Burst  
+- Swift  
+- Mud Shot  
+- Attract  
 
 === TRAINER_MAY_RUSTBORO_TORCHIC ===
 Name: MAY
@@ -14643,15 +14842,43 @@ Pic: May
 Gender: Female
 Music: Female
 Double Battle: No
-AI: Basic Trainer
+AI: Smart Trainer
 
-Torkoal
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Grovyle @ Sitrus Berry  
+Ability: Unburden  
+Level: 21    
+Adamant Nature  
+- Acrobatics  
+- Leaf Blade  
+- Thunder Punch  
+- Swords Dance  
 
-Mudkip
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Lum Berry  
+Ability: Vital Spirit  
+Level: 22  
+Jolly Nature  
+- Body Slam  
+- Brick Break  
+- Yawn  
+- Rock Slide  
+
+Gligar @ Eviolite  
+Ability: Hyper Cutter  
+Level: 22   
+Adamant Nature  
+- Aerial Ace  
+- Roost  
+- Bulldoze  
+- U-turn  
+
+Quaxwell @ Mystic Water  
+Ability: Moxie  
+Level: 23   
+Adamant Nature  
+- Aqua Jet  
+- Wing Attack  
+- Flip Turn  
+- Work Up   
 
 === TRAINER_ROXANNE_2 ===
 Name: ROXANNE

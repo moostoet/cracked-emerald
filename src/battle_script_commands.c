@@ -1641,6 +1641,12 @@ u32 GetTotalAccuracy(u32 battlerAtk, u32 battlerDef, u32 move, u32 atkAbility, u
 
     if (WEATHER_HAS_EFFECT && gBattleWeather & B_WEATHER_FOG)
         calc = (calc * 60) / 100; // modified by 3/5
+    
+    // Rising Tide: 10% accuracy boost for Fighting-type moves
+    if (gFieldStatuses & STATUS_FIELD_RISING_TIDE && gMovesInfo[move].type == TYPE_FIGHTING)
+    {
+        calc = (calc * 110) / 100;
+    }
 
     return calc;
 }

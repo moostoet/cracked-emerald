@@ -4434,6 +4434,17 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                         gSideTimers[B_SIDE_OPPONENT].tailwindTimer = 5;
                     effect = 1;
                 }
+            case STARTING_STATUS_RISING_TIDE:
+            if (!(gFieldStatuses & STATUS_FIELD_RISING_TIDE))
+            {
+                if (!FlagGet(FLAG_DEWFORD_DEFEATED))
+                {
+                    gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SET_RISING_TIDE;
+                    gFieldStatuses |= STATUS_FIELD_RISING_TIDE;
+                    gFieldStatuses |= STATUS_FIELD_TERRAIN_PERMANENT;
+                    effect = 2;
+                }
+            }
                 break;
             }
 
@@ -9836,6 +9847,12 @@ static inline u32 CalcAttackStat(struct DamageCalculationData *damageCalcData, u
 
     if (IsAbilityOnField(ABILITY_TABLETS_OF_RUIN) && atkAbility != ABILITY_TABLETS_OF_RUIN && IS_MOVE_PHYSICAL(move))
         modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(0.75));
+    
+    // Rising Tide: Boost Fighting-type moves by 10%
+    if (gFieldStatuses & STATUS_FIELD_RISING_TIDE && moveType == TYPE_FIGHTING)
+    {
+        modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.1));
+    }
 
     // attacker's hold effect
     switch (holdEffectAtk)

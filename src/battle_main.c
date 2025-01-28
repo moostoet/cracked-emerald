@@ -4829,6 +4829,16 @@ u32 GetBattlerTotalSpeedStatArgs(u32 battler, u32 ability, u32 holdEffect)
 
     if (gSideStatuses[GetBattlerSide(battler)] & SIDE_STATUS_SWAMP)
         speed /= 4;
+    
+    // Rising Tide: Non-Fighting types lose 20% Speed
+    if (gFieldStatuses & STATUS_FIELD_RISING_TIDE)
+    {
+        if (gBattleMons[battler].types[0] != TYPE_FIGHTING && 
+            gBattleMons[battler].types[1] != TYPE_FIGHTING)
+        {
+            speed = (speed * 80) / 100; // 20% reduction
+        }
+    }
 
     return speed;
 }

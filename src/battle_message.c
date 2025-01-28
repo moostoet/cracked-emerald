@@ -886,6 +886,7 @@ const u8 *const gBattleStringsTable[BATTLESTRINGS_COUNT] =
     [STRINGID_ELECTRICCURRENTISRUNNING]             = COMPOUND_STRING("An electric current is running across the battlefield!"),
     [STRINGID_SEEMSWEIRD]                           = COMPOUND_STRING("The battlefield seems weird!"),
     [STRINGID_WAGGLINGAFINGER]                      = COMPOUND_STRING("Waggling a finger let it use {B_CURRENT_MOVE}!"),
+    [STRINGID_RISING_TIDE]                          = COMPOUND_STRING("The sound of waves invigorate the spirit!"),
 };
 
 const u16 gTrainerUsedItemStringIds[] =
@@ -1291,6 +1292,7 @@ const u16 gTerrainStartsStringIds[] =
     [B_MSG_TERRAIN_SET_ELECTRIC] = STRINGID_ELECTRICCURRENTISRUNNING,
     [B_MSG_TERRAIN_SET_PSYCHIC]  = STRINGID_SEEMSWEIRD,
     [B_MSG_TERRAIN_SET_GRASSY]   = STRINGID_ISCOVEREDWITHGRASS,
+    [B_MSG_SET_RISING_TIDE]      = STRINGID_RISING_TIDE,
 };
 
 const u16 gPrimalWeatherBlocksStringIds[] =

@@ -3245,11 +3245,35 @@ Pic: Black Belt
 Gender: Male
 Music: Intense
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
+Starting Status: Rising Tide
 
-Machop
-Level: 13
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+Timburr @ Flame Orb  
+Ability: Guts  
+Level: 24   
+Adamant Nature  
+- Drain Punch  
+- Facade  
+- Bulk Up  
+- Protect  
+
+Pancham @ Expert Belt  
+Ability: Mold Breaker  
+Level: 24   
+Adamant Nature  
+- Arm Thrust  
+- Circle Throw  
+- Crunch  
+- Parting Shot  
+
+Hawlucha @ Sitrus Berry  
+Ability: Unburden  
+Level: 24   
+Jolly Nature  
+- Acrobatics  
+- Swords Dance  
+- Taunt  
+- Submission  
 
 === TRAINER_HITOSHI ===
 Name: HITOSHI
@@ -4912,7 +4936,7 @@ IVs: 0 Atk
 - Mud Shot  
 - Charge Beam  
 
-Corsola-Galar  
+Corsola-Galar   
 Ability: Cursed Body
 Level: 18  
 Calm Nature  
@@ -4944,8 +4968,7 @@ Starting Status: Rising Tide
 
 Monferno @ Focus Sash  
 Ability: Iron Fist  
-Level: 25  
-Tera Type: Fire  
+Level: 25    
 EVs: 150 Spe  
 Jolly Nature  
 - Fake Out  
@@ -4955,8 +4978,7 @@ Jolly Nature
 
 Pawmot @ Punching Glove  
 Ability: Iron Fist  
-Level: 25  
-Tera Type: Electric  
+Level: 25   
 Adamant Nature  
 - Knock Off  
 - Thunder Punch  
@@ -4965,8 +4987,7 @@ Adamant Nature
 
 Hariyama @ Flame Orb  
 Ability: Guts  
-Level: 25  
-Tera Type: Fighting  
+Level: 25    
 EVs: 4 HP / 150 Atk / 50 Spe  
 - Facade  
 - Drain Punch  
@@ -4975,8 +4996,7 @@ EVs: 4 HP / 150 Atk / 50 Spe
 
 Grapploct @ Assault Vest  
 Ability: Analytic  
-Level: 26  
-Tera Type: Fighting  
+Level: 26   
 Adamant Nature  
 - Sucker Punch  
 - Poison Jab  
@@ -4985,8 +5005,7 @@ Adamant Nature
 
 Lucario @ Wise Glasses  
 Ability: Inner Focus  
-Level: 26  
-Tera Type: Fighting  
+Level: 26   
 EVs: 50 SpA / 150 Spe  
 Timid Nature  
 IVs: 0 Atk  
@@ -4997,8 +5016,7 @@ IVs: 0 Atk
 
 Floatzel @ White Herb  
 Ability: Technician  
-Level: 27  
-Tera Type: Water  
+Level: 27   
 Jolly Nature  
 - Jet Punch  
 - Force Palm  
@@ -6653,8 +6671,7 @@ AI: Smart Trainer
 
 Pelipper @ Damp Rock  
 Ability: Drizzle  
-Level: 23  
-Tera Type: Water  
+Level: 23   
 Bold Nature  
 - Roost  
 - U-turn  
@@ -6663,8 +6680,7 @@ Bold Nature
 
 Wishiwashi @ Leftovers  
 Ability: Schooling  
-Level: 25  
-Tera Type: Water  
+Level: 25   
 Bold Nature  
 - Scald  
 - U-turn  
@@ -8150,11 +8166,35 @@ Pic: Battle Girl
 Gender: Female
 Music: Intense
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
+Starting Status: Rising Tide
 
-Meditite
-Level: 13
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+Heracross @ Coba Berry  
+Ability: Swarm  
+Level: 24   
+Jolly Nature  
+- Rock Tomb  
+- Low Sweep  
+- Bug Bite  
+- Shadow Claw  
+
+Kubfu @ Punching Glove  
+Ability: Inner Focus  
+Level: 24   
+Jolly Nature  
+- Brick Break  
+- Sucker Punch  
+- Fire Punch  
+- Ice Punch  
+
+Throh @ Expert Belt  
+Ability: Inner Focus  
+Level: 24    
+Adamant Nature  
+- Rock Tomb  
+- Storm Throw  
+- Poison Jab  
+- Payback  
 
 === TRAINER_LAURA ===
 Name: LAURA
@@ -8176,7 +8216,8 @@ Adamant Nature
 - U-turn  
 
 Machoke @ Eviolite  
-Ability: Guts  
+Ability: Guts
+Adamant Nature  
 Level: 23    
 - Bulk Up  
 - Bullet Punch  
@@ -11006,11 +11047,26 @@ Pic: Sailor
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
+Starting Status: Rising Tide
 
-Machop
-Level: 13
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+Primeape @ Muscle Band  
+Ability: Vital Spirit  
+Level: 24    
+Adamant Nature  
+- Cross Chop  
+- Rock Slide  
+- U-turn  
+- Thunder Punch
+
+Scraggy @ Sitrus Berry  
+Ability: Moxie  
+Level: 24  
+Jolly Nature  
+- Jump Kick  
+- Crunch  
+- Ice Punch  
+- Drain Punch
 
 === TRAINER_LILITH ===
 Name: LILITH
@@ -11019,11 +11075,27 @@ Pic: Battle Girl
 Gender: Female
 Music: Intense
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
+Starting Status: Rising Tide
 
-Meditite
-Level: 13
-IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+Riolu @ Eviolite  
+Ability: Prankster  
+Level: 24  
+Bold Nature  
+- Coaching  
+- Helping Hand  
+- Copycat  
+- Protect
+
+
+Croagunk @ Focus Sash  
+Ability: Dry Skin  
+Level: 24    
+Adamant Nature  
+- Fake Out  
+- Revenge  
+- Sucker Punch  
+- Protect
 
 === TRAINER_CRISTIAN ===
 Name: CRISTIAN
@@ -11032,11 +11104,26 @@ Pic: Black Belt
 Gender: Male
 Music: Intense
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
+Starting Status: Rising Tide
 
-Makuhita
-Level: 13
-IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+Breloom @ Miracle Seed  
+Ability: Technician  
+Level: 24    
+Jolly Nature  
+- Mach Punch  
+- Bullet Seed  
+- Leech Seed  
+- Stun Spore  
+
+Passimian @ Assault Vest  
+Ability: Defiant  
+Level: 24   
+Jolly Nature  
+- Brick Break  
+- Iron Head  
+- Knock Off  
+- Seed Bomb
 
 === TRAINER_SYLVIA ===
 Name: SYLVIA
@@ -11493,12 +11580,12 @@ Adamant Nature
 - U-turn  
 
 Quaxwell @ Mystic Water  
-Ability: Moxie  
+Ability: Torrent  
 Level: 23    
 Adamant Nature  
 - Aqua Jet  
 - Wing Attack  
-- Flip Turn  
+- Aqua Cutter  
 - Work Up   
 
 === TRAINER_MAY_RUSTBORO_MUDKIP ===
@@ -13693,8 +13780,8 @@ Mild Nature
 - Acrobatics  
 - Aurora Beam  
 
-Feebas @ Eviolite  
-Ability: Swift Swim  
+Feebas  
+Ability: Adaptability  
 Level: 13    
 Timid Nature  
 IVs: 0 Atk  
@@ -14971,12 +15058,12 @@ Adamant Nature
 - U-turn  
 
 Quaxwell @ Mystic Water  
-Ability: Moxie  
+Ability: Torrent  
 Level: 23   
 Adamant Nature  
 - Aqua Jet  
 - Wing Attack  
-- Flip Turn  
+- Aqua Cutter  
 - Work Up   
 
 === TRAINER_ROXANNE_2 ===
@@ -15188,7 +15275,6 @@ Music: Male
 Items: Full Restore / Full Restore / Full Restore
 Double Battle: Yes
 AI: Basic Trainer
-s
 
 Machamp @ Sitrus Berry
 Level: 33

@@ -13,6 +13,7 @@ u32 GetCurrentLevelCap(void)
         {FLAG_GRUNT_PETALBURG, 16},
         {FLAG_BADGE01_GET, 20},
         {FLAG_BADGE02_GET, 24},
+        {FLAG_RIVAL_RUST_DEFEATED, 27},
         {FLAG_BADGE03_GET, 29},
         {FLAG_BADGE04_GET, 31},
         {FLAG_BADGE05_GET, 33},

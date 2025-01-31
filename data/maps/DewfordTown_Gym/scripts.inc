@@ -110,6 +110,11 @@ DewfordTown_Gym_EventScript_AnimateFlashFullBrightness::
 	call DewfordTown_Gym_EventScript_SetFlashLevel
 	return
 
+DewfordCity_Gym_EventScript_CheckStopRisingTide_IfBeatAllTrainers::
+	goto_if_defeated TRAINER_BRAWLY_1, DewfordCity_Gym_EventScript_StopRisingTide
+	call DewfordTown_Gym_EventScript_CountTrainersDefeated
+	goto_if_eq VAR_0x8000, 6, DewfordCity_Gym_EventScript_StopRisingTide
+
 DewfordTown_Gym_EventScript_CountTrainersDefeated::
 	setvar VAR_0x8000, 0
 	goto_if_not_defeated TRAINER_TAKAO, DewfordTown_Gym_EventScript_CheckJocelyn
@@ -131,6 +136,11 @@ DewfordTown_Gym_EventScript_CheckLilith::
 	addvar VAR_0x8000, 1
 DewfordTown_Gym_EventScript_StopCountingTrainers::
 	return
+
+DewfordCity_Gym_EventScript_StopRisingTide::
+	setflag FLAG_DEWFORD_DEFEATED
+	msgbox DewfordTown_Gym_Text_RisingTideEnd, MSGBOX_AUTOCLOSE
+	end
 
 DewfordTown_Gym_EventScript_Brawly::
 	trainerbattle_single TRAINER_BRAWLY_1, DewfordTown_Gym_Text_BrawlyIntro, DewfordTown_Gym_Text_BrawlyDefeat, DewfordTown_Gym_EventScript_BrawlyDefeated, NO_MUSIC
@@ -194,6 +204,7 @@ DewfordTown_Gym_EventScript_Takao::
 
 DewfordTown_Gym_EventScript_TakaoBrightenRoom::
 	call DewfordTown_Gym_EventScript_BrightenRoom
+	call DewfordCity_Gym_EventScript_CheckStopRisingTide_IfBeatAllTrainers
 	release
 	end
 
@@ -204,6 +215,7 @@ DewfordTown_Gym_EventScript_Jocelyn::
 
 DewfordTown_Gym_EventScript_JocelynBrightenRoom::
 	call DewfordTown_Gym_EventScript_BrightenRoom
+	call DewfordCity_Gym_EventScript_CheckStopRisingTide_IfBeatAllTrainers
 	release
 	end
 
@@ -214,6 +226,7 @@ DewfordTown_Gym_EventScript_Laura::
 
 DewfordTown_Gym_EventScript_LauraBrightenRoom::
 	call DewfordTown_Gym_EventScript_BrightenRoom
+	call DewfordCity_Gym_EventScript_CheckStopRisingTide_IfBeatAllTrainers
 	release
 	end
 
@@ -224,6 +237,7 @@ DewfordTown_Gym_EventScript_Brenden::
 
 DewfordTown_Gym_EventScript_BrendenBrightenRoom::
 	call DewfordTown_Gym_EventScript_BrightenRoom
+	call DewfordCity_Gym_EventScript_CheckStopRisingTide_IfBeatAllTrainers
 	release
 	end
 
@@ -234,6 +248,7 @@ DewfordTown_Gym_EventScript_Cristian::
 
 DewfordTown_Gym_EventScript_CristianBrightenRoom::
 	call DewfordTown_Gym_EventScript_BrightenRoom
+	call DewfordCity_Gym_EventScript_CheckStopRisingTide_IfBeatAllTrainers
 	release
 	end
 
@@ -244,6 +259,7 @@ DewfordTown_Gym_EventScript_Lilith::
 
 DewfordTown_Gym_EventScript_LilithBrightenRoom::
 	call DewfordTown_Gym_EventScript_BrightenRoom
+	call DewfordCity_Gym_EventScript_CheckStopRisingTide_IfBeatAllTrainers
 	release
 	end
 
@@ -422,6 +438,9 @@ DewfordTown_Gym_Text_BrawlyPostBattle:
 	.string "I can see your talent becoming a giant\n"
 	.string "wave to cause a storm of astonishment\l"
 	.string "among TRAINERS one day!$"
+
+DewfordTown_Gym_Text_RisingTideEnd:
+	.string "The waves subside...$"
 
 DewfordTown_Gym_Text_GymStatue:
 	.string "DEWFORD TOWN POKéMON GYM$"

@@ -2412,7 +2412,7 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
     [ABILITY_NOBLE_AURA] =
     {
         .name = _("Noble Aura"),
-        .description = COMPOUND_STRING("Lowers foe's Special Attack."),
+        .description = COMPOUND_STRING("Lowers foe's Sp. Attack."),
         .aiRating = 7,
     },
 

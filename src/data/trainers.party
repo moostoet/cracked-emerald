@@ -243,9 +243,9 @@ Adamant Nature
 Qwilfish-Hisui @ Poison Barb  
 Ability: Poison Point  
 Level: 15
-Hardy Nature  
+Quiet Nature  
 - Poison Tail  
-- Aqua Jet  
+- Water Gun  
 - Bite  
 - Pain Split  
 
@@ -4949,7 +4949,6 @@ IVs: 0 Atk
 Minior @ Charti Berry  
 Ability: Shields Down  
 Level: 20   
-EVs: 150 Atk / 150 Spe 
 Adamant Nature  
 - Acrobatics  
 - Rock Tomb  
@@ -4976,7 +4975,7 @@ Jolly Nature
 - Fire Punch  
 - Mach Punch  
 
-Pawmot @ Punching Glove  
+Pawmo @ Punching Glove  
 Ability: Iron Fist  
 Level: 25   
 Adamant Nature  
@@ -4987,15 +4986,14 @@ Adamant Nature
 
 Hariyama @ Flame Orb  
 Ability: Guts  
-Level: 25    
-EVs: 4 HP / 150 Atk / 50 Spe  
+Level: 25      
 - Facade  
 - Drain Punch  
 - Knock Off  
 - Bullet Punch  
 
 Grapploct @ Assault Vest  
-Ability: Analytic  
+Ability: Merciless  
 Level: 26   
 Adamant Nature  
 - Sucker Punch  
@@ -5005,8 +5003,7 @@ Adamant Nature
 
 Lucario @ Wise Glasses  
 Ability: Inner Focus  
-Level: 26   
-EVs: 50 SpA / 150 Spe  
+Level: 26    
 Timid Nature  
 IVs: 0 Atk  
 - Flash Cannon  
@@ -6682,7 +6679,7 @@ Wishiwashi @ Leftovers
 Ability: Schooling  
 Level: 25   
 Bold Nature  
-- Scald  
+- Water Gun  
 - U-turn  
 - Rest  
 - Sleep Talk  
@@ -8203,7 +8200,7 @@ Pic: Battle Girl
 Gender: Female
 Music: Intense
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 Starting Status: Rising Tide
 
 Mienfoo @ Eviolite  
@@ -8224,7 +8221,7 @@ Level: 23
 - Brick Break  
 - Fire Punch  
 
-Gurdurr @ Eviolite  
+Gurdurr  
 Ability: Sheer Force  
 Level: 23    
 - Thunder Punch  
@@ -11054,7 +11051,7 @@ Primeape @ Muscle Band
 Ability: Vital Spirit  
 Level: 24    
 Adamant Nature  
-- Cross Chop  
+- Brick Break  
 - Rock Slide  
 - U-turn  
 - Thunder Punch

@@ -3804,6 +3804,8 @@ static void TryDoEventsBeforeFirstTurn(void)
 {
     s32 i, j;
 
+    // DebugPrintf("Size of SpeciesInfo: %d", (int)sizeof(struct SpeciesInfo)); 
+
     if (gBattleControllerExecFlags)
         return;
 
@@ -4831,7 +4833,7 @@ u32 GetBattlerTotalSpeedStatArgs(u32 battler, u32 ability, u32 holdEffect)
         speed /= 4;
     
     // Rising Tide: Non-Fighting types lose 20% Speed
-    if (gFieldStatuses & STATUS_FIELD_RISING_TIDE)
+    if (gFieldStatuses & STATUS_FIELD_RISING_TIDE && !FlagGet(FLAG_DEWFORD_DEFEATED))
     {
         if (gBattleMons[battler].types[0] != TYPE_FIGHTING && 
             gBattleMons[battler].types[1] != TYPE_FIGHTING)

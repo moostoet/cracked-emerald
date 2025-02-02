@@ -17,6 +17,7 @@
                                                 // GEN_1/2/3/4/5/6/7: Yellow, Crystal, RSE, HGSS, B2W2, ORAS, USUM learnsets respectively.
                                                 // GEN_8: Use the following priority: BDSP for Gen1-4 Pokémon, then LA for species introduced in that game, then SwSh for species present in those games. Otherwise, use GEN_7.
                                                 // GEN_9: SV For species present in those games. Otherwise use GEN_8.
+#define P_EVOLUTION_LEVEL_1_LEARN   GEN_LATEST  // In Gen 8+, Pokémon evolving while at level 1 do not get the chance to learn their level 1 moves, while before they did.
 
 // Evolution settings
 #define P_FRIENDSHIP_EVO_THRESHOLD   GEN_LATEST  // Since Gen 8, Pokémon that evolve by friendship evolve at or above 160 friendship instead of 220.
@@ -60,26 +61,14 @@
 #define P_NO_SHINIES_WITHOUT_POKEBALLS   FALSE       // If TRUE, Pokémon encountered when the player is out of Poké Balls won't be shiny
 #define P_SHOW_DYNAMIC_TYPES             FALSE       // If TRUE, all moves with dynamic type changes will be reflected as their current type in battle/summary screens instead of just select ones like in vanilla.
 
-// Summary screen settings
-#define P_SUMMARY_SCREEN_MOVE_RELEARNER  TRUE               // If TRUE, shows an option for Pokémon to relearn moves on the summary screen moves page.
-#define P_SUMMARY_MOVE_RELEARNER_FULL_PP TRUE               // If TRUE, the move relearner in the summary screen restores relearned moves' PP to full.
-#define P_SUMMARY_SCREEN_RENAME          TRUE               // If TRUE, an option to change Pokémon nicknames replaces the cancel prompt on the summary screen info page.
-#define P_SUMMARY_SCREEN_IV_EV_INFO      P_FLAG_IV_EV_INFO  // If TRUE, will allow player to cycle through the Stats, IVs, and EVs in the summary screen skills page.
-#define P_SUMMARY_SCREEN_IV_EV_BOX_ONLY  FALSE              // If TRUE, will allow player to cycle through the Stats, IVs, and EVs in the summary screen skills page, but only in the PC storage box.
-#define P_SUMMARY_SCREEN_IV_EV_TILESET   TRUE              // If TRUE, loads an alternate tileset to allow changing the "STATS" label in the summary screen skills page. Note: if it's still loading the alternate tileset after changing this and recompiling, you may need a `make clean` before compilation.
-#define P_SUMMARY_SCREEN_IV_EV_VALUES    TRUE              // If TRUE, will show the actual IV value instead of the letter grade.
-#define P_SUMMARY_SCREEN_IV_ONLY         FALSE              // If TRUE, will only show IV info in the summary screen.
-#define P_SUMMARY_SCREEN_EV_ONLY         FALSE              // If TRUE, will only show EV info in the summary screen.
-
 // Learnset helper toggles
-#define P_LEARNSET_HELPER_TEACHABLE TRUE        // If TRUE, teachable_learnsets.h will be populated by tools/learnset_helpers/teachable.py using the included JSON files based on available TMs and tutors.
+#define P_LEARNSET_HELPER_TEACHABLE      TRUE   // If TRUE, teachable_learnsets.h will be populated by tools/learnset_helpers/teachable.py using the included JSON files based on available TMs and tutors.
 
 // Flag settings
 // To use the following features in scripting, replace the 0s with the flag ID you're assigning it to.
 // Eg: Replace with FLAG_UNUSED_0x264 so you can use that flag to toggle the feature.
-#define P_FLAG_FORCE_SHINY      0     // If this flag is set, all wild and gift Pokémon will forced into being Shiny.
-#define P_FLAG_FORCE_NO_SHINY   0     // If this flag is set, all wild and gift Pokémon will forced into NOT being Shiny.
-#define P_FLAG_IV_EV_INFO       1     // If this flag is set, will allow player to cycle through the Stats, IVs, and EVs in the summary screen skills page. Note: if P_SUMMARY_SCREEN_IV_EV_INFO is TRUE, this flag does nothing.
+#define P_FLAG_FORCE_SHINY               0  // If this flag is set, all wild and gift Pokémon will forced into being Shiny.
+#define P_FLAG_FORCE_NO_SHINY            0  // If this flag is set, all wild and gift Pokémon will forced into NOT being Shiny.
 
 // Go here if you want to disable specific families of Pokémon.
 #include "config/species_enabled.h"

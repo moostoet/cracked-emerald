@@ -323,7 +323,6 @@ static void BufferLeftColumnIvEvStats(void);
 static void CB2_ReturnToSummaryScreenFromNamingScreen(void);
 static void CB2_PssChangePokemonNickname(void);
 static void ShowUtilityPrompt(s16 mode);
-static void ClearUtilityPrompt(void);
 static void ShowMonSkillsInfo(u8 taskId, s16 mode);
 static void WriteToStatsTilemapBuffer(u32 length, u32 block, u32 statsCoordX, u32 statsCoordY);
 void ExtractMonSkillStatsData(struct Pokemon *mon, struct PokeSummary *sum);
@@ -1769,7 +1768,7 @@ static u8 IncrementSkillsStatsMode(u8 mode)
     switch (mode)
     {
     case SUMMARY_SKILLS_MODE_STATS:
-        if (P_SUMMARY_SCREEN_EV_ONLY == TRUE)
+        if (P_SUMMARY_SCREEN_EV_ONLY)
         {
             sMonSummaryScreen->skillsPageMode = SUMMARY_SKILLS_MODE_EVS;
             return SUMMARY_SKILLS_MODE_EVS;
@@ -1781,7 +1780,7 @@ static u8 IncrementSkillsStatsMode(u8 mode)
         }
 
     case SUMMARY_SKILLS_MODE_IVS:
-        if (P_SUMMARY_SCREEN_IV_ONLY == TRUE)
+        if (P_SUMMARY_SCREEN_IV_ONLY)
         {
             sMonSummaryScreen->skillsPageMode = SUMMARY_SKILLS_MODE_STATS;
             return SUMMARY_SKILLS_MODE_STATS;
@@ -1961,8 +1960,10 @@ static void Task_ChangeSummaryMon(u8 taskId)
             sMonSummaryScreen->skillsPageMode = SUMMARY_SKILLS_MODE_STATS;
             ChangeStatLabel(SUMMARY_SKILLS_MODE_STATS);
         }
-
-        if (ExtractMonDataToSummaryStruct(&sMonSummaryScreen->currentMon) == FALSE) return;
+        if (ExtractMonDataToSummaryStruct(&sMonSummaryScreen->currentMon) == FALSE)
+        {
+            return;
+        }
     
         else
         {
@@ -2122,7 +2123,9 @@ static void ChangePage(u8 taskId, s8 delta)
         BufferRightColumnStats();
     }
     else
+    {
         ShowUtilityPrompt(SUMMARY_MODE_NORMAL);
+    }
 }
 
 static void PssScrollRight(u8 taskId) // Scroll right
@@ -2171,7 +2174,7 @@ static void PssScrollRightEnd(u8 taskId) // display right
 static void PssScrollLeft(u8 taskId) // Scroll left
 {
     s16 *data = gTasks[taskId].data;
-        // to fix a specific lag in writing to the stat label
+    // to fix a specific lag in writing to the stat label
     if (sMonSummaryScreen->currPageIndex == PSS_PAGE_SKILLS)
         ChangeStatLabel(SUMMARY_SKILLS_MODE_STATS);
     if (data[0] == 0)
@@ -2237,15 +2240,18 @@ static void SwitchToMoveSelection(u8 taskId)
         ClearWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_STATUS);
     HandlePowerAccTilemap(9, -3);
     HandleAppealJamTilemap(9, -3, move);
+
     if (!sMonSummaryScreen->lockMovesFlag)
     {
         if (ShouldShowMoveRelearner())
             ClearWindowTilemap(PSS_LABEL_WINDOW_PROMPT_RELEARN);
-
-            ShowUtilityPrompt(SUMMARY_MODE_SELECT_MOVE);
+        
+        ShowUtilityPrompt(SUMMARY_MODE_SELECT_MOVE);
     }
     else
+    {
         ShowUtilityPrompt(SUMMARY_MODE_NORMAL);
+    }
 
     TilemapFiveMovesDisplay(sMonSummaryScreen->bgTilemapBuffers[PSS_PAGE_BATTLE_MOVES][0], 3, FALSE);
     TilemapFiveMovesDisplay(sMonSummaryScreen->bgTilemapBuffers[PSS_PAGE_CONTEST_MOVES][0], 1, FALSE);
@@ -2377,6 +2383,7 @@ static void CloseMoveSelectMode(u8 taskId)
     DestroyMoveSelectorSprites(SPRITE_ARR_ID_MOVE_SELECTOR1);
     if (ShouldShowMoveRelearner())
         PutWindowTilemap(PSS_LABEL_WINDOW_PROMPT_RELEARN);
+
     ShowUtilityPrompt(SUMMARY_MODE_NORMAL);
     PrintMoveDetails(0);
     TilemapFiveMovesDisplay(sMonSummaryScreen->bgTilemapBuffers[PSS_PAGE_BATTLE_MOVES][0], 3, TRUE);
@@ -3033,7 +3040,7 @@ static void DrawContestMoveHearts(u16 move)
     if (move != MOVE_NONE)
     {
         // Draw appeal hearts
-        u8 effectValue = gContestEffects[gMovesInfo[move].contestEffect].appeal;
+        u8 effectValue = gContestEffects[GetMoveContestEffect(move)].appeal;
         if (effectValue != 0xFF)
             effectValue /= 10;
 
@@ -3046,7 +3053,7 @@ static void DrawContestMoveHearts(u16 move)
         }
 
         // Draw jam hearts
-        effectValue = gContestEffects[gMovesInfo[move].contestEffect].jam;
+        effectValue = gContestEffects[GetMoveContestEffect(move)].jam;
         if (effectValue != 0xFF)
             effectValue /= 10;
 
@@ -3769,7 +3776,7 @@ static void BufferStat(u8 *dst, u8 statIndex, u32 stat, u32 strId, u32 n)
     else
         txtPtr = StringCopy(dst, sTextNatureNeutral);
 
-    if (P_SUMMARY_SCREEN_IV_EV_VALUES == FALSE 
+    if (!P_SUMMARY_SCREEN_IV_EV_VALUES 
         && sMonSummaryScreen->skillsPageMode == SUMMARY_SKILLS_MODE_IVS)
         StringAppend(dst, GetLetterGrade(stat));
     else 
@@ -3786,7 +3793,7 @@ static const u8 *GetLetterGrade(u32 stat)
     static const u8 gText_GradeB[] = _("B");
     static const u8 gText_GradeA[] = _("A");
     static const u8 gText_GradeS[] = _("S");
-
+    
     if (stat > 0 && stat <= 15)
         return gText_GradeD;
     else if (stat > 15 && stat <= 25)
@@ -3809,10 +3816,12 @@ static void BufferLeftColumnStats(void)
     u8 *defenseString = Alloc(20);
 
     DynamicPlaceholderTextUtil_Reset();
+
     BufferStat(currentHPString, STAT_HP, sMonSummaryScreen->summary.currentHP, 0, 3);
     BufferStat(maxHPString, STAT_HP, sMonSummaryScreen->summary.maxHP, 1, 3);
     BufferStat(attackString, STAT_ATK, sMonSummaryScreen->summary.atk, 2, 7);
     BufferStat(defenseString, STAT_DEF, sMonSummaryScreen->summary.def, 3, 7);
+
     DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sStatsLeftColumnLayout);
 
     Free(currentHPString);
@@ -3826,7 +3835,7 @@ static void BufferLeftColumnIvEvStats(void)
     u8 *hpIvEvString = Alloc(20);
     u8 *attackIvEvString = Alloc(20);
     u8 *defenseIvEvString = Alloc(20);
-
+    
     DynamicPlaceholderTextUtil_Reset();
 
     BufferStat(hpIvEvString, STAT_HP, sMonSummaryScreen->summary.currentHP, 0, 7);
@@ -3843,8 +3852,8 @@ static void BufferLeftColumnIvEvStats(void)
 static void PrintLeftColumnStats(void)
 {
     int x;
-
-    if (sMonSummaryScreen->skillsPageMode == SUMMARY_SKILLS_MODE_IVS && P_SUMMARY_SCREEN_IV_EV_VALUES == FALSE)
+    
+    if (sMonSummaryScreen->skillsPageMode == SUMMARY_SKILLS_MODE_IVS && !P_SUMMARY_SCREEN_IV_EV_VALUES)
         x = GetStringRightAlignXOffset(FONT_NORMAL, gStringVar4, 46);
     else
         x = 4;
@@ -3866,8 +3875,8 @@ static void BufferRightColumnStats(void)
 static void PrintRightColumnStats(void)
 {
     int x;
-
-    if (sMonSummaryScreen->skillsPageMode == SUMMARY_SKILLS_MODE_IVS && P_SUMMARY_SCREEN_IV_EV_VALUES == FALSE)
+    
+    if (sMonSummaryScreen->skillsPageMode == SUMMARY_SKILLS_MODE_IVS && !P_SUMMARY_SCREEN_IV_EV_VALUES)
         x = GetStringRightAlignXOffset(FONT_NORMAL, gStringVar4, 20);
     else
         x = 2;
@@ -4000,29 +4009,31 @@ static void PrintMoveNameAndPP(u8 moveIndex)
 static void PrintMovePowerAndAccuracy(u16 moveIndex)
 {
     const u8 *text;
-    if (moveIndex != 0)
+    if (moveIndex != MOVE_NONE)
     {
         FillWindowPixelRect(PSS_LABEL_WINDOW_MOVES_POWER_ACC, PIXEL_FILL(0), 53, 0, 19, 32);
 
-        if (gMovesInfo[moveIndex].power < 2)
+        u32 power = GetMovePower(moveIndex);
+        if (power < 2)
         {
             text = gText_ThreeDashes;
         }
         else
         {
-            ConvertIntToDecimalStringN(gStringVar1, gMovesInfo[moveIndex].power, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(gStringVar1, power, STR_CONV_MODE_RIGHT_ALIGN, 3);
             text = gStringVar1;
         }
 
         PrintTextOnWindow(PSS_LABEL_WINDOW_MOVES_POWER_ACC, text, 53, 1, 0, 0);
 
-        if (gMovesInfo[moveIndex].accuracy == 0)
+        u32 accuracy = GetMoveAccuracy(moveIndex);
+        if (accuracy == 0)
         {
             text = gText_ThreeDashes;
         }
         else
         {
-            ConvertIntToDecimalStringN(gStringVar1, gMovesInfo[moveIndex].accuracy, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(gStringVar1, accuracy, STR_CONV_MODE_RIGHT_ALIGN, 3);
             text = gStringVar1;
         }
 
@@ -4092,32 +4103,26 @@ static void PrintContestMoveDescription(u8 moveSlot)
     if (move != MOVE_NONE)
     {
         u8 windowId = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_DESCRIPTION);
-        PrintTextOnWindow(windowId, gContestEffectDescriptionPointers[gMovesInfo[move].contestEffect], 6, 1, 0, 0);
+        PrintTextOnWindow(windowId, gContestEffectDescriptionPointers[GetMoveContestEffect(move)], 6, 1, 0, 0);
     }
 }
 
 static void PrintMoveDetails(u16 move)
 {
     u8 windowId = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_DESCRIPTION);
-    u8 moveEffect;
     FillWindowPixelBuffer(windowId, PIXEL_FILL(0));
     if (move != MOVE_NONE)
     {
         if (sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES)
         {
-            moveEffect = gMovesInfo[move].effect;
             if (B_SHOW_CATEGORY_ICON == TRUE)
                 ShowCategoryIcon(GetBattleMoveCategory(move));
             PrintMovePowerAndAccuracy(move);
-
-            if (moveEffect != EFFECT_PLACEHOLDER)
-                PrintTextOnWindow(windowId, gMovesInfo[move].description, 6, 1, 0, 0);
-            else
-                PrintTextOnWindow(windowId, gNotDoneYetDescription, 6, 1, 0, 0);
+            PrintTextOnWindow(windowId, GetMoveDescription(move), 6, 1, 0, 0);
         }
         else
         {
-            PrintTextOnWindow(windowId, gContestEffectDescriptionPointers[gMovesInfo[move].contestEffect], 6, 1, 0, 0);
+            PrintTextOnWindow(windowId, gContestEffectDescriptionPointers[GetMoveContestEffect(move)], 6, 1, 0, 0);
         }
         PutWindowTilemap(windowId);
     }
@@ -4147,7 +4152,7 @@ static void PrintNewMoveDetailsOrCancelText(void)
         else
             PrintTextOnWindowToFit(windowId1, GetMoveName(move), 0, 65, 0, 5);
 
-        ConvertIntToDecimalStringN(gStringVar1, gMovesInfo[move].pp, STR_CONV_MODE_RIGHT_ALIGN, 2);
+        ConvertIntToDecimalStringN(gStringVar1, GetMovePP(move), STR_CONV_MODE_RIGHT_ALIGN, 2);
         DynamicPlaceholderTextUtil_Reset();
         DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gStringVar1);
         DynamicPlaceholderTextUtil_SetPlaceholderPtr(1, gStringVar1);
@@ -4301,7 +4306,7 @@ static void SetMoveTypeIcons(void)
     {
         if (summary->moves[i] != MOVE_NONE)
         {
-            type = gMovesInfo[summary->moves[i]].type;
+            type = GetMoveType(summary->moves[i]);
             if (P_SHOW_DYNAMIC_TYPES)
                 type = CheckDynamicMoveType(mon, summary->moves[i], 0);
             SetTypeSpritePosAndPal(type, 85, 32 + (i * 16), i + SPRITE_ARR_ID_TYPE);
@@ -4320,7 +4325,7 @@ static void SetContestMoveTypeIcons(void)
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         if (summary->moves[i] != MOVE_NONE)
-            SetTypeSpritePosAndPal(NUMBER_OF_MON_TYPES + gMovesInfo[summary->moves[i]].contestCategory, 85, 32 + (i * 16), i + SPRITE_ARR_ID_TYPE);
+            SetTypeSpritePosAndPal(NUMBER_OF_MON_TYPES + GetMoveContestCategory(summary->moves[i]), 85, 32 + (i * 16), i + SPRITE_ARR_ID_TYPE);
         else
             SetSpriteInvisibility(i + SPRITE_ARR_ID_TYPE, TRUE);
     }
@@ -4328,7 +4333,7 @@ static void SetContestMoveTypeIcons(void)
 
 static void SetNewMoveTypeIcon(void)
 {
-    u32 type = gMovesInfo[sMonSummaryScreen->newMove].type;
+    u32 type = GetMoveType(sMonSummaryScreen->newMove);
     struct Pokemon *mon = &sMonSummaryScreen->currentMon;
 
     if (P_SHOW_DYNAMIC_TYPES)
@@ -4346,7 +4351,7 @@ static void SetNewMoveTypeIcon(void)
         }
         else
         {
-            SetTypeSpritePosAndPal(NUMBER_OF_MON_TYPES + gMovesInfo[sMonSummaryScreen->newMove].contestCategory, 85, 96, SPRITE_ARR_ID_TYPE + 4);
+            SetTypeSpritePosAndPal(NUMBER_OF_MON_TYPES + GetMoveContestCategory(sMonSummaryScreen->newMove), 85, 96, SPRITE_ARR_ID_TYPE + 4);
         }
     }
 }
@@ -4662,23 +4667,16 @@ static inline bool32 ShouldShowRename(void)
 
 static inline bool32 ShouldShowIvEvPrompt(void)
 {
-    if (P_SUMMARY_SCREEN_IV_EV_BOX_ONLY == TRUE)
+    if (P_SUMMARY_SCREEN_IV_EV_BOX_ONLY)
     {
-        return ((P_SUMMARY_SCREEN_IV_EV_INFO == TRUE || FlagGet(P_FLAG_IV_EV_INFO))
-            && (sMonSummaryScreen->mode == SUMMARY_MODE_BOX
-                || sMonSummaryScreen->mode == SUMMARY_MODE_BOX_CURSOR));
+        return (P_SUMMARY_SCREEN_IV_EV_INFO || FlagGet(P_FLAG_SUMMARY_SCREEN_IV_EV_INFO))
+            && (sMonSummaryScreen->mode == SUMMARY_MODE_BOX|| sMonSummaryScreen->mode == SUMMARY_MODE_BOX_CURSOR);
     }
-    else if (P_SUMMARY_SCREEN_IV_EV_BOX_ONLY == FALSE) {
-        return (P_SUMMARY_SCREEN_IV_EV_INFO == TRUE || FlagGet(P_FLAG_IV_EV_INFO));
+    else if (!P_SUMMARY_SCREEN_IV_EV_BOX_ONLY)
+    {
+        return (P_SUMMARY_SCREEN_IV_EV_INFO || FlagGet(P_FLAG_SUMMARY_SCREEN_IV_EV_INFO));
     }
-    else
-        return FALSE;
-}
-
-static inline void ClearUtilityPrompt(void)
-{
-    ClearWindowTilemap(PSS_LABEL_WINDOW_PROMPT_UTILITY);
-    FillWindowPixelBuffer(PSS_LABEL_WINDOW_PROMPT_UTILITY, PIXEL_FILL(0));
+    return FALSE;
 }
 
 static inline void ShowUtilityPrompt(s16 mode)
@@ -4701,20 +4699,22 @@ static inline void ShowUtilityPrompt(s16 mode)
         {
             if (mode == SUMMARY_SKILLS_MODE_STATS)
             {
-                if (P_SUMMARY_SCREEN_EV_ONLY == TRUE)
+                if (P_SUMMARY_SCREEN_EV_ONLY)
                     promptText = gText_SkillPageEvs;
                 else
                     promptText = gText_SkillPageIvs;
             }
             else if (mode == SUMMARY_SKILLS_MODE_IVS)
             {
-                if (P_SUMMARY_SCREEN_IV_ONLY == TRUE)
+                if (P_SUMMARY_SCREEN_IV_ONLY)
                     promptText = gText_SkillPageStats;
                 else
                     promptText = gText_SkillPageEvs;
             }
             else if (mode == SUMMARY_SKILLS_MODE_EVS)
+            {
                 promptText = gText_SkillPageStats;
+            }
         }
     }
     else if (sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES
@@ -4728,7 +4728,8 @@ static inline void ShowUtilityPrompt(s16 mode)
 
     if (promptText == NULL)
     {
-        ClearUtilityPrompt();
+        ClearWindowTilemap(PSS_LABEL_WINDOW_PROMPT_UTILITY);
+        FillWindowPixelBuffer(PSS_LABEL_WINDOW_PROMPT_UTILITY, PIXEL_FILL(0));
         return;
     }
 

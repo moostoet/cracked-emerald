@@ -5700,8 +5700,8 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
             break;
         case ABILITY_MAGMA_CORE:
             if ((!gDisableStructs[battler].magmaCoreBoosted)
-             && (!(gMoveResultFlags & MOVE_RESULT_NO_EFFECT))
-             && TARGET_TURN_DAMAGED
+             && (!(gBattleStruct->moveResultFlags[battler] & MOVE_RESULT_NO_EFFECT))
+             && IsBattlerTurnDamaged(battler)
              && (moveType == TYPE_WATER)
              && IsBattlerAlive(battler))
              {

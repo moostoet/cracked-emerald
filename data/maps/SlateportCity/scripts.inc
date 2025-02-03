@@ -18,6 +18,11 @@
 .set LOCALID_GRUNT_9, 31
 .set LOCALID_GRUNT_11, 33
 .set LOCALID_SCOTT, 35
+.set LOCALID_GRUNT_BLOCK_1, 36
+.set LOCALID_GRUNT_BLOCK_2, 37
+.set LOCALID_GRUNT_BLOCK_3, 38
+.set LOCALID_GRUNT_BLOCK_4, 39
+.set LOCALID_GRUNT_BLOCK_5, 40
 
 @ Note: LOCALID_SLATEPORT_ENERGY_GURU is a local id for this map used elsewhere. It's defined in event_objects.h
 
@@ -363,6 +368,56 @@ SlateportCity_EventScript_PokefanF::
 
 SlateportCity_EventScript_Man2::
 	msgbox SlateportCity_Text_BattleTentBuiltRecently, MSGBOX_NPC
+	end
+
+SlatePortCity_EventScript_AquaGruntBlock1::
+	lock
+	faceplayer
+	msgbox SlateportCity_Text_NoPassingThroughHere, MSGBOX_DEFAULT
+	closemessage
+	applymovement LOCALID_GRUNT_BLOCK_1, Common_Movement_FaceOriginalDirection
+	waitmovement 0
+	release
+	end
+
+SlatePortCity_EventScript_AquaGruntBlock2::
+	lock
+	faceplayer
+	msgbox SlateportCity_Text_BossOrderedBlockade, MSGBOX_DEFAULT
+	closemessage
+	applymovement LOCALID_GRUNT_BLOCK_2, Common_Movement_FaceOriginalDirection
+	waitmovement 0
+	release
+	end
+
+SlatePortCity_EventScript_AquaGruntBlock3::
+	lock
+	faceplayer
+	msgbox SlateportCity_Text_WaterIsFuture, MSGBOX_DEFAULT
+	closemessage
+	applymovement LOCALID_GRUNT_BLOCK_3, Common_Movement_FaceOriginalDirection
+	waitmovement 0
+	release
+	end
+
+SlatePortCity_EventScript_AquaGruntBlock4::
+	lock
+	faceplayer
+	msgbox SlateportCity_Text_StandingGuardIsBoringMe, MSGBOX_DEFAULT
+	closemessage
+	applymovement LOCALID_GRUNT_BLOCK_4, Common_Movement_FaceOriginalDirection
+	waitmovement 0
+	release
+	end
+
+SlatePortCity_EventScript_AquaGruntBlock5::
+	lock
+	faceplayer
+	msgbox SlateportCity_Text_CityUnderAquaControl, MSGBOX_DEFAULT
+	closemessage
+	applymovement LOCALID_GRUNT_BLOCK_5, Common_Movement_FaceOriginalDirection
+	waitmovement 0
+	release
 	end
 
 SlateportCity_EventScript_AquaGrunt1::
@@ -1025,6 +1080,27 @@ SlateportCity_Text_EveryoneCallsHimCaptStern:
 SlateportCity_Text_WhatsLongLineOverThere:
 	.string "What is that over there?\n"
 	.string "That long line…$"
+
+SlateportCity_Text_NoPassingThroughHere:
+	.string "No passing through here!\n"
+	.string "TEAM AQUA's got business in this city!$"
+
+SlateportCity_Text_BossOrderedBlockade:
+	.string "Our BOSS ordered us to maintain this\n"
+	.string "blockade. Nothing personal, kid!$"
+
+SlateportCity_Text_WaterIsFuture:
+	.string "The future belongs to the sea!\p"
+	.string "You wouldn't understand TEAM AQUA's\n"
+	.string "noble mission!$"
+
+SlateportCity_Text_StandingGuardIsBoringMe:
+	.string "Standing guard is boring me to tears…\p"
+	.string "But orders are orders! No entry!$"
+
+SlateportCity_Text_CityUnderAquaControl:
+	.string "This city is under TEAM AQUA's\n"
+	.string "control for now. Turn back!$"
 
 SlateportCity_Text_VisitedMuseumOften:
 	.string "When I was a child, I visited\n"

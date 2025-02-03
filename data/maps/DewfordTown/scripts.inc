@@ -10,6 +10,8 @@
 .equ LOCALID_BOAT_R104, 7
 .equ LOCALID_BRINEY_R104, 8
 
+.set LOCALID_GYM_GUIDE, 6
+
 DewfordTown_MapScripts::
 	map_script MAP_SCRIPT_ON_TRANSITION, DewfordTown_OnTransition
 	.byte 0
@@ -199,6 +201,16 @@ DewfordTown_EventScript_LandedSlateportDeliverGoods::
 DewfordTown_EventScript_LandedSlateport::
 	msgbox DewfordTown_Text_BrineyLandedInSlateport, MSGBOX_DEFAULT
 	return
+
+DewfordTown_EventScript_GymGuide_Blocked::
+	lock
+	faceplayer
+	msgbox DewfordTown_Gym_Text_BrawlyNotPresent, MSGBOX_DEFAULT
+	closemessage
+	applymovement LOCALID_GYM_GUIDE, Common_Movement_FaceOriginalDirection
+	waitmovement 0
+	release
+	end
 
 DewfordTown_Movement_SailToPetalburg:
 	walk_up
@@ -711,6 +723,15 @@ DewfordTown_Text_GiveYouOneOfMyRods:
 	.string "I hear you, and I like what\n"
 	.string "you're saying!\p"
 	.string "I'll give you one of my fishing RODS.$"
+
+DewfordTown_Gym_Text_BrawlyNotPresent:
+	.string "Hi, CHAMPION-bound TRAINER!\p"
+	.string "I hate to tell you this, but BRAWLY\n"
+	.string "isn't at the GYM right now.\p"
+	.string "Word is he's in SLATEPORT CITY\n"
+	.string "checking out some situation there.\p"
+	.string "Why don't you head over there?\n"
+	.string "Maybe you'll run into him!$"
 
 DewfordTown_Text_ThrowInFishingAdvice:
 	.string "And, as an added bonus, I'll even throw\n"

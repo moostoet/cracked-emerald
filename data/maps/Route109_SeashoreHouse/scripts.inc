@@ -9,7 +9,6 @@ Route109_SeashoreHouse_OnTransition:
 Route109_SeashoreHouse_EventScript_Owner::
 	lock
 	faceplayer
-	goto_if_set FLAG_RECEIVED_6_SODA_POP, Route109_SeashoreHouse_EventScript_AlreadyReceivedSodaPop
 	goto_if_set FLAG_DEFEATED_SEASHORE_HOUSE, Route109_SeashoreHouse_EventScript_DefeatedTrainers
 	goto_if_set FLAG_TEMP_2, Route109_SeashoreHouse_EventScript_AlreadyGaveIntroduction
 	msgbox Route109_SeashoreHouse_Text_SeashoreHouseIntro, MSGBOX_DEFAULT
@@ -23,28 +22,37 @@ Route109_SeashoreHouse_EventScript_AlreadyGaveIntroduction::
 	end
 
 Route109_SeashoreHouse_EventScript_DefeatedTrainers::
-	lock
-	faceplayer
-	specialvar VAR_TEMP_0, GetNumOwnedBadges
-	addvar VAR_TEMP_0, 1
-	compare VAR_STONES_TAKEN, VAR_TEMP_0
+	specialvar VAR_TEMP_1, GetNumOwnedBadges
+	addvar VAR_TEMP_1, 1
+	compare VAR_STONES_TAKEN, VAR_TEMP_1
 	goto_if_ge Route109_SeashoreHouse_EventScript_DefeatedTrainers_2
-	dynmultipush Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_0, ITEM_FIRE_STONE
-	dynmultipush Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_1, ITEM_WATER_STONE
-	dynmultipush Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_2, ITEM_THUNDER_STONE
-	dynmultipush Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_3, ITEM_LEAF_STONE
-	dynmultipush Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_4, ITEM_MOON_STONE
-	dynmultipush Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_5, ITEM_SUN_STONE
-	dynmultipush Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_6, ITEM_SHINY_STONE
-	dynmultipush Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_7, ITEM_DUSK_STONE
-	dynmultipush Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_8, ITEM_DAWN_STONE
+	setvar VAR_TEMP_0, ITEM_FIRE_STONE
+	call EventScript_PushItem
+	setvar VAR_TEMP_0, ITEM_WATER_STONE
+	call EventScript_PushItem
+	setvar VAR_TEMP_0, ITEM_THUNDER_STONE
+	call EventScript_PushItem
+	setvar VAR_TEMP_0, ITEM_LEAF_STONE
+	call EventScript_PushItem
+	setvar VAR_TEMP_0, ITEM_MOON_STONE
+	call EventScript_PushItem
+	setvar VAR_TEMP_0, ITEM_SUN_STONE
+	call EventScript_PushItem
+	setvar VAR_TEMP_0, ITEM_SHINY_STONE
+	call EventScript_PushItem
+	setvar VAR_TEMP_0, ITEM_DUSK_STONE
+	call EventScript_PushItem
+	setvar VAR_TEMP_0, ITEM_DAWN_STONE
+	call EventScript_PushItem
+	subvar VAR_TEMP_1, VAR_STONES_TAKEN
+	buffernumberstring STR_VAR_1, VAR_TEMP_1
+	call_if_unset FLAG_TEMP_1, Route109_SeashoreHouse_EventScript_GreatJob
 	msgbox Route109_SeashoreHouse_Text_ChooseStone, MSGBOX_DEFAULT
-	dynmultistack 0, 0, TRUE, 6, FALSE, 0, DYN_MULTICHOICE_CB_NONE
-	compare VAR_RESULT, 127
+	dynmultistack 0, 0, FALSE, 6, FALSE, 0, DYN_MULTICHOICE_CB_SHOW_ITEM
+	compare VAR_RESULT, MULTI_B_PRESSED
 	goto_if_eq Route109_SeashoreHouse_EventScript_DefeatedTrainers_5
 	copyvar VAR_TEMP_1, VAR_RESULT
 	giveitem VAR_TEMP_1, 1
-	setflag FLAG_RECEIVED_6_SODA_POP
 	compare VAR_RESULT, FALSE
 	goto_if_eq Route109_SeashoreHouse_EventScript_DefeatedTrainers_8
 	addvar VAR_STONES_TAKEN, 1
@@ -52,6 +60,19 @@ Route109_SeashoreHouse_EventScript_DefeatedTrainers::
 	setflag FLAG_HIDE_BRAWLY_BLOCK
 	release
 	end
+
+Route109_SeashoreHouse_EventScript_GreatJob::
+	msgbox Route109_SeashoreHouse_Text_GreatJob, MSGBOX_DEFAULT
+	setflag FLAG_TEMP_1
+	return
+
+EventScript_PushItem::
+	bufferitemname STR_VAR_1, VAR_TEMP_0
+	dynmultipush EventScript_PushItemIfOwned_Text_0, VAR_TEMP_0
+	return
+
+EventScript_PushItemIfOwned_Text_0:
+	.string "{STR_VAR_1}$"
 
 Route109_SeashoreHouse_EventScript_DefeatedTrainers_2::
 	msgbox Route109_SeashoreHouse_Text_ReturnWithMoreBadges, MSGBOX_DEFAULT
@@ -66,84 +87,36 @@ Route109_SeashoreHouse_EventScript_DefeatedTrainers_5::
 Route109_SeashoreHouse_EventScript_DefeatedTrainers_8:
 	goto Route109_SeashoreHouse_EventScript_BagFull
 
-Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_0:
-	.string "Fire Stone$"
 
-Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_1:
-	.string "Water Stone$"
-
-Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_2:
-	.string "Thunder Stone$"
-
-Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_3:
-	.string "Leaf Stone$"
-
-Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_4:
-	.string "Moon Stone$"
-
-Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_5:
-	.string "Sun Stone$"
-
-Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_6:
-	.string "Shiny Stone$"
-
-Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_7:
-	.string "Dusk Stone$"
-
-Route109_SeashoreHouse_EventScript_DefeatedTrainers_Text_8:
-	.string "Dawn Stone$"
+Route109_SeashoreHouse_Text_GreatJob:
+	.string "Those were some sizzling hot battles!\n"
+	.string "You really know how to bring the heat!$"
 
 Route109_SeashoreHouse_Text_ReturnWithMoreBadges:
-	.string "Come back after you've earned more Badges\n"
-	.string "to receive another Evolution Stone!$"
+	.string "Say, I find all sorts of neat stones\n"
+	.string "washed up on the shore here.\p"
+	.string "Come back when you've got more Badges,\n"
+	.string "and I'll share some more with you!$"
 
 Route109_SeashoreHouse_Text_ChooseStone:
-	.string "Please choose an Evolution Stone as your\n"
-	.string "reward. You may select {STR_VAR_1} more!$"
+	.string "Check out these beautiful stones I\n"
+	.string "found while beach combing!\p"
+	.string "Pick one you like - I've got {STR_VAR_1}\n"
+	.string "more to share with strong TRAINERS!$"
 
 Route109_SeashoreHouse_Text_StoneRemaining:
-	.string "You can return for another stone after\n"
-	.string "earning more Gym Badges!$"
+	.string "The ocean brings in such mysterious\n"
+	.string "treasures with the tides.\p"
+	.string "Show me more Badges next time, and\n"
+	.string "I'll share what else I've found!$"
 
 Route109_SeashoreHouse_Text_ComeBackLater:
-	.string "Come back when you're ready to choose!$"
+	.string "Take your time deciding!\n"
+	.string "These stones aren't going anywhere!$"
 
 
 Route109_SeashoreHouse_EventScript_BagFull::
 	msgbox Route109_SeashoreHouse_Text_BagFull, MSGBOX_DEFAULT
-	release
-	end
-
-Route109_SeashoreHouse_EventScript_AlreadyReceivedSodaPop::
-	showmoneybox 0, 0
-	msgbox Route109_SeashoreHouse_Text_WantToBuySodaPop, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, YES, Route109_SeashoreHouse_EventScript_BuySodaPop
-	msgbox Route109_SeashoreHouse_Text_ThatsTooBad, MSGBOX_DEFAULT
-	hidemoneybox
-	release
-	end
-
-Route109_SeashoreHouse_EventScript_BuySodaPop::
-	checkmoney 300
-	goto_if_eq VAR_RESULT, FALSE, Route109_SeashoreHouse_EventScript_NotEnoughMoney
-	checkitemspace ITEM_SODA_POP
-	goto_if_eq VAR_RESULT, FALSE, Route109_SeashoreHouse_EventScript_NotEnoughSpace
-	msgbox Route109_SeashoreHouse_Text_HereYouGo, MSGBOX_DEFAULT
-	removemoney 300
-	updatemoneybox
-.if OW_SHOW_ITEM_DESCRIPTIONS != OW_ITEM_DESCRIPTIONS_OFF
-	hidemoneybox
-	giveitem ITEM_SODA_POP
-.else
-	giveitem ITEM_SODA_POP
-	hidemoneybox
-.endif
-	release
-	end
-
-Route109_SeashoreHouse_EventScript_NotEnoughMoney::
-	msgbox Route109_SeashoreHouse_Text_NotEnoughMoney, MSGBOX_DEFAULT
-	hidemoneybox
 	release
 	end
 
@@ -194,23 +167,9 @@ Route109_SeashoreHouse_Text_ShowMeSomeHotMatches:
 	.string "I run this SEASHORE HOUSE just for\n"
 	.string "that reason alone!$"
 
-Route109_SeashoreHouse_Text_TakeTheseSodaPopBottles:
-	.string "You're scorching hot!\n"
-	.string "Those battles blazed!\l"
-	.string "I'm more than just satisfied!\p"
-	.string "As thanks for showing me your hot\n"
-	.string "streak, I want you to take these.\p"
-	.string "It's half a dozen bottles of SODA POP!$"
-
 Route109_SeashoreHouse_Text_BagFull:
 	.string "Oh, but hey, your BAG's jammed full.\n"
 	.string "I'll hang on to these for you.$"
-
-Route109_SeashoreHouse_Text_WantToBuySodaPop:
-	.string "Want to buy some SODA POP?\n"
-	.string "POKéMON love it!\p"
-	.string "Just ¥300 a bottle!\n"
-	.string "Buy some!$"
 
 Route109_SeashoreHouse_Text_HereYouGo:
 	.string "Here you go!$"

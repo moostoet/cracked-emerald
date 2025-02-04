@@ -1085,15 +1085,25 @@ Pic: Tuber F
 Gender: Female
 Music: Girl
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Azurill
-Level: 12
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Maractus @ Miracle Seed  
+Ability: Water Absorb  
+Level: 24   
+Sassy Nature  
+- Giga Drain  
+- Spikes  
+- Endeavor  
+- Sucker Punch  
 
-Azurill
-Level: 12
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Crabrawler @ Eviolite  
+Ability: Iron Fist  
+Level: 24   
+Adamant Nature  
+- Crabhammer  
+- Ice Punch  
+- Drain Punch  
+- Thunder Punch
 
 === TRAINER_AUSTINA ===
 Name: AUSTINA
@@ -1196,15 +1206,24 @@ Pic: Tuber M
 Gender: Male
 Music: Girl
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Zigzagoon
-Level: 13
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
-- Sand Attack
-- Headbutt
-- Tail Whip
+Pelipper @ Damp Rock  
+Ability: Drizzle  
+Level: 23  
+IVs: 0 Atk  
+- Air Cutter  
+- Roost  
+- Protect  
 - Surf
+
+Drednaw @ Muscle Band  
+Ability: Swift Swim  
+Level: 23    
+- Razor Shell  
+- Rock Slide  
+- Jaw Lock  
+- Protect
 
 === TRAINER_SIMON ===
 Name: SIMON
@@ -1213,15 +1232,25 @@ Pic: Tuber M
 Gender: Male
 Music: Girl
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Azurill
-Level: 12
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Bibarel @ White Herb  
+Ability: Simple  
+Level: 23  
+Jolly Nature  
+- Aqua Jet  
+- Bulk Up  
+- Facade  
+- Quick Attack  
 
-Marill
-Level: 12
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Greedent (M) @ Sitrus Berry  
+Ability: Cheek Pouch  
+Level: 23   
+Lax Nature  
+- Stuff Cheeks  
+- Stockpile  
+- Spit Up  
+- Knock Off  
 
 === TRAINER_CHARLIE ===
 Name: CHARLIE
@@ -9335,15 +9364,24 @@ Pic: Sailor
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Wingull
-Level: 12
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Krokorok @ Passho Berry  
+Ability: Intimidate  
+Level: 24  
+Jolly Nature  
+- Crunch  
+- Stomping Tantrum  
+- Thunder Fang  
+- Fire Fang  
 
-Machop
-Level: 12
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Dewott @ Scope Lens  
+Ability: Torrent  
+Level: 24  
+- Brick Break  
+- Knock Off  
+- Razor Shell  
+- X-Scissor  
 
 === TRAINER_EDMOND ===
 Name: EDMOND
@@ -9352,11 +9390,35 @@ Pic: Sailor
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Wingull
-Level: 13
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Hitmonlee @ Normal Gem  
+Ability: Unburden  
+Level: 23  
+Adamant Nature  
+- Fake Out  
+- High Jump Kick  
+- Rock Slide  
+- Poison Jab  
+
+Carvanha @ Expert Belt  
+Ability: Speed Boost  
+Level: 24  
+Adamant Nature  
+- Crunch  
+- Waterfall  
+- Ice Fang  
+- Protect  
+
+Magnemite @ Magnet  
+Ability: Sturdy  
+Level: 24  
+Modest Nature  
+IVs: 0 Atk  
+- Thunder Wave  
+- Thunderbolt  
+- Volt Switch  
+- Flash Cannon  
 
 === TRAINER_ERNEST_1 ===
 Name: ERNEST
@@ -9382,19 +9444,25 @@ Pic: Sailor
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Wingull
-Level: 11
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Tauros @ Silk Scarf  
+Ability: Intimidate  
+Level: 23  
+Jolly Nature  
+- Facade  
+- Rock Slide  
+- Trailblaze  
+- Pursuit  
 
-Machop
-Level: 11
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
-
-Tentacool
-Level: 11
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Miltank @ Leftovers  
+Ability: Thick Fat  
+Level: 23  
+Impish Nature  
+- Rollout  
+- Milk Drink  
+- Counter  
+- Seismic Toss  
 
 === TRAINER_PHILLIP ===
 Name: PHILLIP
@@ -12627,11 +12695,25 @@ Pic: Beauty
 Gender: Female
 Music: Female
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Goldeen
-Level: 13
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Liepard @ Black Glasses  
+Ability: Prankster  
+Level: 23  
+Timid Nature  
+- Thunder Wave  
+- Dark Pulse  
+- Copycat  
+- Encore  
+
+Azumarill @ Sitrus Berry  
+Ability: Huge Power  
+Level: 23  
+Brave Nature  
+- Aqua Jet  
+- Body Slam  
+- Brick Break  
+- Draining Kiss  
 
 === TRAINER_GERALD ===
 Name: GERALD
@@ -13811,11 +13893,23 @@ Pic: Tuber F
 Gender: Female
 Music: Girl
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Marill
-Level: 13
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Quagsire @ Leftovers  
+Ability: Water Absorb  
+Level: 23  
+- Earthquake  
+- Waterfall  
+- Yawn  
+- Recover
+
+Togedemaru @ Magnet  
+Ability: Lightning Rod  
+Level: 23  
+- Zing Zap  
+- Iron Head  
+- Magnet Rise  
+- Nuzzle
 
 === TRAINER_CHANDLER ===
 Name: CHANDLER
@@ -13824,15 +13918,26 @@ Pic: Tuber M
 Gender: Male
 Music: Girl
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Tentacool
-Level: 12
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Mantine @ Leftovers  
+Ability: Water Absorb  
+Level: 24  
+Modest Nature  
+IVs: 0 Atk  
+- Tailwind  
+- Protect  
+- Air Slash  
+- Surf  
 
-Tentacool
-Level: 12
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Corsola @ Rocky Helmet  
+Ability: Rough Skin   
+Calm Nature  
+IVs: 0 Atk  
+- Ancient Power  
+- Shore Up  
+- Water Pulse  
+- Aqua Ring
 
 === TRAINER_KALEB ===
 Name: KALEB

@@ -6695,23 +6695,24 @@ Music: Hiker
 Double Battle: No
 AI: Smart Trainer
 
-Pelipper @ Damp Rock  
-Ability: Drizzle  
-Level: 23   
+Politoed @ Damp Rock  
+Ability: Water Absorb  
+Level: 23  
 Bold Nature  
-- Roost  
-- U-turn  
-- Air Cutter  
-- Brine  
+IVs: 0 Atk  
+- Water Pulse  
+- Ice Beam  
+- Hypnosis  
+- Encore  
 
 Wishiwashi @ Leftovers  
 Ability: Schooling  
-Level: 25   
+Level: 25    
 Bold Nature  
-- Water Gun  
+- Scald  
 - U-turn  
 - Rest  
-- Sleep Talk  
+- Sleep Talk   
 
 === TRAINER_NED ===
 Name: NED
@@ -13931,7 +13932,8 @@ IVs: 0 Atk
 - Surf  
 
 Corsola @ Rocky Helmet  
-Ability: Rough Skin   
+Ability: Rough Skin
+Level: 24   
 Calm Nature  
 IVs: 0 Atk  
 - Ancient Power  

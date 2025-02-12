@@ -3321,7 +3321,7 @@ static u32 AI_CalcHoldItemEffectMoveScore(u32 battlerAtk, u32 battlerDef, u32 mo
     }
 
     return score;
-}
+} // generalized score adjustments for hold item cases
 
 static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
 {

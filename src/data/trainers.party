@@ -94,6 +94,61 @@ Geodude
 Level: 21
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+=== TRAINER_GRUNT_OCEANIC_LEFT ===
+Name: GRUNT
+Class: Team Aqua
+Pic: Aqua Grunt M 
+Gender: Male
+Music: Aqua
+Double Battle: No 
+AI: Smart Trainer
+
+Kabutops @ Rindo Berry  
+Ability: Swift Swim  
+Level: 28   
+Adamant Nature  
+- Rock Slide  
+- Razor Shell  
+- Hone Claws  
+- Leech Life
+
+Relicanth @ Focus Band  
+Ability: Swift Swim  
+Level: 28    
+Adamant Nature  
+- Liquidation  
+- Stone Edge  
+- Zen Headbutt  
+- Body Press
+
+
+=== TRAINER_GRUNT_OCEANIC_RIGHT ===
+Name: GRUNT
+Class: Team Aqua
+Pic: Aqua Grunt F 
+Gender: Female
+Music: Aqua
+Double Battle: No 
+AI: Smart Trainer
+
+Aerodactyl @ Damp Rock  
+Ability: Unnerve  
+Level: 28  
+Jolly Nature  
+- Rain Dance  
+- Aqua Tail  
+- Rock Slide  
+- Dual Wingbeat
+
+Arctovish @ Muscle Band  
+Ability: Water Absorb  
+Level: 28  
+Adamant Nature  
+- Fishious Rend  
+- Crunch  
+- Body Slam  
+- Avalanche
+
 === TRAINER_GRUNT_AQUA_HIDEOUT_1 ===
 Name: GRUNT
 Class: Team Aqua
@@ -434,11 +489,26 @@ Pic: Aqua Grunt M
 Gender: Male
 Music: Aqua
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Carvanha
-Level: 15
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Tentacruel @ Black Sludge  
+Ability: Liquid Ooze  
+Level: 30  
+Jolly Nature  
+IVs: 0 Atk  
+- Scald  
+- Sludge Bomb  
+- Hex  
+- Giga Drain  
+
+Cacturne @ Kings Rock  
+Ability: Technician  
+Level: 30  
+Adamant Nature  
+- Bullet Seed  
+- Hidden Power 
+- Drain Punch  
+- Lunge  
 
 === TRAINER_GRUNT_MUSEUM_2 ===
 Name: GRUNT
@@ -447,15 +517,24 @@ Pic: Aqua Grunt M
 Gender: Male
 Music: Aqua
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
-Zubat
-Level: 14
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Lokix @ Bug Gem  
+Ability: Tinted Lens  
+Level: 30  
+- First Impression  
+- Knock Off  
+- Leech Life  
+- Brick Break  
 
-Carvanha
-Level: 14
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Cloyster @ White Herb  
+Ability: Skill Link  
+Level: 30  
+Adamant Nature  
+- Icicle Spear  
+- Shell Smash  
+- Razor Shell  
+- Poison Jab  
 
 === TRAINER_GRUNT_SPACE_CENTER_1 ===
 Name: GRUNT
@@ -633,6 +712,43 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 Mightyena
 Level: 37
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+
+=== TRAINER_ARCHIE_OCEANIC ===
+Name: ARCHIE
+Class: Aqua Leader
+Pic: Aqua Leader Archie
+Gender: Male
+Music: Aqua
+Double Battle: No
+AI: Smart Trainer
+
+Perrserker @ Iron Ball  
+Ability: Steely Spirit  
+Level: 30    
+Brave Nature  
+IVs: 0 Spe  
+- Gyro Ball  
+- Play Rough  
+- Swords Dance  
+- Knock Off  
+
+Eelektross @ Leftovers  
+Ability: Levitate  
+Level: 30  
+Adamant Nature  
+- Coil  
+- Supercell Slam  
+- Drain Punch  
+- Crunch  
+
+Sharpedo @ Liechi Berry  
+Ability: Speed Boost  
+Level: 31  
+Adamant Nature  
+- Tidal Bore  
+- Psychic Fangs  
+- Bite  
+- Ice Fang  
 
 === TRAINER_ARCHIE ===
 Name: ARCHIE
@@ -1243,7 +1359,7 @@ Jolly Nature
 - Facade  
 - Quick Attack  
 
-Greedent (M) @ Sitrus Berry  
+Greedent @ Sitrus Berry  
 Ability: Cheek Pouch  
 Level: 23   
 Lax Nature  

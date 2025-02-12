@@ -57,7 +57,9 @@ SlateportCity_OceanicMuseum_2F_EventScript_CaptStern::
 	closemessage
 	applymovement LOCALID_ARCHIE, SlateportCity_OceanicMuseum_2F_Movement_ArchieApproachPlayer
 	waitmovement 0
-	msgbox SlateportCity_OceanicMuseum_2F_Text_ArchieWarning, MSGBOX_DEFAULT
+	msgbox SlateportCity_OceanicMuseum_2F_Text_ArchiePreBattle, MSGBOX_DEFAULT
+	trainerbattle_no_intro TRAINER_ARCHIE_OCEANIC, SlateportCity_OceanicMuseum_2F_Text_ArchieDefeat
+	msgbox SlateportCity_OceanicMuseum_2F_Text_ArchiePostBattle, MSGBOX_DEFAULT
 	closemessage
 	savebgm MUS_DUMMY
 	fadedefaultbgm
@@ -320,6 +322,45 @@ SlateportCity_OceanicMuseum_2F_Text_CameToSeeWhatsTakingSoLong:
 	.string "I came to see what was taking so\n"
 	.string "long to snatch some parts, and you\l"
 	.string "simps are held up by a mere child?$"
+
+SlateportCity_OceanicMuseum_2F_Text_ArchiePreBattle:
+    .string "We are TEAM AQUA,\n"
+    .string "and we love the sea!\p"
+    .string "And I am TEAM AQUA's leader,\n"
+    .string "ARCHIE!\p"
+    .string "What makes you interfere with us?\p"
+    .string "…No! You can't be!\n"
+    .string "You're not one of TEAM MAGMA?\p"
+    .string "Wait, that can't be right.\n"
+    .string "You're not dressed for the part.\p"
+    .string "POKéMON, people… All life depends on\n"
+    .string "the sea.\p"
+    .string "So, TEAM AQUA is dedicated to\n"
+    .string "the expansion of the sea.\p"
+    .string "Hmph! You dare stand against our\n"
+    .string "noble cause?\p"
+    .string "Then let me show you the raw power\n"
+    .string "of the sea itself!$"
+
+SlateportCity_OceanicMuseum_2F_Text_ArchieDefeat:
+    .string "What?! This power... from a mere\n"
+    .string "child?!$"
+
+SlateportCity_OceanicMuseum_2F_Text_ArchiePostBattle:
+    .string "... ... ...\n"
+    .string "Interesting. Very interesting.\p"
+    .string "There's something different about\n"
+    .string "you. A hidden potential...\p"
+    .string "Just like how the ancient stones we\n"
+    .string "seek can unleash primal power...\p"
+    .string "But you're still too young to grasp\n"
+    .string "the magnitude of our mission.\p"
+    .string "Mark my words - when we unlock the\n"
+    .string "true power of evolution itself,\l"
+    .string "you'll understand our noble goal!\p"
+    .string "Team Aqua, we're moving out!\p"
+    .string "But remember this: interfere again,\n"
+    .string "and you won't be so fortunate!$"
 
 SlateportCity_OceanicMuseum_2F_Text_ArchieWarning:
 	.string "We are TEAM AQUA,\n"

@@ -20712,6 +20712,28 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         .battleAnimScript = gBattleAnimMove_MalignantChain,
     },
 
+    [MOVE_TIDAL_BORE] =
+    {
+        .name = COMPOUND_STRING("Tidal Bore"),
+        .description = COMPOUND_STRING(
+            "A powerful bite that \n"
+            "breaks screens."),
+        .effect = EFFECT_BRICK_BREAK,
+        .power = 75,
+        .type = TYPE_WATER,
+        .accuracy = 100,
+        .pp = 15,
+        .target = MOVE_TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .bitingMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_WORSEN_CONDITION_OF_PREV_MONS,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_TidalBore,
+    },
+
     // Z-Moves
     [MOVE_BREAKNECK_BLITZ] =
     {

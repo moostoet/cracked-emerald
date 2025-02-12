@@ -11689,6 +11689,51 @@ FleurCannonBeam:
 	delay 0x1
 	return
 
+gBattleAnimMove_TidalBore::
+	loadspritegfx ANIM_TAG_SHARP_TEETH @Teeth
+	loadspritegfx ANIM_TAG_IMPACT @Hit
+	loadspritegfx ANIM_TAG_SMALL_BUBBLES @Bubbles
+	loadspritegfx ANIM_TAG_ICE_CRYSTALS
+	setalpha 12, 8
+	playsewithpan SE_M_BITE, SOUND_PAN_TARGET
+	createsprite gSharpTeethSpriteTemplate, ANIM_ATTACKER, 2, 0xffe0, 0xffe0, 0x1, 0x333, 0x333, 0xa
+	createsprite gSharpTeethSpriteTemplate, ANIM_ATTACKER, 2, 0x20, 0x20, 0x5, 0xfccd, 0xfccd, 0xa
+	delay 0xa
+	createsprite gBasicHitSplatSpriteTemplate, ANIM_ATTACKER, 2, 0xfff8, 0x0, 0x1, 0x1
+	createvisualtask AnimTask_ShakeMon, 5, ANIM_TARGET, 0, 7, 5, 2
+	delay 5
+	call WaterfallBubblesOnTarget
+	createvisualtask AnimTask_ShakeMon, 5, ANIM_TARGET, 0, 2, 23, 1
+	waitforvisualfinish
+	end
+
+WaterfallBubblesOnTarget:
+	playsewithpan SE_M_CRABHAMMER, SOUND_PAN_TARGET
+	createsprite gSmallBubblePairSpriteTemplate, ANIM_TARGET, 2, 10, 10, 25, ANIM_TARGET
+	delay 4
+	playsewithpan SE_M_CRABHAMMER, SOUND_PAN_TARGET
+	createsprite gSmallBubblePairSpriteTemplate, ANIM_TARGET, 2, -15, 0, 25, ANIM_TARGET
+	delay 4
+	playsewithpan SE_M_CRABHAMMER, SOUND_PAN_TARGET
+	createsprite gSmallBubblePairSpriteTemplate, ANIM_TARGET, 2, 20, 10, 25, ANIM_TARGET
+	delay 4
+	playsewithpan SE_M_CRABHAMMER, SOUND_PAN_TARGET
+	createsprite gSmallBubblePairSpriteTemplate, ANIM_TARGET, 2, 0, -10, 25, ANIM_TARGET
+	delay 4
+	playsewithpan SE_M_CRABHAMMER, SOUND_PAN_TARGET
+	createsprite gSmallBubblePairSpriteTemplate, ANIM_TARGET, 2, -10, 15, 25, ANIM_TARGET
+	delay 4
+	playsewithpan SE_M_CRABHAMMER, SOUND_PAN_TARGET
+	createsprite gSmallBubblePairSpriteTemplate, ANIM_TARGET, 2, 25, 20, 25, ANIM_TARGET
+	delay 4
+	playsewithpan SE_M_CRABHAMMER, SOUND_PAN_TARGET
+	createsprite gSmallBubblePairSpriteTemplate, ANIM_TARGET, 2, -20, 20, 25, ANIM_TARGET
+	delay 4
+	playsewithpan SE_M_CRABHAMMER, SOUND_PAN_TARGET
+	createsprite gSmallBubblePairSpriteTemplate, ANIM_TARGET, 2, 12, 0, 25, ANIM_TARGET
+	waitforvisualfinish
+	return
+
 gBattleAnimMove_PsychicFangs::
 	loadspritegfx ANIM_TAG_SHARP_TEETH @Teeth
 	loadspritegfx ANIM_TAG_IMPACT @Hit

@@ -65,6 +65,47 @@ SlateportCity_OceanicMuseum_1F_Movement_PushPlayerBackFromCounter:
 	walk_down
 	step_end
 
+SlateportCity_OceanicMuseum_1F_EventScript_GruntLeft::
+	trainerbattle_single TRAINER_GRUNT_OCEANIC_LEFT, SlateportCity_OceanicMuseum_1F_Text_GruntLeft, SlateportCity_OceanicMuseum_1F_Text_GruntLeftDefeated
+	msgbox SlateportCity_OceanicMuseum_1F_Text_GruntLeft_PostBattle, MSGBOX_AUTOCLOSE
+	end
+
+SlateportCity_OceanicMuseum_1F_EventScript_GruntRight::
+	trainerbattle_single TRAINER_GRUNT_OCEANIC_RIGHT, SlateportCity_OceanicMuseum_1F_Text_GruntRight, SlateportCity_OceanicMuseum_1F_Text_GruntRightDefeated
+	msgbox SlateportCity_OceanicMuseum_1F_Text_GruntRight_PostBattle, MSGBOX_AUTOCLOSE
+	end
+
+SlateportCity_OceanicMuseum_1F_Text_GruntLeft:
+    .string "Hehehe... See this fossil POKéMON?\p"
+    .string "We swiped it from the display case\n"
+    .string "and brought it back to life!\p"
+    .string "Pretty impressive, right? Now watch\n"
+    .string "what they're capable of!$"
+
+SlateportCity_OceanicMuseum_1F_Text_GruntLeft_PostBattle:
+    .string "Maybe these fossils weren't as\n"
+    .string "powerful as the BOSS claimed...\p"
+    .string "Or maybe you're just too strong...$"
+
+SlateportCity_OceanicMuseum_1F_Text_GruntLeftDefeated:
+    .string "No way! Even with a revived\n"
+    .string "prehistoric POKéMON...$"
+
+SlateportCity_OceanicMuseum_1F_Text_GruntRight:
+    .string "Our science team really outdid\n"
+    .string "themselves this time!\p"
+    .string "These fossil POKéMON will help\n"
+    .string "TEAM AQUA rule both land and sea!$"
+
+SlateportCity_OceanicMuseum_1F_Text_GruntRight_PostBattle:
+    .string "Maybe we should've left these\n"
+    .string "fossils in their display cases...\p"
+    .string "The BOSS isn't going to like this!$"
+
+SlateportCity_OceanicMuseum_1F_Text_GruntRightDefeated:
+    .string "Impossible! These POKéMON survived\n"
+    .string "millions of years, but lost to you?!$"
+
 SlateportCity_OceanicMuseum_1F_EventScript_MuseumGrunt1::
 	msgbox SlateportCity_OceanicMuseum_1F_Text_AquaExistForGoodOfAll, MSGBOX_NPC
 	end

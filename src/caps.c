@@ -14,7 +14,7 @@ u32 GetCurrentLevelCap(void)
         {FLAG_BADGE01_GET, 20},
         {FLAG_DEFEATED_RIVAL_RUSTBORO, 24},
         {FLAG_BADGE02_GET, 27},
-        {FLAG_BADGE03_GET, 29},
+        {FLAG_BADGE03_GET, 31},
         {FLAG_BADGE04_GET, 31},
         {FLAG_BADGE05_GET, 33},
         {FLAG_BADGE06_GET, 42},

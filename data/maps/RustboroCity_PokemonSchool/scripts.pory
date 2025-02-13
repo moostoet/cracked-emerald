@@ -1,0 +1,7 @@
+script RustboroCity_PokemonSchool_EventScript_Teacher {
+    lock
+    faceplayer
+    if (flag(FLAG_RECEIVED_QUICK_CLAW)) {
+        
+    }    
+}

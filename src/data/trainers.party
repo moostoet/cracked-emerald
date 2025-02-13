@@ -501,14 +501,15 @@ IVs: 0 Atk
 - Hex  
 - Giga Drain  
 
-Cacturne @ Kings Rock  
-Ability: Technician  
-Level: 30  
-Adamant Nature  
-- Bullet Seed  
-- Hidden Power 
-- Drain Punch  
-- Lunge  
+Dhelmise @ Colbur Berry  
+Ability: Steelworker  
+Level: 30   
+Brave Nature  
+IVs: 0 Spe  
+- Gyro Ball  
+- Poltergeist  
+- Power Whip  
+- Liquidation
 
 === TRAINER_GRUNT_MUSEUM_2 ===
 Name: GRUNT
@@ -519,14 +520,6 @@ Music: Aqua
 Double Battle: No
 AI: Smart Trainer
 
-Lokix @ Bug Gem  
-Ability: Tinted Lens  
-Level: 30  
-- First Impression  
-- Knock Off  
-- Leech Life  
-- Brick Break  
-
 Cloyster @ White Herb  
 Ability: Skill Link  
 Level: 30  
@@ -535,6 +528,16 @@ Adamant Nature
 - Shell Smash  
 - Razor Shell  
 - Poison Jab  
+
+Kilowattrel @ Wide Lens  
+Ability: Volt Absorb  
+Level: 30   
+Modest Nature  
+IVs: 0 Atk  
+- Hurricane  
+- Thunder  
+- Heat Wave  
+- Uproar  
 
 === TRAINER_GRUNT_SPACE_CENTER_1 ===
 Name: GRUNT
@@ -6825,7 +6828,7 @@ Wishiwashi @ Leftovers
 Ability: Schooling  
 Level: 25    
 Bold Nature  
-- Scald  
+- Water Gun  
 - U-turn  
 - Rest  
 - Sleep Talk   

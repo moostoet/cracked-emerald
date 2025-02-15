@@ -2435,5 +2435,12 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
         .name = _("Magma Core"),
         .description = COMPOUND_STRING("Weakens Water, raises Fire."),
         .aiRating = 7,
+    },
+
+    [ABILITY_CHAIN_STRIKER] =
+    {
+        .name = _("Chain Striker"),
+        .description = COMPOUND_STRING("Attacks become multi-hit."),
+        .aiRating = 10,
     }
 };

@@ -5,3 +5,7 @@ script RustboroCity_PokemonSchool_EventScript_Teacher {
         
     }    
 }
+
+script RustboroCity_PokemonSchool_EventScript_SchoolKid_Evert {
+    
+}

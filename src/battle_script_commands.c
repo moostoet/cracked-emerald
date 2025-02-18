@@ -12495,7 +12495,7 @@ static u32 ChangeStatBuffs(s8 statValue, u32 statId, u32 flags, const u8 *BS_ptr
             // Check Mirror Herb / Opportunist
             for (index = 0; index < gBattlersCount; index++)
             {
-                if (GetBattlerSide(index) == GetBattlerSide(battler))
+                if (IsBattlerAlly(index, battler))
                     continue; // Only triggers on opposing side
 
                 if (GetBattlerAbility(index) == ABILITY_OPPORTUNIST
@@ -17711,13 +17711,25 @@ void BS_AllySwitchFailChance(void)
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
-void BS_SetPhotonGeyserCategory(void)
+void BS_SetDynamicMoveCategory(void)
 {
     NATIVE_ARGS();
-    u32 effect = GetMoveEffect(gCurrentMove);
-    if (!((effect == EFFECT_TERA_BLAST && GetActiveGimmick(gBattlerAttacker) != GIMMICK_TERA)
-            || (effect == EFFECT_TERA_STARSTORM && GetActiveGimmick(gBattlerAttacker) != GIMMICK_TERA && gBattleMons[gBattlerAttacker].species == SPECIES_TERAPAGOS_STELLAR)))
+
+    switch (GetMoveEffect(gCurrentMove))
+    {
+    case EFFECT_TERA_BLAST:
+        if (GetActiveGimmick(gBattlerAttacker) == GIMMICK_TERA)
+            gBattleStruct->swapDamageCategory = (GetCategoryBasedOnStats(gBattlerAttacker) != GetMoveCategory(gCurrentMove));
+        break;
+    case EFFECT_TERA_STARSTORM:
+        if (GetActiveGimmick(gBattlerAttacker) == GIMMICK_TERA && gBattleMons[gBattlerAttacker].species == SPECIES_TERAPAGOS_STELLAR)
+            gBattleStruct->swapDamageCategory = (GetCategoryBasedOnStats(gBattlerAttacker) != GetMoveCategory(gCurrentMove));
+        break;
+    default:
         gBattleStruct->swapDamageCategory = (GetCategoryBasedOnStats(gBattlerAttacker) != GetMoveCategory(gCurrentMove));
+        break;
+    }
+
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
@@ -17965,7 +17977,7 @@ void BS_JumpIfSleepClause(void)
     NATIVE_ARGS(const u8 *jumpInstr);
 
     // Can freely sleep own partner
-    if (IsDoubleBattle() && IsSleepClauseEnabled() && GetBattlerSide(gBattlerAttacker) == GetBattlerSide(gBattlerTarget))
+    if (IsDoubleBattle() && IsSleepClauseEnabled() && IsBattlerAlly(gBattlerAttacker, gBattlerTarget))
     {
         gBattleStruct->battlerState[gBattlerTarget].sleepClauseEffectExempt = TRUE;
         gBattlescriptCurrInstr = cmd->nextInstr;
@@ -18085,7 +18097,7 @@ void BS_TryWindRiderPower(void)
 
     u32 battler = GetBattlerForBattleScript(cmd->battler);
     u16 ability = GetBattlerAbility(battler);
-    if (GetBattlerSide(battler) == GetBattlerSide(gBattlerAttacker)
+    if (IsBattlerAlly(battler, gBattlerAttacker)
         && (ability == ABILITY_WIND_RIDER || ability == ABILITY_WIND_POWER))
     {
         gLastUsedAbility = ability;

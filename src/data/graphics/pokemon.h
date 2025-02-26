@@ -12051,6 +12051,8 @@ const u32 gObjectEventPic_Substitute[] = INCBIN_COMP("graphics/pokemon/question_
 
 #if P_FAMILY_SPINDA
     const u32 gMonFrontPic_Spinda[] = INCBIN_U32("graphics/pokemon/spinda/anim_front.4bpp.lz");
+    const u32 gMonFrontPic_SpindaDrunken[] = INCBIN_U32("graphics/pokemon/spinda/drunken/anim_front.4bpp.lz");
+    const u32 gMonPalette_SpindaDrunken[] = INCBIN_U32("graphics/pokemon/spinda/drunken/normal.gbapal.lz");
     const u32 gMonPalette_Spinda[] = INCBIN_U32("graphics/pokemon/spinda/normal.gbapal.lz");
     const u32 gMonBackPic_Spinda[] = INCBIN_U32("graphics/pokemon/spinda/back.4bpp.lz");
     const u32 gMonShinyPalette_Spinda[] = INCBIN_U32("graphics/pokemon/spinda/shiny.gbapal.lz");

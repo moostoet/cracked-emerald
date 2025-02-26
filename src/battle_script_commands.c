@@ -1526,6 +1526,9 @@ u32 GetTotalAccuracy(u32 battlerAtk, u32 battlerDef, u32 move, u32 atkAbility, u
         if (IsBattleMovePhysical(move))
             calc = (calc * 80) / 100; // 1.2 hustle loss
         break;
+    case ABILITY_JUMBLED:
+        calc = (calc * (125 - moveAcc / 2)) / 100; // 50 acc > 100 acc, 100 acc > 75 acc
+        break;
     }
 
     // Target's ability
@@ -1542,6 +1545,16 @@ u32 GetTotalAccuracy(u32 battlerAtk, u32 battlerDef, u32 move, u32 atkAbility, u
     case ABILITY_TANGLED_FEET:
         if (gBattleMons[battlerDef].status2 & STATUS2_CONFUSION)
             calc = (calc * 50) / 100; // 1.5 tangled feet loss
+        break;
+    case ABILITY_JUMBLED:
+        if (moveAcc >= 85)
+        {
+            calc = (calc * 90) / 100; // 1.1 loss from jumbled
+        } 
+        else if (moveAcc <= 75)
+        {
+            calc = (calc * 110) / 100; // 1.1 boost from jumbled
+        }
         break;
     }
 

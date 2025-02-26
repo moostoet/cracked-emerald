@@ -2433,7 +2433,7 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
     [ABILITY_MAGMA_CORE] =
     {
         .name = _("Magma Core"),
-        .description = COMPOUND_STRING("Weakens Water, raises Fire."),
+        .description = COMPOUND_STRING("Weakens Water, buffs Fire."),
         .aiRating = 7,
     },
 
@@ -2442,5 +2442,12 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
         .name = _("Chain Striker"),
         .description = COMPOUND_STRING("Attacks become multi-hit."),
         .aiRating = 10,
-    }
+    },
+
+    [ABILITY_JUMBLED] = 
+    {
+        .name = ("Jumbled"),
+        .description = COMPOUND_STRING("High acc. > low, low > high."),
+        .aiRating = 7,
+    },
 };

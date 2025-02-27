@@ -10066,6 +10066,153 @@ IVs: 0 Atk
 - Confuse Ray  
 - Disable
 
+=== TRAINER_OLLIE_SCHOOL ===
+Name: OLLIE
+Class: School Kid
+Pic: School Kid M
+Gender: Male
+Music: Male
+Double Battle: No
+AI: Smart Trainer / Force Setup First Turn
+
+Bronzor @ Eviolite  
+Ability: Levitate  
+Level: 16  
+Sassy Nature  
+IVs: 0 Atk / 0 Spe
+- Trick Room  
+- Extrasensory  
+- Hypnosis  
+- Light Screen  
+
+Torkoal @ Charcoal  
+Ability: White Smoke  
+Level: 16   
+Brave Nature
+IVs: 0 Spe  
+- Ember  
+- Curse  
+- Body Slam  
+- Rock Tomb  
+
+Clobbopus @ Black Belt  
+Ability: Technician  
+Level: 16  
+Adamant Nature
+IVs: 0 Spe  
+- Power-Up Punch  
+- Payback  
+- Bulk Up  
+
+=== TRAINER_HARRY_SCHOOL ===
+Name: HARRY
+Class: Rich Boy
+Pic: Rich Boy
+Gender: Male
+Music: Male
+Double Battle: No
+AI: Smart Trainer
+
+Vulpix-Alola @ Icy Rock  
+Ability: Snow Warning  
+Level: 16   
+Modest Nature  
+IVs: 0 Atk  
+- Aurora Veil  
+- Draining Kiss  
+- Aurora Beam  
+
+Sandshrew-Alola @ Bright Powder  
+Ability: Snow Cloak  
+Level: 16    
+Adamant Nature  
+- Ice Shard  
+- Metal Claw  
+- Hone Claws  
+- Bulldoze  
+
+Cubchoo @ Assault Vest  
+Ability: Slush Rush  
+Level: 16    
+Lonely Nature  
+- Ice Fang  
+- Aerial Ace  
+- Brine  
+- Power-Up Punch
+
+=== TRAINER_FIONA_SCHOOL ===
+Name: FIONA
+Class: Lass
+Pic: Lass
+Gender: Female
+Music: Female
+Double Battle: No
+AI: Smart Trainer
+
+Shuckle @ Berry Juice  
+Ability: Contrary  
+Level: 15  
+Sassy Nature  
+- Rollout  
+- Sticky Web  
+- Toxic  
+- Infestation  
+
+Munchlax @ Leftovers  
+Ability: Thick Fat  
+Level: 16    
+Adamant Nature  
+- Curse  
+- Body Slam  
+- Zen Headbutt  
+- Fire Punch  
+
+Wynaut @ Custap Berry  
+Ability: Shadow Tag  
+Level: 16   
+Calm Nature  
+IVs: 0 Atk  
+- Encore  
+- Counter  
+- Mirror Coat  
+- Destiny Bond  
+
+=== TRAINER_WILSON_SCHOOL ===
+Name: WILSON
+Class: Gentleman
+Pic: Gentleman
+Gender: Male
+Music: Male
+Double Battle: No
+AI: Smart Trainer
+
+Herdier @ Eviolite  
+Ability: Intimidate  
+Level: 17  
+Adamant Nature  
+- Work Up  
+- Crunch  
+- Facade  
+- Psychic Fangs  
+
+Aipom @ Kings Rock  
+Ability: Skill Link  
+Level: 17  
+Jolly Nature  
+- Fake Out  
+- Power-Up Punch  
+- Double Slap  
+- Aerial Ace  
+
+Spinda @ Bright Powder  
+Ability: Own Tempo  
+Level: 17  
+Adamant Nature  
+- Dizzy Punch  
+- Drain Punch  
+- Attract  
+- Swagger  
+
 === TRAINER_WALLY_VR_1 ===
 Name: WALLY
 Class: Rival

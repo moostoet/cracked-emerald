@@ -100,66 +100,68 @@
 
 const struct SpeciesInfo gSpeciesInfo[] =
     {
-        .speciesName = _("??????????"),
-        .cryId = CRY_NONE,
-        .natDexNum = NATIONAL_DEX_NONE,
-        .categoryName = _("Unknown"),
-        .height = 0,
-        .weight = 0,
-        .description = gFallbackPokedexText,
-        .pokemonScale = 256,
-        .pokemonOffset = 0,
-        .trainerScale = 256,
-        .trainerOffset = 0,
-        .frontPic = gMonFrontPic_CircledQuestionMark,
-        .frontPicSize = MON_COORDS_SIZE(40, 40),
-        .frontPicYOffset = 12,
-        .frontAnimFrames = sAnims_TwoFramePlaceHolder,
-        .frontAnimId = ANIM_V_SQUISH_AND_BOUNCE,
-        .backPic = gMonBackPic_CircledQuestionMark,
-        .backPicSize = MON_COORDS_SIZE(40, 40),
-        .backPicYOffset = 12,
-        .backAnimId = BACK_ANIM_NONE,
-        .palette = gMonPalette_CircledQuestionMark,
-        .shinyPalette = gMonShinyPalette_CircledQuestionMark,
-        .iconSprite = gMonIcon_QuestionMark,
-        .iconPalIndex = 0,
-        .pokemonJumpType = PKMN_JUMP_TYPE_NONE,
-        FOOTPRINT(QuestionMark)
-        SHADOW(-1, 0, SHADOW_SIZE_M)
-    #if OW_POKEMON_OBJECT_EVENTS
-        .overworldData = {
-            .tileTag = TAG_NONE,
-            .paletteTag = OBJ_EVENT_PAL_TAG_SUBSTITUTE,
-            .reflectionPaletteTag = OBJ_EVENT_PAL_TAG_NONE,
-            .size = 512,
-            .width = 32,
-            .height = 32,
-            .paletteSlot = PALSLOT_NPC_1,
-            .shadowSize = SHADOW_SIZE_M,
-            .inanimate = FALSE,
-            .compressed = COMP,
-            .tracks = TRACKS_FOOT,
-            .oam = &gObjectEventBaseOam_32x32,
-            .subspriteTables = sOamTables_32x32,
-            .anims = sAnimTable_Following,
-            .images = sPicTable_Substitute,
-            .affineAnims = gDummySpriteAffineAnimTable,
-    #endif
+        [SPECIES_NONE] = {
+            .speciesName = _("??????????"),
+            .cryId = CRY_NONE,
+            .natDexNum = NATIONAL_DEX_NONE,
+            .categoryName = _("Unknown"),
+            .height = 0,
+            .weight = 0,
+            .description = gFallbackPokedexText,
+            .pokemonScale = 256,
+            .pokemonOffset = 0,
+            .trainerScale = 256,
+            .trainerOffset = 0,
+            .frontPic = gMonFrontPic_CircledQuestionMark,
+            .frontPicSize = MON_COORDS_SIZE(40, 40),
+            .frontPicYOffset = 12,
+            .frontAnimFrames = sAnims_TwoFramePlaceHolder,
+            .frontAnimId = ANIM_V_SQUISH_AND_BOUNCE,
+            .backPic = gMonBackPic_CircledQuestionMark,
+            .backPicSize = MON_COORDS_SIZE(40, 40),
+            .backPicYOffset = 12,
+            .backAnimId = BACK_ANIM_NONE,
+            .palette = gMonPalette_CircledQuestionMark,
+            .shinyPalette = gMonShinyPalette_CircledQuestionMark,
+            .iconSprite = gMonIcon_QuestionMark,
+            .iconPalIndex = 0,
+            .pokemonJumpType = PKMN_JUMP_TYPE_NONE,
+            FOOTPRINT(QuestionMark)
+                SHADOW(-1, 0, SHADOW_SIZE_M)
+#if OW_POKEMON_OBJECT_EVENTS
+                    .overworldData = {
+                .tileTag = TAG_NONE,
+                .paletteTag = OBJ_EVENT_PAL_TAG_SUBSTITUTE,
+                .reflectionPaletteTag = OBJ_EVENT_PAL_TAG_NONE,
+                .size = 512,
+                .width = 32,
+                .height = 32,
+                .paletteSlot = PALSLOT_NPC_1,
+                .shadowSize = SHADOW_SIZE_M,
+                .inanimate = FALSE,
+                .compressed = COMP,
+                .tracks = TRACKS_FOOT,
+                .oam = &gObjectEventBaseOam_32x32,
+                .subspriteTables = sOamTables_32x32,
+                .anims = sAnimTable_Following,
+                .images = sPicTable_Substitute,
+                .affineAnims = gDummySpriteAffineAnimTable,
+            },
+#endif
             .teachableLearnset = sNoneTeachableLearnset,
             .levelUpLearnset = sNoneLevelUpLearnset,
             .eggMoveLearnset = sNoneEggMoveLearnset,
-    },
+        },
 
-    #include "species_info/gen_1_families.h"
-    #include "species_info/gen_2_families.h"
-    #include "species_info/gen_3_families.h"
-    #include "species_info/gen_4_families.h"
-    #include "species_info/gen_5_families.h"
-    #include "species_info/gen_6_families.h"
-    #include "species_info/gen_7_families.h"
-    #include "species_info/gen_8_families.h"
-    #include "species_info/gen_9_families.h"
+#include "species_info/gen_1_families.h"
+#include "species_info/gen_2_families.h"
+#include "species_info/gen_3_families.h"
+#include "species_info/gen_4_families.h"
+#include "species_info/gen_5_families.h"
+#include "species_info/gen_6_families.h"
+#include "species_info/gen_7_families.h"
+#include "species_info/gen_8_families.h"
+#include "species_info/gen_9_families.h"
 
         [SPECIES_EGG] = {
             .frontPic = gMonFrontPic_Egg,
@@ -210,15 +212,7 @@ const struct SpeciesInfo gSpeciesInfo[] =
             .frontPic = gMonFrontPic_SpindaDrunken,
             .frontPicSize = MON_COORDS_SIZE(48, 64),
             .frontPicYOffset = 2,
-            .frontAnimFrames = ANIM_FRAMES(
-                ANIMCMD_FRAME(0, 20),
-                ANIMCMD_FRAME(1, 5), 
-                ANIMCMD_FRAME(0, 20),
-                ANIMCMD_FRAME(1, 5), 
-                ANIMCMD_FRAME(0, 5), 
-                ANIMCMD_FRAME(1, 5), 
-                ANIMCMD_FRAME(0, 20),
-            ),
+            .frontAnimFrames = ANIM_FRAMES(ANIMCMD_FRAME(0, 20), ANIMCMD_FRAME(1, 5), ANIMCMD_FRAME(0, 20), ANIMCMD_FRAME(1, 5), ANIMCMD_FRAME(0, 5), ANIMCMD_FRAME(1, 5), ANIMCMD_FRAME(0, 20), ),
             .frontAnimId = ANIM_FOUR_PETAL,
             .backPic = gMonBackPic_Spinda,
             .backPicSize = MON_COORDS_SIZE(56, 56),

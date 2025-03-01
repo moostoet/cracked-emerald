@@ -25130,7 +25130,7 @@ F_TRAINER_FEMALE |
                 MOVE_TRICK_ROOM,
                 MOVE_EXTRASENSORY,
                 MOVE_HYPNOSIS,
-                MOVE_LIGHT_SCREEN,
+                MOVE_GYRO_BALL,
             },
             },
             {

@@ -297,7 +297,7 @@ RustboroCity_PokemonSchool_Text_OlliePostBattle:
     .string "weak become really strong with it.$"
 
 RustboroCity_PokemonSchool_Text_HarryIntro:
-    .string "My parents bought me the rarest ICE-type\n"
+    .string "My parents got me the rarest ICE-type\n"
     .string "POKéMON from the coldest regions!\p"
     .string "Let me show you how elegant yet\n"
     .string "powerful a hail team can be!$"
@@ -401,18 +401,203 @@ RustboroCity_PokemonSchool_Text_ScottMetAlreadyStoneBadge:
 	.string "you in battle.\p"
 	.string "It's hard to tell what you're like as\n"
 	.string "a TRAINER from a LEAGUE BADGE.$"
+
+RustboroCity_PokemonSchool_Text_LassIntro:  
+    .string "My big brother taught me the best way\n"  
+    .string "to battle: defense and patience!\p"  
+    .string "Think you have what it takes to\n"  
+    .string "outlast my tough POKéMON?$"
+
+RustboroCity_PokemonSchool_Text_LassDefeat:  
+    .string "Oh no! You broke through my defenses\n"  
+    .string "after all!$"
+
+RustboroCity_PokemonSchool_Text_LassPostBattle:  
+    .string "Using bulky and defensive POKéMON\n"  
+    .string "can be really annoying, can't it?\p"  
+    .string "My big brother says battles aren't only\n"  
+    .string "about power, but about strategy too.\p"  
+    .string "Maybe you'll try a defensive team\n"  
+    .string "someday?$"
+
+RustboroCity_PokemonSchool_Text_TeacherIntro:
+    .string "Welcome! I'm the head teacher here at\n"
+    .string "the POKéMON SCHOOL.\p"
+    .string "You look like you're eager to\n"
+    .string "improve your battling skills.\p"
+    .string "Tell you what-my top three students here\n"
+    .string "are quite talented trainers with unique\l"
+    .string "strategies.\p"
+    .string "If you can defeat all three of them,\n"
+    .string "I'll reward your efforts with a rare\l"
+    .string "and special POKéMON: an EEVEE!$"
+
+RustboroCity_PokemonSchool_Text_TeacherNotYetDone:
+    .string "You're doing great, but remember,\n"
+    .string "you need to defeat all three of my\l"
+    .string "top students first.\p"
+    .string "Keep going-the EEVEE awaits!$"
+
+RustboroCity_PokemonSchool_Text_TeacherReadyForFinalExam:
+    .string "Outstanding! You've defeated my three\n"
+    .string "strongest students.\p"
+    .string "But before I entrust this EEVEE to you,\n"
+    .string "I'd like to test your skills myself.\p"
+    .string "Consider this your final exam. Let's\n"
+    .string "see how much you've learned!$"
+
+RustboroCity_PokemonSchool_Text_TeacherDefeat:
+    .string "Haha! Incredible!\n"
+    .string "I see now your potential surpasses\l"
+    .string "even my best students.$"
+
+RustboroCity_PokemonSchool_Text_TeacherGiveEevee:
+    .string "As promised, this EEVEE is yours.\n"
+    .string "It has remarkable potential and can\l"
+    .string "evolve in various ways.\p"
+    .string "How you nurture and train it will\n"
+    .string "determine the POKéMON it becomes.\p"
+    .string "May your journey together be exciting\n"
+    .string "and educational!$"
+
+RustboroCity_PokemonSchool_Text_TeacherPostObtainEevee:
+    .string "How is your EEVEE doing? It's a special\n"
+    .string "POKéMON with immense potential.\p"
+    .string "Remember, learning and growing never\n"
+    .string "stop-for trainers or for teachers!\p"
+    .string "Come back anytime you'd like to test\n"
+    .string "your knowledge again!$"
+
+RustboroCity_PokemonSchool_Text_TeacherPlayerHasBadge:
+	.string "Oh my! I see you already have the\n"
+	.string "STONE BADGE from ROXANNE.\p"
+	.string "You're clearly too experienced to\n"
+	.string "need lessons from our school.\p"
+	.string "While I'd still offer you EEVEE for\n"
+	.string "defeating my students, a trainer of\l"
+	.string "your caliber probably has encountered\l"
+	.string "many rare POKéMON already.\p"
+	.string "Feel free to observe our classes\n"
+	.string "anytime, though!$"
 `
+
+text PokemonSchool_Text_NoRoomForEevee { 
+    "Hohoho! Seems your POKéMON team\n"
+    "is already full!\p"
+    "Come back when you have room!"
+}
+
+text PokemonSchool_Text_ReceivedEevee {
+    "{PLAYER} received EEVEE\n"
+    "from the teacher!"
+}
+
+script Count_TrainersDefeated {
+	setvar(VAR_0x8000, 0)
+	if (defeated(TRAINER_OLLIE_SCHOOL)) {
+		addvar(VAR_0x8000, 1)
+	}
+	if (defeated(TRAINER_HARRY_SCHOOL)) {
+		addvar(VAR_0x8000, 1)
+	}
+	if (defeated(TRAINER_FIONA_SCHOOL)) {
+		addvar(VAR_0x8000, 1)
+	}
+	return
+}
 
 script RustboroCity_PokemonSchool_EventScript_Teacher {
     lock
     faceplayer
+
+	if (flag(FLAG_BADGE01_GET)) {
+		msgbox(RustboroCity_PokemonSchool_Text_TeacherPlayerHasBadge, MSGBOX_DEFAULT)
+		release
+		end
+	}
+
     if (flag(FLAG_RECEIVED_QUICK_CLAW)) {
-        msgbox(RustboroCity_PokemonSchool_Text_OlliePostBattle, MSGBOX_DEFAULT)
+		msgbox(RustboroCity_PokemonSchool_Text_TeacherPostObtainEevee, MSGBOX_DEFAULT)
+		release
+		end
     } else {
-        msgbox(RustboroCity_PokemonSchool_Text_OlliePostBattle, MSGBOX_DEFAULT)
+		call(Count_TrainersDefeated)
+		if (var(VAR_0x8000) == 3) {
+			msgbox(RustboroCity_PokemonSchool_Text_TeacherReadyForFinalExam, MSGBOX_DEFAULT)
+			trainerbattle_no_intro(TRAINER_WILSON_SCHOOL, RustboroCity_PokemonSchool_Text_TeacherDefeat)
+			msgbox(RustboroCity_PokemonSchool_Text_TeacherGiveEevee, MSGBOX_DEFAULT)
+			call(GiveEevee)
+		} else {
+			if (var(VAR_0x8000) > 0) {
+				msgbox(RustboroCity_PokemonSchool_Text_TeacherNotYetDone, MSGBOX_DEFAULT)
+			} else {
+				msgbox(RustboroCity_PokemonSchool_Text_TeacherIntro, MSGBOX_DEFAULT)
+			}
+			release
+			end
+		}
     }
     release
     end
+}
+
+script GiveEevee {
+	givemon(SPECIES_EEVEE, 15, ITEM_SILK_SCARF, ITEM_GREAT_BALL)
+	if (var(VAR_RESULT) == 0) {
+		goto(GiveEevee_Party)
+	} elif (var(VAR_RESULT) == 1) {
+		goto(GiveEevee_PC)
+	} else {
+		msgbox(PokemonSchool_Text_NoRoomForEevee, MSGBOX_DEFAULT)
+		release
+		end
+	}
+	release
+	end
+}
+
+script GiveEevee_Party {
+	playfanfare(MUS_LEVEL_UP)
+	message(PokemonSchool_Text_ReceivedEevee)
+	waitmessage
+	waitfanfare
+
+	bufferspeciesname(STR_VAR_1, SPECIES_EEVEE)
+	msgbox(gText_NicknameThisPokemon, MSGBOX_YESNO)
+	if (var(VAR_RESULT) == NO) {
+		setflag(FLAG_RECEIVED_QUICK_CLAW)
+		release
+		end
+	} else {
+		setvar(VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_EEVEE)
+		call(Common_EventScript_GetGiftMonPartySlot)
+		call(Common_EventScript_NameReceivedPartyMon)
+		setflag(FLAG_RECEIVED_QUICK_CLAW)
+		release
+		end
+	}
+}
+
+script GiveEevee_PC {
+	playfanfare(MUS_LEVEL_UP)
+	message(PokemonSchool_Text_ReceivedEevee)
+	waitmessage
+	waitfanfare
+	
+	bufferspeciesname(STR_VAR_1, SPECIES_EEVEE)
+	msgbox(gText_NicknameThisPokemon, MSGBOX_YESNO)
+	if (var(VAR_RESULT) == NO) {
+		setflag(FLAG_RECEIVED_QUICK_CLAW)
+		release
+		end
+	} else {
+		setvar(VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_EEVEE)
+		call(Common_EventScript_NameReceivedBoxMon)
+		call(Common_EventScript_TransferredToPC)
+		setflag(FLAG_RECEIVED_QUICK_CLAW)
+		release
+		end
+	}
 }
 
 script RustboroCity_PokemonSchool_EventScript_SchoolKid_Ollie {
@@ -425,6 +610,13 @@ script RustboroCity_PokemonSchool_EventScript_SchoolKid_Ollie {
 script RustboroCity_PokemonSchool_EventScript_RichBoy_Harry {
 	trainerbattle_single(TRAINER_HARRY_SCHOOL, RustboroCity_PokemonSchool_Text_HarryIntro, RustboroCity_PokemonSchool_Text_HarryDefeat)
 	msgbox(RustboroCity_PokemonSchool_Text_HarryPostBattle, MSGBOX_DEFAULT)
+	release
+	end
+}
+
+script RustboroCity_PokemonSchool_EventScript_Lass_Fiona {
+	trainerbattle_single(TRAINER_FIONA_SCHOOL, RustboroCity_PokemonSchool_Text_LassIntro, RustboroCity_PokemonSchool_Text_LassDefeat)
+	msgbox(RustboroCity_PokemonSchool_Text_LassPostBattle, MSGBOX_DEFAULT)
 	release
 	end
 }

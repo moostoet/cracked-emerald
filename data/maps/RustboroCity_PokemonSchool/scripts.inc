@@ -597,7 +597,7 @@ RustboroCity_PokemonSchool_Text_OlliePostBattle:
 # 299 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 RustboroCity_PokemonSchool_Text_HarryIntro:
 # 300 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-    .string "My parents bought me the rarest ICE-type\n"
+    .string "My parents got me the rarest ICE-type\n"
 # 301 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
     .string "POKéMON from the coldest regions!\p"
 # 302 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
@@ -804,43 +804,396 @@ RustboroCity_PokemonSchool_Text_ScottMetAlreadyStoneBadge:
 	.string "It's hard to tell what you're like as\n"
 # 403 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	.string "a TRAINER from a LEAGUE BADGE.$"
+# 404 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+
+# 405 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+RustboroCity_PokemonSchool_Text_LassIntro:  
+# 406 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "My big brother taught me the best way\n"  
+# 407 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "to battle: defense and patience!\p"  
+# 408 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Think you have what it takes to\n"  
+# 409 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "outlast my tough POKéMON?$"
+# 410 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+
+# 411 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+RustboroCity_PokemonSchool_Text_LassDefeat:  
+# 412 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Oh no! You broke through my defenses\n"  
+# 413 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "after all!$"
+# 414 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+
+# 415 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+RustboroCity_PokemonSchool_Text_LassPostBattle:  
+# 416 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Using bulky and defensive POKéMON\n"  
+# 417 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "can be really annoying, can't it?\p"  
+# 418 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "My big brother says battles aren't only\n"  
+# 419 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "about power, but about strategy too.\p"  
+# 420 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Maybe you'll try a defensive team\n"  
+# 421 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "someday?$"
+# 422 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+
+# 423 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+RustboroCity_PokemonSchool_Text_TeacherIntro:
+# 424 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Welcome! I'm the head teacher here at\n"
+# 425 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "the POKéMON SCHOOL.\p"
+# 426 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "You look like you're eager to\n"
+# 427 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "improve your battling skills.\p"
+# 428 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Tell you what-my top three students here\n"
+# 429 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "are quite talented trainers with unique\l"
+# 430 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "strategies.\p"
+# 431 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "If you can defeat all three of them,\n"
+# 432 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "I'll reward your efforts with a rare\l"
+# 433 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "and special POKéMON: an EEVEE!$"
+# 434 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+
+# 435 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+RustboroCity_PokemonSchool_Text_TeacherNotYetDone:
+# 436 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "You're doing great, but remember,\n"
+# 437 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "you need to defeat all three of my\l"
+# 438 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "top students first.\p"
+# 439 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Keep going-the EEVEE awaits!$"
+# 440 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+
+# 441 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+RustboroCity_PokemonSchool_Text_TeacherReadyForFinalExam:
+# 442 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Outstanding! You've defeated my three\n"
+# 443 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "strongest students.\p"
+# 444 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "But before I entrust this EEVEE to you,\n"
+# 445 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "I'd like to test your skills myself.\p"
+# 446 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Consider this your final exam. Let's\n"
+# 447 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "see how much you've learned!$"
+# 448 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+
+# 449 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+RustboroCity_PokemonSchool_Text_TeacherDefeat:
+# 450 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Haha! Incredible!\n"
+# 451 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "I see now your potential surpasses\l"
+# 452 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "even my best students.$"
+# 453 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+
+# 454 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+RustboroCity_PokemonSchool_Text_TeacherGiveEevee:
+# 455 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "As promised, this EEVEE is yours.\n"
+# 456 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "It has remarkable potential and can\l"
+# 457 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "evolve in various ways.\p"
+# 458 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "How you nurture and train it will\n"
+# 459 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "determine the POKéMON it becomes.\p"
+# 460 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "May your journey together be exciting\n"
+# 461 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "and educational!$"
+# 462 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+
+# 463 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+RustboroCity_PokemonSchool_Text_TeacherPostObtainEevee:
+# 464 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "How is your EEVEE doing? It's a special\n"
+# 465 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "POKéMON with immense potential.\p"
+# 466 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Remember, learning and growing never\n"
+# 467 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "stop-for trainers or for teachers!\p"
+# 468 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "Come back anytime you'd like to test\n"
+# 469 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+    .string "your knowledge again!$"
+# 470 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+
+# 471 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+RustboroCity_PokemonSchool_Text_TeacherPlayerHasBadge:
+# 472 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "Oh my! I see you already have the\n"
+# 473 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "STONE BADGE from ROXANNE.\p"
+# 474 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "You're clearly too experienced to\n"
+# 475 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "need lessons from our school.\p"
+# 476 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "While I'd still offer you EEVEE for\n"
+# 477 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "defeating my students, a trainer of\l"
+# 478 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "your caliber probably has encountered\l"
+# 479 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "many rare POKéMON already.\p"
+# 480 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "Feel free to observe our classes\n"
+# 481 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "anytime, though!$"
+
+Count_TrainersDefeated::
+# 496 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	setvar VAR_0x8000, 0
+# 497 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	checktrainerflag TRAINER_OLLIE_SCHOOL
+	goto_if 1, Count_TrainersDefeated_2
+Count_TrainersDefeated_1:
+# 500 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	checktrainerflag TRAINER_HARRY_SCHOOL
+	goto_if 1, Count_TrainersDefeated_5
+Count_TrainersDefeated_4:
+# 503 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	checktrainerflag TRAINER_FIONA_SCHOOL
+	goto_if 1, Count_TrainersDefeated_8
+Count_TrainersDefeated_7:
+	return
+
+Count_TrainersDefeated_2:
+# 498 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	addvar VAR_0x8000, 1
+	goto Count_TrainersDefeated_1
+
+Count_TrainersDefeated_5:
+# 501 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	addvar VAR_0x8000, 1
+	goto Count_TrainersDefeated_4
+
+Count_TrainersDefeated_8:
+# 504 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	addvar VAR_0x8000, 1
+	goto Count_TrainersDefeated_7
+
 
 RustboroCity_PokemonSchool_EventScript_Teacher::
-# 407 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 510 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	lock
-# 408 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 511 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	faceplayer
-# 409 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	goto_if_set FLAG_RECEIVED_QUICK_CLAW, RustboroCity_PokemonSchool_EventScript_Teacher_2
-# 412 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	msgbox RustboroCity_PokemonSchool_Text_OlliePostBattle, MSGBOX_DEFAULT
-RustboroCity_PokemonSchool_EventScript_Teacher_1:
-# 414 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 513 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	goto_if_set FLAG_BADGE01_GET, RustboroCity_PokemonSchool_EventScript_Teacher_2
+# 519 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	goto_if_set FLAG_RECEIVED_QUICK_CLAW, RustboroCity_PokemonSchool_EventScript_Teacher_5
+# 524 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	call Count_TrainersDefeated
+# 525 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	compare VAR_0x8000, 3
+	goto_if_eq RustboroCity_PokemonSchool_EventScript_Teacher_8
+# 531 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	compare VAR_0x8000, 0
+	goto_if_gt RustboroCity_PokemonSchool_EventScript_Teacher_12
+# 534 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox RustboroCity_PokemonSchool_Text_TeacherIntro, MSGBOX_DEFAULT
+RustboroCity_PokemonSchool_EventScript_Teacher_11:
+# 536 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	release
 	end
 
 RustboroCity_PokemonSchool_EventScript_Teacher_2:
-# 410 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	msgbox RustboroCity_PokemonSchool_Text_OlliePostBattle, MSGBOX_DEFAULT
-	goto RustboroCity_PokemonSchool_EventScript_Teacher_1
+# 514 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox RustboroCity_PokemonSchool_Text_TeacherPlayerHasBadge, MSGBOX_DEFAULT
+# 515 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	release
+	end
+
+RustboroCity_PokemonSchool_EventScript_Teacher_4:
+# 540 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	release
+	end
+
+RustboroCity_PokemonSchool_EventScript_Teacher_5:
+# 520 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox RustboroCity_PokemonSchool_Text_TeacherPostObtainEevee, MSGBOX_DEFAULT
+# 521 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	release
+	end
+
+RustboroCity_PokemonSchool_EventScript_Teacher_8:
+# 526 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox RustboroCity_PokemonSchool_Text_TeacherReadyForFinalExam, MSGBOX_DEFAULT
+# 527 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	trainerbattle_no_intro TRAINER_WILSON_SCHOOL, RustboroCity_PokemonSchool_Text_TeacherDefeat
+# 528 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox RustboroCity_PokemonSchool_Text_TeacherGiveEevee, MSGBOX_DEFAULT
+# 529 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	call GiveEevee
+	goto RustboroCity_PokemonSchool_EventScript_Teacher_4
+
+RustboroCity_PokemonSchool_EventScript_Teacher_12:
+# 532 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox RustboroCity_PokemonSchool_Text_TeacherNotYetDone, MSGBOX_DEFAULT
+	goto RustboroCity_PokemonSchool_EventScript_Teacher_11
+
+
+GiveEevee::
+# 545 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	givemon SPECIES_EEVEE, 15, ITEM_SILK_SCARF, ITEM_GREAT_BALL
+# 546 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	compare VAR_RESULT, 0
+	goto_if_eq GiveEevee_2
+# 548 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	compare VAR_RESULT, 1
+	goto_if_eq GiveEevee_3
+# 551 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox PokemonSchool_Text_NoRoomForEevee, MSGBOX_DEFAULT
+# 552 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	release
+	end
+
+GiveEevee_1:
+# 555 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	release
+	end
+
+GiveEevee_2:
+# 547 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	goto GiveEevee_Party
+	goto GiveEevee_1
+
+GiveEevee_3:
+# 549 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	goto GiveEevee_PC
+	goto GiveEevee_1
+
+
+GiveEevee_Party::
+# 560 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	playfanfare MUS_LEVEL_UP
+# 561 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	message PokemonSchool_Text_ReceivedEevee
+# 562 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	waitmessage
+# 563 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	waitfanfare
+# 565 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	bufferspeciesname STR_VAR_1, SPECIES_EEVEE
+# 566 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox gText_NicknameThisPokemon, MSGBOX_YESNO
+# 567 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq GiveEevee_Party_1
+# 572 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_EEVEE
+# 573 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	call Common_EventScript_GetGiftMonPartySlot
+# 574 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	call Common_EventScript_NameReceivedPartyMon
+# 575 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	setflag FLAG_RECEIVED_QUICK_CLAW
+# 576 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	release
+	end
+
+GiveEevee_Party_1:
+# 568 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	setflag FLAG_RECEIVED_QUICK_CLAW
+# 569 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	release
+	end
+
+
+GiveEevee_PC::
+# 582 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	playfanfare MUS_LEVEL_UP
+# 583 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	message PokemonSchool_Text_ReceivedEevee
+# 584 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	waitmessage
+# 585 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	waitfanfare
+# 587 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	bufferspeciesname STR_VAR_1, SPECIES_EEVEE
+# 588 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox gText_NicknameThisPokemon, MSGBOX_YESNO
+# 589 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq GiveEevee_PC_1
+# 594 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	setvar VAR_TEMP_TRANSFERRED_SPECIES, SPECIES_EEVEE
+# 595 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	call Common_EventScript_NameReceivedBoxMon
+# 596 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	call Common_EventScript_TransferredToPC
+# 597 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	setflag FLAG_RECEIVED_QUICK_CLAW
+# 598 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	release
+	end
+
+GiveEevee_PC_1:
+# 590 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	setflag FLAG_RECEIVED_QUICK_CLAW
+# 591 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	release
+	end
 
 
 RustboroCity_PokemonSchool_EventScript_SchoolKid_Ollie::
-# 419 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 604 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	trainerbattle_single TRAINER_OLLIE_SCHOOL, RustboroCity_PokemonSchool_Text_OllieIntro, RustboroCity_PokemonSchool_Text_OllieDefeat
-# 420 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 605 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox RustboroCity_PokemonSchool_Text_OlliePostBattle, MSGBOX_DEFAULT
-# 421 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 606 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	release
 	end
 
 
 RustboroCity_PokemonSchool_EventScript_RichBoy_Harry::
-# 426 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 611 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	trainerbattle_single TRAINER_HARRY_SCHOOL, RustboroCity_PokemonSchool_Text_HarryIntro, RustboroCity_PokemonSchool_Text_HarryDefeat
-# 427 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 612 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox RustboroCity_PokemonSchool_Text_HarryPostBattle, MSGBOX_DEFAULT
-# 428 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 613 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	release
 	end
 
+
+RustboroCity_PokemonSchool_EventScript_Lass_Fiona::
+# 618 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	trainerbattle_single TRAINER_FIONA_SCHOOL, RustboroCity_PokemonSchool_Text_LassIntro, RustboroCity_PokemonSchool_Text_LassDefeat
+# 619 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox RustboroCity_PokemonSchool_Text_LassPostBattle, MSGBOX_DEFAULT
+# 620 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	release
+	end
+
+
+PokemonSchool_Text_NoRoomForEevee::
+# 484 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "Hohoho! Seems your POKéMON team\n"
+	.string "is already full!\p"
+	.string "Come back when you have room!$"
+
+PokemonSchool_Text_ReceivedEevee::
+# 490 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "{PLAYER} received EEVEE\n"
+	.string "from the teacher!$"

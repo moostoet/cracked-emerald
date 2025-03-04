@@ -3315,6 +3315,13 @@ static u32 AI_CalcHoldEffectMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
     }
     break;
+    case HOLD_EFFECT_THROAT_SPRAY:
+    {
+        if (IsSoundMove(move)) {
+            ADJUST_SCORE(GOOD_EFFECT);
+        }
+        break;
+    }
     }
 
     return score;

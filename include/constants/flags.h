@@ -1511,8 +1511,8 @@
 #define FLAG_WALLY_PETALBURG                        (SYSTEM_FLAGS + 0x87) // Unused Flag
 #define FLAG_DEWFORD_DEFEATED                       (SYSTEM_FLAGS + 0x88) // Unused Flag
 #define FLAG_RIVAL_RUST_DEFEATED                    (SYSTEM_FLAGS + 0x89) // Unused Flag
-#define FLAG_UNUSED_0x8EA                           (SYSTEM_FLAGS + 0x8A) // Unused Flag
-#define FLAG_UNUSED_0x8EB                           (SYSTEM_FLAGS + 0x8B) // Unused Flag
+#define FLAG_ARCHIE_OCEANIC_DEFEATED                (SYSTEM_FLAGS + 0x8A) // Unused Flag
+#define FLAG_COLRESS_NM_DEFEATED                    (SYSTEM_FLAGS + 0x8B) // Unused Flag
 #define FLAG_UNUSED_0x8EC                           (SYSTEM_FLAGS + 0x8C) // Unused Flag
 #define FLAG_UNUSED_0x8ED                           (SYSTEM_FLAGS + 0x8D) // Unused Flag
 #define FLAG_UNUSED_0x8EE                           (SYSTEM_FLAGS + 0x8E) // Unused Flag

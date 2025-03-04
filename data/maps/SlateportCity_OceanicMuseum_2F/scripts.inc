@@ -60,6 +60,7 @@ SlateportCity_OceanicMuseum_2F_EventScript_CaptStern::
 	msgbox SlateportCity_OceanicMuseum_2F_Text_ArchiePreBattle, MSGBOX_DEFAULT
 	trainerbattle_no_intro TRAINER_ARCHIE_OCEANIC, SlateportCity_OceanicMuseum_2F_Text_ArchieDefeat
 	msgbox SlateportCity_OceanicMuseum_2F_Text_ArchiePostBattle, MSGBOX_DEFAULT
+	setflag FLAG_ARCHIE_OCEANIC_DEFEATED
 	closemessage
 	savebgm MUS_DUMMY
 	fadedefaultbgm

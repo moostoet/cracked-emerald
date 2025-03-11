@@ -12656,14 +12656,14 @@ F_TRAINER_FEMALE |
             },
             {
 #line 5126
-            .species = SPECIES_PAWMO,
+            .species = SPECIES_SPINDA_DRUNKEN,
             .gender = TRAINER_MON_RANDOM_GENDER,
 #line 5126
-            .heldItem = ITEM_PUNCHING_GLOVE,
+            .heldItem = ITEM_LUM_BERRY,
 #line 5130
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 5127
-            .ability = ABILITY_IRON_FIST,
+            .ability = ABILITY_JUMBLED,
 #line 5128
             .lvl = 25,
 #line 5129
@@ -12671,10 +12671,10 @@ F_TRAINER_FEMALE |
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
 #line 5130
-                MOVE_KNOCK_OFF,
-                MOVE_THUNDER_PUNCH,
-                MOVE_DRAIN_PUNCH,
-                MOVE_ICE_PUNCH,
+                MOVE_DYNAMIC_PUNCH,
+                MOVE_MEGA_KICK,
+                MOVE_SING,
+                MOVE_STONE_EDGE,
             },
             },
             {
@@ -12693,7 +12693,7 @@ F_TRAINER_FEMALE |
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
 #line 5138
-                MOVE_FACADE,
+                MOVE_FAKE_OUT,
                 MOVE_DRAIN_PUNCH,
                 MOVE_KNOCK_OFF,
                 MOVE_BULLET_PUNCH,
@@ -16857,7 +16857,7 @@ F_TRAINER_FEMALE |
 #line 6821
             .iv = TRAINER_PARTY_IVS(31, 0, 31, 31, 31, 31),
 #line 6818
-            .ability = ABILITY_WATER_ABSORB,
+            .ability = ABILITY_DRIZZLE,
 #line 6819
             .lvl = 23,
 #line 6820

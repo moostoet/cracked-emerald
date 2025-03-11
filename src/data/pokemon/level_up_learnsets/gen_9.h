@@ -8257,7 +8257,7 @@ static const struct LevelUpMove sIllumiseLevelUpLearnset[] = {
 #endif //P_FAMILY_VOLBEAT_ILLUMISE
 
 #if P_FAMILY_ROSELIA
-#if P_GEN_4_CROSS_EVOSDF
+#if P_GEN_4_CROSS_EVOS
 static const struct LevelUpMove sBudewLevelUpLearnset[] = {
     LEVEL_UP_MOVE( 1, MOVE_ABSORB),
     LEVEL_UP_MOVE( 1, MOVE_GROWTH),

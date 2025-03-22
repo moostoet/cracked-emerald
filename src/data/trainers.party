@@ -10162,7 +10162,7 @@ Munchlax @ Leftovers
 Ability: Thick Fat  
 Level: 16    
 Adamant Nature  
-- Curse  
+- Rock Throw  
 - Body Slam  
 - Zen Headbutt  
 - Fire Punch  
@@ -10287,19 +10287,56 @@ Pic: Brendan
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Basic Trainer
+AI: Smart Trainer
+Mugshot: Purple
 
-Slugma
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Life Orb  
+Ability: Vital Spirit  
+Level: 34    
+Jolly Nature  
+- Return  
+- Drain Punch  
+- Play Rough  
+- Poison Jab  
 
-Wingull
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Blaziken @ Throat Spray  
+Ability: Speed Boost  
+Level: 34    
+Modest Nature  
+IVs: 0 Atk  
+- Roar  
+- Fire Blast  
+- Aura Sphere  
+- Scorching Sands  
 
-Grovyle
-Level: 20
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+Gholdengo @ Wise Glasses  
+Ability: Good as Gold  
+Level: 35    
+Modest Nature  
+IVs: 0 Atk  
+- Flash Cannon  
+- Shadow Ball  
+- Recover  
+- Confuse Ray  
+
+Honchkrow @ Scope Lens  
+Ability: Super Luck  
+Level: 35   
+Adamant Nature  
+- Night Slash  
+- Drill Peck  
+- Roost  
+- Superpower  
+
+Serperior @ Assault Vest  
+Ability: nobleaura  
+Level: 36   
+Jolly Nature  
+IVs: 0 Atk  
+- Calm Mind  
+- Giga Drain  
+- Thunderbolt  
+- Earth Power  
 
 === TRAINER_BRENDAN_ROUTE_119_MUDKIP ===
 Name: BRENDAN
@@ -10345,19 +10382,53 @@ Pic: Brendan
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Basic Trainer
+AI: Smart Trainer
+Mugshot: Purple
 
-Wingull
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Life Orb  
+Ability: Vital Spirit  
+Level: 34   
+Jolly Nature  
+- Return  
+- Drain Punch  
+- Play Rough  
+- Poison Jab  
 
-Lombre
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Swampert @ Leftovers  
+Ability: Storm Drain  
+Level: 34  
+Adamant Nature  
+- Flip Turn  
+- Earthquake  
+- Rock Slide  
+- Waterfall  
 
-Combusken
-Level: 20
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+Bisharp @ Eviolite  
+Ability: Defiant  
+Level: 35    
+Adamant Nature  
+- Night Slash  
+- Iron Head  
+- Low Kick  
+- Psycho Cut  
+
+Staraptor @ Sitrus Berry  
+Ability: Reckless  
+Level: 35   
+Jolly Nature  
+- Submission  
+- Acrobatics  
+- Pursuit  
+- U-turn  
+
+Typhlosion @ Expert Belt  
+Ability: Adaptability  
+Level: 36   
+Hasty Nature  
+- Heat Wave  
+- Extrasensory  
+- Scorching Sands  
+- Thunder Punch  
 
 === TRAINER_BRENDAN_ROUTE_119_TREECKO ===
 Name: BRENDAN
@@ -10404,19 +10475,54 @@ Pic: Brendan
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Basic Trainer
+AI: Smart Trainer
+Mugshot: Purple
 
-Lombre
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Life Orb  
+Ability: Vital Spirit  
+Level: 34   
+Jolly Nature  
+- Return  
+- Drain Punch  
+- Play Rough  
+- Poison Jab  
 
-Slugma
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Sceptile @ Miracle Seed  
+Ability: Technician  
+Level: 34   
+Hasty Nature  
+- Dragon Breath  
+- Magical Leaf  
+- Vacuum Wave  
+- Iron Tail  
 
-Marshtomp
-Level: 20
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+Gliscor @ Toxic Orb  
+Ability: Poison Heal  
+Level: 34    
+Adamant Nature  
+- Roost  
+- Dig  
+- Fly  
+- Protect  
+
+Magnezone @ Air Balloon  
+Ability: Magnet Pull  
+Level: 35    
+Modest Nature  
+IVs: 0 Atk  
+- Flash Cannon  
+- Volt Switch  
+- Body Press  
+- Tri Attack  
+
+Quaquaval @ Expert Belt  
+Ability: Dazzling  
+Level: 36    
+Jolly Nature  
+- Aqua Step  
+- Brick Break  
+- Knock Off  
+- Ice Spinner  
 
 === TRAINER_BRENDAN_ROUTE_119_TORCHIC ===
 Name: BRENDAN
@@ -10463,19 +10569,56 @@ Pic: May
 Gender: Female
 Music: Female
 Double Battle: No
-AI: Basic Trainer
+AI: Smart Trainer
+Mugshot: Purple
 
-Wingull
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Life Orb  
+Ability: Vital Spirit  
+Level: 34    
+Jolly Nature  
+- Return  
+- Drain Punch  
+- Play Rough  
+- Poison Jab  
 
-Slugma
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Blaziken @ Throat Spray  
+Ability: Speed Boost  
+Level: 34    
+Modest Nature  
+IVs: 0 Atk  
+- Roar  
+- Fire Blast  
+- Aura Sphere  
+- Scorching Sands  
 
-Grovyle
-Level: 20
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+Gholdengo @ Wise Glasses  
+Ability: Good as Gold  
+Level: 35    
+Modest Nature  
+IVs: 0 Atk  
+- Flash Cannon  
+- Shadow Ball  
+- Recover  
+- Confuse Ray  
+
+Honchkrow @ Scope Lens  
+Ability: Super Luck  
+Level: 35   
+Adamant Nature  
+- Night Slash  
+- Drill Peck  
+- Roost  
+- Superpower  
+
+Serperior @ Assault Vest  
+Ability: nobleaura  
+Level: 36   
+Jolly Nature  
+IVs: 0 Atk  
+- Calm Mind  
+- Giga Drain  
+- Thunderbolt  
+- Earth Power
 
 === TRAINER_MAY_ROUTE_119_MUDKIP ===
 Name: MAY
@@ -10521,19 +10664,53 @@ Pic: May
 Gender: Female
 Music: Female
 Double Battle: No
-AI: Basic Trainer
+AI: Smart Trainer
+Mugshot: Purple
 
-Wingull
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Life Orb  
+Ability: Vital Spirit  
+Level: 34   
+Jolly Nature  
+- Return  
+- Drain Punch  
+- Play Rough  
+- Poison Jab  
 
-Lombre
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Swampert @ Leftovers  
+Ability: Storm Drain  
+Level: 34  
+Adamant Nature  
+- Flip Turn  
+- Earthquake  
+- Rock Slide  
+- Waterfall  
 
-Combusken
-Level: 20
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+Bisharp @ Eviolite  
+Ability: Defiant  
+Level: 35    
+Adamant Nature  
+- Night Slash  
+- Iron Head  
+- Low Kick  
+- Psycho Cut  
+
+Staraptor @ Sitrus Berry  
+Ability: Reckless  
+Level: 35   
+Jolly Nature  
+- Submission  
+- Acrobatics  
+- Pursuit  
+- U-turn  
+
+Typhlosion @ Expert Belt  
+Ability: Adaptability  
+Level: 36   
+Hasty Nature  
+- Heat Wave  
+- Extrasensory  
+- Scorching Sands  
+- Thunder Punch
 
 === TRAINER_MAY_ROUTE_119_TREECKO ===
 Name: MAY
@@ -10580,19 +10757,54 @@ Pic: May
 Gender: Female
 Music: Female
 Double Battle: No
-AI: Basic Trainer
+AI: Smart Trainer
+Mugshot: Purple
 
-Lombre
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Vigoroth @ Life Orb  
+Ability: Vital Spirit  
+Level: 34   
+Jolly Nature  
+- Return  
+- Drain Punch  
+- Play Rough  
+- Poison Jab  
 
-Slugma
-Level: 18
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Sceptile @ Miracle Seed  
+Ability: Technician  
+Level: 34   
+Hasty Nature  
+- Dragon Breath  
+- Magical Leaf  
+- Vacuum Wave  
+- Iron Tail  
 
-Marshtomp
-Level: 20
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+Gliscor @ Toxic Orb  
+Ability: Poison Heal  
+Level: 34    
+Adamant Nature  
+- Roost  
+- Dig  
+- Fly  
+- Protect  
+
+Magnezone @ Air Balloon  
+Ability: Magnet Pull  
+Level: 35    
+Modest Nature  
+IVs: 0 Atk  
+- Flash Cannon  
+- Volt Switch  
+- Body Press  
+- Tri Attack  
+
+Quaquaval @ Expert Belt  
+Ability: Dazzling  
+Level: 36    
+Jolly Nature  
+- Aqua Step  
+- Brick Break  
+- Knock Off  
+- Ice Spinner
 
 === TRAINER_MAY_ROUTE_119_TORCHIC ===
 Name: MAY
@@ -11912,7 +12124,7 @@ Adamant Nature
 - U-turn  
 
 Quaxwell @ Mystic Water  
-Ability: Torrent  
+Ability: Dazzling  
 Level: 23    
 Adamant Nature  
 - Aqua Jet  
@@ -15080,7 +15292,7 @@ Level: 18
 Jolly Nature  
 - Bug Bite  
 - Aqua Jet  
-- Rock Blast  
+- Rock Throw  
 - Hone Claws  
 
 === TRAINER_JOHNSON ===

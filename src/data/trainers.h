@@ -25330,7 +25330,7 @@ F_TRAINER_FEMALE |
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
 #line 10165
-                MOVE_CURSE,
+                MOVE_ROCK_THROW,
                 MOVE_BODY_SLAM,
                 MOVE_ZEN_HEADBUTT,
                 MOVE_FIRE_PUNCH,
@@ -29783,7 +29783,7 @@ F_TRAINER_FEMALE |
 #line 11918
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 11915
-            .ability = ABILITY_TORRENT,
+            .ability = ABILITY_DAZZLING,
 #line 11916
             .lvl = 23,
 #line 11917
@@ -37702,7 +37702,7 @@ F_TRAINER_FEMALE |
 #line 15081
                 MOVE_BUG_BITE,
                 MOVE_AQUA_JET,
-                MOVE_ROCK_BLAST,
+                MOVE_ROCK_THROW,
                 MOVE_HONE_CLAWS,
             },
             },

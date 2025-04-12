@@ -196,7 +196,6 @@ struct SpecialStatus
     u8 faintedHasReplacement:1;
     u8 emergencyExited:1;
     u8 afterYou:1;
-    u8 enduredDamage:1;
     u8 stormDrainRedirected:1;
     // End of byte
     u8 switchInAbilityDone:1;

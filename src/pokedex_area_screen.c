@@ -25,6 +25,7 @@
 #include "constants/region_map_sections.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "config/pokedex_plus_hgss.h"
 
 // There are two types of indicators for the area screen to show where a Pokémon can occur:
 // - Area glows, which highlight any of the maps in MAP_GROUP_TOWNS_AND_ROUTES that have the species.
@@ -920,7 +921,7 @@ static void Task_HandlePokedexAreaScreenInput(u8 taskId)
             ClearAreaWindowLabel(DEX_AREA_LABEL_AREA_UNKNOWN);
             RemoveAllWindowsOnBg(LABEL_WINDOW_BG);
         }
-            
+
         sPokedexAreaScreen->screenSwitchState[0] = gTasks[taskId].data[1];
         ResetPokedexAreaMapBg();
         DestroyTask(taskId);

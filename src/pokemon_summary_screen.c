@@ -1059,7 +1059,7 @@ static const struct CompressedSpriteSheet sMoveSelectorSpriteSheet =
     .size = 0x400,
     .tag = TAG_MOVE_SELECTOR
 };
-static const struct CompressedSpritePalette sMoveSelectorSpritePal =
+static const struct SpritePalette sMoveSelectorSpritePal =
 {
     .data = gSummaryMoveSelect_Pal,
     .tag = TAG_MOVE_SELECTOR
@@ -1138,7 +1138,7 @@ static const struct CompressedSpriteSheet sStatusIconsSpriteSheet =
     .size = 0x400,
     .tag = TAG_MON_STATUS
 };
-static const struct CompressedSpritePalette sStatusIconsSpritePalette =
+static const struct SpritePalette sStatusIconsSpritePalette =
 {
     .data = gStatusPal_Icons,
     .tag = TAG_MON_STATUS
@@ -1439,7 +1439,7 @@ static bool8 DecompressGraphics(void)
         sMonSummaryScreen->switchCounter++;
         break;
     case 6:
-        LoadCompressedPalette(gSummaryScreen_Pal, BG_PLTT_ID(0), 8 * PLTT_SIZE_4BPP);
+        LoadPalette(gSummaryScreen_Pal, BG_PLTT_ID(0), 8 * PLTT_SIZE_4BPP);
         LoadPalette(&gPPTextPalette, BG_PLTT_ID(8) + 1, PLTT_SIZEOF(16 - 1));
         sMonSummaryScreen->switchCounter++;
         break;
@@ -1456,15 +1456,15 @@ static bool8 DecompressGraphics(void)
         sMonSummaryScreen->switchCounter++;
         break;
     case 10:
-        LoadCompressedSpritePalette(&sStatusIconsSpritePalette);
+        LoadSpritePalette(&sStatusIconsSpritePalette);
         sMonSummaryScreen->switchCounter++;
         break;
     case 11:
-        LoadCompressedSpritePalette(&sMoveSelectorSpritePal);
+        LoadSpritePalette(&sMoveSelectorSpritePal);
         sMonSummaryScreen->switchCounter++;
         break;
     case 12:
-        LoadCompressedPalette(gMoveTypes_Pal, OBJ_PLTT_ID(13), 3 * PLTT_SIZE_4BPP);
+        LoadPalette(gMoveTypes_Pal, OBJ_PLTT_ID(13), 3 * PLTT_SIZE_4BPP);
         LoadCompressedSpriteSheet(&gSpriteSheet_CategoryIcons);
         LoadSpritePalette(&gSpritePal_CategoryIcons);
         sMonSummaryScreen->switchCounter = 0;
@@ -4308,7 +4308,11 @@ static void SetMoveTypeIcons(void)
         {
             type = GetMoveType(summary->moves[i]);
             if (P_SHOW_DYNAMIC_TYPES)
-                type = CheckDynamicMoveType(mon, summary->moves[i], 0);
+            {
+                enum MonState state = gMain.inBattle ? MON_IN_BATTLE : MON_OUTSIDE_BATTLE;
+                type = CheckDynamicMoveType(mon, sMonSummaryScreen->newMove, 0, state); // Bug: in battle, this only shows the dynamic type of battler in position 0
+            }
+
             SetTypeSpritePosAndPal(type, 85, 32 + (i * 16), i + SPRITE_ARR_ID_TYPE);
         }
         else
@@ -4337,7 +4341,10 @@ static void SetNewMoveTypeIcon(void)
     struct Pokemon *mon = &sMonSummaryScreen->currentMon;
 
     if (P_SHOW_DYNAMIC_TYPES)
-        type = CheckDynamicMoveType(mon, sMonSummaryScreen->newMove, 0);
+    {
+        enum MonState state = gMain.inBattle ? MON_IN_BATTLE : MON_OUTSIDE_BATTLE;
+        type = CheckDynamicMoveType(mon, sMonSummaryScreen->newMove, 0, state);  // Bug: in battle, this only shows the dynamic type of battler in position 0
+    }
 
     if (sMonSummaryScreen->newMove == MOVE_NONE)
     {
@@ -4411,7 +4418,7 @@ static u8 LoadMonGfxAndSprite(struct Pokemon *mon, s16 *state)
         (*state)++;
         return 0xFF;
     case 1:
-        LoadCompressedSpritePaletteWithTag(GetMonSpritePalFromSpeciesAndPersonality(summary->species2, summary->isShiny, summary->pid), summary->species2);
+        LoadSpritePaletteWithTag(GetMonSpritePalFromSpeciesAndPersonality(summary->species2, summary->isShiny, summary->pid), summary->species2);
         SetMultiuseSpriteTemplateToPokemon(summary->species2, B_POSITION_OPPONENT_LEFT);
         (*state)++;
         return 0xFF;

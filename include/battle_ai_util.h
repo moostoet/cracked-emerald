@@ -37,6 +37,8 @@ static inline bool32 IsMoveUnusable(u32 moveIndex, u32 move, u32 moveLimitations
         || moveLimitations & 1u << moveIndex;
 }
 
+typedef bool32 (*MoveFlag)(u32 move);
+
 bool32 AI_IsFaster(u32 battlerAi, u32 battlerDef, u32 move);
 bool32 AI_IsSlower(u32 battlerAi, u32 battlerDef, u32 move);
 bool32 AI_RandLessThan(u32 val);
@@ -132,7 +134,8 @@ bool32 HasMove(u32 battlerId, u32 move);
 bool32 HasOnlyMovesWithCategory(u32 battlerId, u32 category, bool32 onlyOffensive);
 bool32 HasMoveWithCategory(u32 battler, u32 category);
 bool32 HasMoveWithType(u32 battler, u32 type);
-bool32 HasMoveEffect(u32 battlerId, enum BattleMoveEffects moveEffect);
+bool32 HasMoveWithEffect(u32 battlerId, enum BattleMoveEffects moveEffect);
+bool32 HasNonVolatileMoveEffect(u32 battlerId, u32 effect);
 bool32 IsPowerBasedOnStatus(u32 battlerId, enum BattleMoveEffects effect, u32 argument);
 bool32 HasMoveWithAdditionalEffect(u32 battlerId, u32 moveEffect);
 bool32 HasMoveWithCriticalHitChance(u32 battlerId);
@@ -141,7 +144,7 @@ bool32 HasMoveThatLowersOwnStats(u32 battlerId);
 bool32 HasMoveWithLowAccuracy(u32 battlerAtk, u32 battlerDef, u32 accCheck, bool32 ignoreStatus, u32 atkAbility, u32 defAbility, u32 atkHoldEffect, u32 defHoldEffect);
 bool32 HasAnyKnownMove(u32 battlerId);
 bool32 IsAromaVeilProtectedEffect(enum BattleMoveEffects moveEffect);
-bool32 IsNonVolatileStatusMoveEffect(enum BattleMoveEffects moveEffect);
+bool32 IsNonVolatileStatusMove(u32 moveEffect);
 bool32 IsMoveRedirectionPrevented(u32 battlerAtk, u32 move, u32 atkAbility);
 bool32 IsMoveEncouragedToHit(u32 battlerAtk, u32 battlerDef, u32 move);
 bool32 IsHazardMove(u32 move);
@@ -167,15 +170,11 @@ bool32 IsChaseEffect(enum BattleMoveEffects effect);
 bool32 IsAttackBoostMoveEffect(enum BattleMoveEffects effect);
 bool32 IsUngroundingEffect(enum BattleMoveEffects effect);
 bool32 IsSemiInvulnerable(u32 battlerDef, u32 move);
-bool32 HasSubstituteIgnoringMove(u32 battler);
-bool32 HasHighCritRatioMove(u32 battler);
-bool32 HasMagicCoatAffectedMove(u32 battler);
-bool32 HasSnatchAffectedMove(u32 battler);
+bool32 HasMoveWithFlag(u32 battler, MoveFlag getFlag);
 bool32 IsHazardClearingMove(u32 move);
 bool32 IsSubstituteEffect(enum BattleMoveEffects effect);
 
 // status checks
-bool32 AI_CanGetFrostbite(u32 battler, u32 ability);
 bool32 AI_CanBeConfused(u32 battlerAtk, u32 battlerDef, u32 move, u32 ability);
 bool32 IsBattlerIncapacitated(u32 battler, u32 ability);
 bool32 AI_CanPutToSleep(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 move, u32 partnerMove);
@@ -183,9 +182,9 @@ bool32 ShouldPoison(u32 battlerAtk, u32 battlerDef);
 bool32 AI_CanPoison(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 move, u32 partnerMove);
 bool32 AI_CanParalyze(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 move, u32 partnerMove);
 bool32 AI_CanConfuse(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 battlerAtkPartner, u32 move, u32 partnerMove);
-bool32 ShouldBurn(u32 battlerAtk, u32 battlerDef);
-bool32 ShouldFreezeOrFrostbite(u32 battlerAtk, u32 battlerDef);
-bool32 ShouldParalyze(u32 battlerAtk, u32 battlerDef);
+bool32 ShouldBurn(u32 battlerAtk, u32 battlerDef, u32 abilityDef);
+bool32 ShouldFreezeOrFrostbite(u32 battlerAtk, u32 battlerDef, u32 abilityDef);
+bool32 ShouldParalyze(u32 battlerAtk, u32 battlerDef, u32 abilityDef);
 bool32 AI_CanBurn(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 battlerAtkPartner, u32 move, u32 partnerMove);
 bool32 AI_CanGiveFrostbite(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 battlerAtkPartner, u32 move, u32 partnerMove);
 bool32 AI_CanBeInfatuated(u32 battlerAtk, u32 battlerDef, u32 defAbility);
@@ -194,6 +193,10 @@ u32 ShouldTryToFlinch(u32 battlerAtk, u32 battlerDef, u32 atkAbility, u32 defAbi
 bool32 ShouldTrap(u32 battlerAtk, u32 battlerDef, u32 move);
 bool32 IsWakeupTurn(u32 battler);
 bool32 AI_IsBattlerAsleepOrComatose(u32 battlerId);
+
+// ability logic
+bool32 IsMoxieTypeAbility(u32 ability);
+bool32 ShouldTriggerAbility(u32 battler, u32 ability);
 
 // partner logic
 #define IS_TARGETING_PARTNER(battlerAtk, battlerDef)((battlerAtk) == (battlerDef ^ BIT_FLANK))
@@ -210,6 +213,8 @@ bool32 PartnerMoveIsSameAsAttacker(u32 battlerAtkPartner, u32 battlerDef, u32 mo
 bool32 PartnerMoveIsSameNoTarget(u32 battlerAtkPartner, u32 move, u32 partnerMove);
 bool32 PartnerMoveActivatesSleepClause(u32 move);
 bool32 ShouldUseWishAromatherapy(u32 battlerAtk, u32 battlerDef, u32 move);
+u32 GetFriendlyFireKOThreshold(u32 battler);
+bool32 IsAllyProtectingFromMove(u32 battlerAtk, u32 attackerMove, u32 allyMove);
 
 // party logic
 struct BattlePokemon *AllocSaveBattleMons(void);
@@ -229,7 +234,7 @@ void IncreaseSleepScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseConfusionScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseFrostbiteScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 
-s32 AI_CalcPartyMonDamage(u32 move, u32 battlerAtk, u32 battlerDef, struct BattlePokemon switchinCandidate, bool32 isPartyMonAttacker);
+s32 AI_CalcPartyMonDamage(u32 move, u32 battlerAtk, u32 battlerDef, struct BattlePokemon switchinCandidate, enum DamageCalcContext calcContext);
 u32 AI_WhoStrikesFirstPartyMon(u32 battlerAtk, u32 battlerDef, struct BattlePokemon switchinCandidate, u32 moveConsidered);
 s32 AI_TryToClearStats(u32 battlerAtk, u32 battlerDef, bool32 isDoubleBattle);
 bool32 AI_ShouldCopyStatChanges(u32 battlerAtk, u32 battlerDef);
@@ -239,7 +244,9 @@ bool32 AI_ShouldSpicyExtract(u32 battlerAtk, u32 battlerAtkPartner, u32 move, st
 u32 IncreaseSubstituteMoveScore(u32 battlerAtk, u32 battlerDef, u32 move);
 bool32 IsBattlerItemEnabled(u32 battler);
 bool32 IsBattlerPredictedToSwitch(u32 battler);
+u32 GetIncomingMove(u32 battler, u32 opposingBattler, struct AiLogicData *aiData);
 bool32 HasLowAccuracyMove(u32 battlerAtk, u32 battlerDef);
 bool32 HasBattlerSideAbility(u32 battlerDef, u32 ability, struct AiLogicData *aiData);
+u32 GetThinkingBattler(u32 battler);
 
 #endif //GUARD_BATTLE_AI_UTIL_H

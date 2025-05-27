@@ -4369,8 +4369,8 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .teachableLearnset = sBasculinTeachableLearnset,
         .eggMoveLearnset = sBasculinEggMoveLearnset,
         .formSpeciesIdTable = sBasculinFormSpeciesIdTable,
-        .evolutions = EVOLUTION({EVO_LEVEL_MALE, 34, SPECIES_BASCULEGION_M},
-            {EVO_LEVEL_FEMALE, 34, SPECIES_BASCULEGION_F}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 34, SPECIES_BASCULEGION_M, CONDITIONS({IF_GENDER, MON_MALE})},
+                                {EVO_LEVEL, 34, SPECIES_BASCULEGION_F, CONDITIONS({IF_GENDER, MON_FEMALE})}),
     },
 
     [SPECIES_BASCULIN_BLUE_STRIPED] =
@@ -4438,8 +4438,8 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .teachableLearnset = sBasculinTeachableLearnset,
         .eggMoveLearnset = sBasculinEggMoveLearnset,
         .formSpeciesIdTable = sBasculinFormSpeciesIdTable,
-        .evolutions = EVOLUTION({EVO_LEVEL_MALE, 34, SPECIES_BASCULEGION_M},
-            {EVO_LEVEL_FEMALE, 34, SPECIES_BASCULEGION_F}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 34, SPECIES_BASCULEGION_M, CONDITIONS({IF_GENDER, MON_MALE})},
+                                {EVO_LEVEL, 34, SPECIES_BASCULEGION_F, CONDITIONS({IF_GENDER, MON_FEMALE})}),
     },
 
 #if P_HISUIAN_FORMS
@@ -4508,8 +4508,8 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .teachableLearnset = sBasculinWhiteStripedTeachableLearnset,
         .eggMoveLearnset = sBasculinWhiteStripedEggMoveLearnset,
         .formSpeciesIdTable = sBasculinFormSpeciesIdTable,
-        .evolutions = EVOLUTION({EVO_LEVEL_MALE, 34, SPECIES_BASCULEGION_M},
-                                {EVO_LEVEL_FEMALE, 34, SPECIES_BASCULEGION_F}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 34, SPECIES_BASCULEGION_M, CONDITIONS({IF_GENDER, MON_MALE})},
+                                {EVO_LEVEL, 34, SPECIES_BASCULEGION_F, CONDITIONS({IF_GENDER, MON_FEMALE})}),
     },
 
     [SPECIES_BASCULEGION_M] =

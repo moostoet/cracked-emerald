@@ -6731,15 +6731,13 @@ BattleScript_NobleAuraLoop:
 	jumpifbyteequal gBattlerTarget, gBattlerAttacker, BattleScript_NobleAuraLoopIncrement
 	jumpiftargetally BattleScript_NobleAuraLoopIncrement
 	jumpifabsent BS_TARGET, BattleScript_NobleAuraLoopIncrement
-	jumpifstatus2 BS_TARGET, STATUS2_SUBSTITUTE, BattleScript_NobleAuraLoopIncrement
+	jumpifvolatile BS_TARGET, VOLATILE_SUBSTITUTE, BattleScript_NobleAuraLoopIncrement
 BattleScript_NobleAuraEffect:
 	copybyte sBATTLER, gBattlerAttacker
 	setstatchanger STAT_SPATK, 1, TRUE
-	statbuffchange STAT_CHANGE_NOT_PROTECT_AFFECTED | STAT_CHANGE_ALLOW_PTR, BattleScript_NobleAuraLoopIncrement
-	setgraphicalstatchangevalues
+	statbuffchange BS_TARGET, STAT_CHANGE_NOT_PROTECT_AFFECTED | STAT_CHANGE_ALLOW_PTR, BattleScript_NobleAuraLoopIncrement
 	jumpifability BS_TARGET, ABILITY_CONTRARY, BattleScript_NobleAuraContrary
-	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_DECREASE, BattleScript_NobleAuraWontDecrease
-	playanimation BS_TARGET, B_ANIM_STATS_CHANGE, sB_ANIM_ARG1
+	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_CHANGE, BattleScript_NobleAuraWontDecrease
 	printstring STRINGID_PKMNCUTSSPATKWITH
 BattleScript_NobleAura_WaitString:
 	waitmessage B_WAIT_TIME_LONG
@@ -6757,8 +6755,7 @@ BattleScript_NobleAuraEnd:
 
 BattleScript_NobleAuraContrary:
 	call BattleScript_AbilityPopUpTarget
-	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_INCREASE, BattleScript_NobleAuraContrary_WontIncrease
-	playanimation BS_TARGET, B_ANIM_STATS_CHANGE, sB_ANIM_ARG1
+	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_CHANGE, BattleScript_NobleAuraContrary_WontIncrease
 	printfromtable gStatUpStringIds
 	goto BattleScript_NobleAura_WaitString
 BattleScript_NobleAuraContrary_WontIncrease:
@@ -8484,7 +8481,7 @@ BattleScript_TargetAbilityStatRaiseRet_End:
 	return
 
 BattleScript_TargetAbilityActivateMagmaCore::
-	attackstring
+	printattackstring
 	pause B_WAIT_TIME_SHORT
 	call BattleScript_AbilityPopUp
 	printfromtable gMagmaCoreStringIds

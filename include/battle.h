@@ -216,9 +216,8 @@ struct SpecialStatus
     u8 dancerOriginalTarget:3;
     u8 unused:5;
     // End of byte
-    u8 enduredDamage:1;
     u8 chainStrikerState:3;
-    u8 padding:4;
+    u8 padding:5;
 };
 
 struct SideTimer

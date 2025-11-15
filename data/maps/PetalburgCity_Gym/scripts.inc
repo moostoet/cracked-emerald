@@ -140,7 +140,7 @@ PetalburgCity_Gym_EventScript_BeginWallyTutorialEast::
 	goto PetalburgCity_Gym_EventScript_BeginWallyBattle
 	end
 
-PetalburgCity_Gym_EventScript_BeginWallyTutorial::
+PetalburgCity_Gym_EventScript_BeginWallyBattle::
 	addobject LOCALID_PETALBURG_GYM_WALLY
 	playse SE_DOOR
 	call_if_eq VAR_0x8008, 0, PetalburgCity_Gym_EventScript_WallyArriveSouth

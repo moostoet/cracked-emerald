@@ -3751,7 +3751,7 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
                     B_MSG_SET_RISING_TIDE,
                     0,
                     &gFieldTimers.terrainTimer
-                )
+                );
                 isTerrain = TRUE;
             break;
         }

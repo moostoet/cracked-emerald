@@ -163,19 +163,6 @@ const struct SpeciesInfo gSpeciesInfo[] =
 #include "species_info/gen_8_families.h"
 #include "species_info/gen_9_families.h"
 
-        [SPECIES_EGG] = {
-            .frontPic = gMonFrontPic_Egg,
-            .frontPicSize = MON_COORDS_SIZE(24, 24),
-            .frontPicYOffset = 20,
-            .backPic = gMonFrontPic_Egg,
-            .backPicSize = MON_COORDS_SIZE(24, 24),
-            .backPicYOffset = 20,
-            .palette = gMonPalette_Egg,
-            .shinyPalette = gMonPalette_Egg,
-            .iconSprite = gMonIcon_Egg,
-            .iconPalIndex = 1,
-        },
-
         [SPECIES_SPINDA_DRUNKEN] = {
             .baseHP = 83,
             .baseAttack = 113,
@@ -225,7 +212,20 @@ const struct SpeciesInfo gSpeciesInfo[] =
             SHADOW(13, 8, SHADOW_SIZE_M) FOOTPRINT(Spinda) OVERWORLD(sPicTable_Spinda, SIZE_32x32, SHADOW_SIZE_M, TRACKS_FOOT, sAnimTable_Following, gOverworldPalette_Spinda, gShinyOverworldPalette_Spinda).levelUpLearnset = sSpindaLevelUpLearnset,
             .teachableLearnset = sSpindaTeachableLearnset,
             .eggMoveLearnset = sSpindaEggMoveLearnset,
-        }
+        },
+
+        [SPECIES_EGG] = {
+            .frontPic = gMonFrontPic_Egg,
+            .frontPicSize = MON_COORDS_SIZE(24, 24),
+            .frontPicYOffset = 20,
+            .backPic = gMonFrontPic_Egg,
+            .backPicSize = MON_COORDS_SIZE(24, 24),
+            .backPicYOffset = 20,
+            .palette = gMonPalette_Egg,
+            .shinyPalette = gMonPalette_Egg,
+            .iconSprite = gMonIcon_Egg,
+            .iconPalIndex = 1,
+        },
 
         /* You may add any custom species below this point based on the following structure: */
 

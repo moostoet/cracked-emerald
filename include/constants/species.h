@@ -1666,7 +1666,7 @@
 #define SPECIES_FALINKS_MEGA                            1549
 #define SPECIES_SPINDA_DRUNKEN                          1550
 
-#define SPECIES_EGG                                     (SPECIES_FALINKS_MEGA + 1)
+#define SPECIES_EGG                                     (SPECIES_SPINDA_DRUNKEN + 1)
 
 #define NUM_SPECIES SPECIES_EGG
 

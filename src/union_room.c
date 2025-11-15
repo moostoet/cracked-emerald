@@ -205,7 +205,7 @@ static EWRAM_DATA union
 } sWirelessLinkMain = {};
 EWRAM_DATA struct RfuGameCompatibilityData gRfuPartnerCompatibilityData = {};
 EWRAM_DATA u16 gUnionRoomOfferedSpecies = 0;
-EWRAM_DATA u8 gUnionRoomRequestedMonType = 0;
+EWRAM_DATA enum Type gUnionRoomRequestedMonType = 0;
 static EWRAM_DATA struct UnionRoomTrade sUnionRoomTrade = {};
 
 static struct WirelessLink_Leader *sLeader;
@@ -270,7 +270,7 @@ static void GetURoomActivityRejectMsg(u8 *, s32, u32);
 static u32 ConvPartnerUnameAndGetWhetherMetAlready(struct RfuPlayer *);
 static void GetURoomActivityStartMsg(u8 *, u8);
 static void UR_ClearBg0(void);
-static s32 IsRequestedTradeInPlayerParty(u32, u32);
+static s32 IsRequestedTradeInPlayerParty(enum Type, u32);
 static bool32 UR_PrintFieldMessage(const u8 *);
 static s32 GetChatLeaderActionRequestMessage(u8 *, u32, u16 *, struct WirelessLink_URoom *);
 static void Task_InitUnionRoom(u8 taskId);
@@ -1671,7 +1671,7 @@ static void Task_StartActivity(u8 taskId)
         HealPlayerParty();
         SavePlayerParty();
         LoadPlayerBag();
-        WarpForCableClubActivity(MAP_GROUP(BATTLE_COLOSSEUM_2P), MAP_NUM(BATTLE_COLOSSEUM_2P), 6, 8, USING_SINGLE_BATTLE);
+        WarpForCableClubActivity(MAP_GROUP(MAP_BATTLE_COLOSSEUM_2P), MAP_NUM(MAP_BATTLE_COLOSSEUM_2P), 6, 8, USING_SINGLE_BATTLE);
         SetMainCallback2(CB2_TransitionToCableClub);
         break;
     case ACTIVITY_BATTLE_DOUBLE:
@@ -1680,7 +1680,7 @@ static void Task_StartActivity(u8 taskId)
         SavePlayerParty();
         LoadPlayerBag();
         CreateTrainerCardInBuffer(gBlockSendBuffer, TRUE);
-        WarpForCableClubActivity(MAP_GROUP(BATTLE_COLOSSEUM_2P), MAP_NUM(BATTLE_COLOSSEUM_2P), 6, 8, USING_DOUBLE_BATTLE);
+        WarpForCableClubActivity(MAP_GROUP(MAP_BATTLE_COLOSSEUM_2P), MAP_NUM(MAP_BATTLE_COLOSSEUM_2P), 6, 8, USING_DOUBLE_BATTLE);
         SetMainCallback2(CB2_TransitionToCableClub);
         break;
     case ACTIVITY_BATTLE_MULTI:
@@ -1689,19 +1689,19 @@ static void Task_StartActivity(u8 taskId)
         SavePlayerParty();
         LoadPlayerBag();
         CreateTrainerCardInBuffer(gBlockSendBuffer, TRUE);
-        WarpForCableClubActivity(MAP_GROUP(BATTLE_COLOSSEUM_4P), MAP_NUM(BATTLE_COLOSSEUM_4P), 5, 8, USING_MULTI_BATTLE);
+        WarpForCableClubActivity(MAP_GROUP(MAP_BATTLE_COLOSSEUM_4P), MAP_NUM(MAP_BATTLE_COLOSSEUM_4P), 5, 8, USING_MULTI_BATTLE);
         SetMainCallback2(CB2_TransitionToCableClub);
         break;
     case ACTIVITY_TRADE:
         CreateTrainerCardInBuffer(gBlockSendBuffer, TRUE);
         CleanupOverworldWindowsAndTilemaps();
-        WarpForCableClubActivity(MAP_GROUP(TRADE_CENTER), MAP_NUM(TRADE_CENTER), 5, 8, USING_TRADE_CENTER);
+        WarpForCableClubActivity(MAP_GROUP(MAP_TRADE_CENTER), MAP_NUM(MAP_TRADE_CENTER), 5, 8, USING_TRADE_CENTER);
         SetMainCallback2(CB2_TransitionToCableClub);
         break;
     case ACTIVITY_RECORD_CORNER:
         CreateTrainerCardInBuffer(gBlockSendBuffer, TRUE);
         CleanupOverworldWindowsAndTilemaps();
-        WarpForCableClubActivity(MAP_GROUP(RECORD_CORNER), MAP_NUM(RECORD_CORNER), 8, 9, USING_RECORD_CORNER);
+        WarpForCableClubActivity(MAP_GROUP(MAP_RECORD_CORNER), MAP_NUM(MAP_RECORD_CORNER), 8, 9, USING_RECORD_CORNER);
         SetMainCallback2(CB2_TransitionToCableClub);
         break;
     case ACTIVITY_TRADE | IN_UNION_ROOM:
@@ -3612,7 +3612,7 @@ static bool8 PrintOnTextbox(u8 *textState, const u8 *str)
         LoadMessageBoxAndBorderGfx();
         DrawDialogueFrame(0, TRUE);
         StringExpandPlaceholders(gStringVar4, str);
-        AddTextPrinterForMessage_2(TRUE);
+        AddTextPrinterForMessage(TRUE);
         (*textState)++;
         break;
     case 1:
@@ -4104,7 +4104,7 @@ static void TradeBoardPrintItemInfo(u8 windowId, u8 y, struct RfuGameData *data,
 {
     u8 levelStr[4];
     u16 species = data->tradeSpecies;
-    u8 type = data->tradeType;
+    enum Type type = data->tradeType;
     u8 level = data->tradeLevel;
 
     PrintUnionRoomText(windowId, FONT_NORMAL, playerName, 8, y, colorIdx);
@@ -4174,7 +4174,7 @@ static s32 GetUnionRoomPlayerGender(s32 playerIdx, struct RfuPlayerList *list)
     return list->players[playerIdx].rfu.data.playerGender;
 }
 
-static s32 IsRequestedTradeInPlayerParty(u32 type, u32 species)
+static s32 IsRequestedTradeInPlayerParty(enum Type type, u32 species)
 {
     s32 i;
 
@@ -4193,7 +4193,7 @@ static s32 IsRequestedTradeInPlayerParty(u32 type, u32 species)
         for (i = 0; i < gPlayerPartyCount; i++)
         {
             species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG);
-            if (gSpeciesInfo[species].types[0] == type || gSpeciesInfo[species].types[1] == type)
+            if (GetSpeciesType(species, 0) == type || GetSpeciesType(species, 1) == type)
                 return UR_TRADE_MATCH;
         }
         return UR_TRADE_NOTYPE;
@@ -4312,8 +4312,8 @@ static bool32 PollPartnerYesNoResponse(struct WirelessLink_URoom *data)
 
 bool32 InUnionRoom(void)
 {
-    return gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(UNION_ROOM)
-        && gSaveBlock1Ptr->location.mapNum == MAP_NUM(UNION_ROOM)
+    return gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_UNION_ROOM)
+        && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_UNION_ROOM)
         ? TRUE : FALSE;
 }
 

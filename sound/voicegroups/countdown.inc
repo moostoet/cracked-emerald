@@ -1,5 +1,5 @@
 voice_group countdown
-	voice_keysplit_all voicegroup_emerald_drumset_1                          @ GM #1 Drum Kit (percussion channel)
+	voice_keysplit_all voicegroup_frlg_drumset                        @ GM #1 Drum Kit (percussion channel)
 	voice_keysplit voicegroup_piano_keysplit, keysplit_piano                 @ GM #2 Piano keysplit proxy
 	.rept 15    @ GM programs 3-18 placeholder
 		voice_square_1 60, 0, 0, 2, 0, 0, 15, 0
@@ -30,15 +30,17 @@ voice_group countdown
 	.rept 8     @ GM programs 73-80 placeholder
 		voice_square_1 60, 0, 0, 2, 0, 0, 15, 0
 	.endr
-	voice_square_1 60, 0, 0, 2, 0, 2, 7, 2 @ GM #81 custom square
-	.rept 8     @ GM programs 82-89 placeholder
-		voice_square_1 60, 0, 0, 2, 0, 0, 15, 0	
+	voice_square_1 60, 0, 0, 2, 0, 3, 2, 0 @ GM #81 custom square
+	.rept 6     @ GM programs 82-87 placeholder
+		voice_square_1 60, 0, 0, 2, 0, 0, 15, 0
 	.endr
+	voice_programmable_wave_alt 60, 0, ProgrammableWaveData_7, 0, 7, 15, 1 @ GM #88 custom wave
+	voice_square_1 60, 0, 0, 2, 0, 0, 15, 0	@ GM #89 placeholder
 	voice_programmable_wave_alt 60, 0, ProgrammableWaveData_15, 0, 7, 15, 0 @ GM #90 custom wave
 	.rept 13    @ GM programs 91-103 placeholder
 		voice_square_1 60, 0, 0, 2, 0, 0, 15, 0	
 	.endr
-	voice_square_2 60, 0, 2, 0, 2, 7, 2      @ GM #104 custom square2
+	voice_square_2 60, 0, 2, 0, 3, 2, 0      @ GM #104 custom square2
 	.rept 5     @ GM programs 105-109 placeholder
 		voice_square_1 60, 0, 0, 2, 0, 0, 15, 0
 	.endr
@@ -50,5 +52,5 @@ voice_group countdown
 	.rept 12    @ GM programs 115-126 placeholder
 		voice_square_1 60, 0, 0, 2, 0, 0, 15, 0
 	.endr
-	voice_noise_alt 60, 0, 0, 0, 2, 6, 2   @ GM #127 custom noise
-	voice_noise_alt 60, 0, 0, 0, 6, 0, 1   @ GM #128 custom noise
+	voice_noise_alt 60, 0, 0, 0, 2, 6, 1   @ GM #127 custom noise
+	voice_noise_alt 60, 0, 0, 0, 6, 0, 0   @ GM #128 custom noise

@@ -6290,6 +6290,9 @@ u8 GetAttackerObedienceForAction()
     u8 obedienceLevel = 0;
     u8 levelReferenced;
 
+    // Disable obedience entirely so every battler always goes through the normal move flow.
+    return OBEYS;
+
     if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
         return OBEYS;
     if (BattlerHasAi(gBattlerAttacker))

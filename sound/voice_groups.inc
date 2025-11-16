@@ -1,4 +1,5 @@
 .include "sound/voicegroups/dummy.inc"
+.include "sound/voicegroups/countdown.inc"
 
 @ drumsets
 .include "sound/voicegroups/drumsets/rs.inc"

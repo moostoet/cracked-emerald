@@ -6451,3 +6451,27 @@ DirectSoundWaveData_sd90_classical_whistle::
 	.align 2
 DirectSoundWaveData_sd90_enhanced_delay_shaku::
 	.incbin "sound/direct_sound_samples/sd90_enhanced_delay_shaku.bin"
+
+	.align 2
+DirectSoundWaveData_countdown_five::
+	.incbin "sound/direct_sound_samples/Countdown_Five.bin"
+
+	.align 2
+DirectSoundWaveData_countdown_four::
+	.incbin "sound/direct_sound_samples/Countdown_Four.bin"
+
+	.align 2
+DirectSoundWaveData_countdown_three::
+	.incbin "sound/direct_sound_samples/Countdown_Three.bin"
+
+	.align 2
+DirectSoundWaveData_countdown_two::
+	.incbin "sound/direct_sound_samples/Countdown_Two.bin"
+
+	.align 2
+DirectSoundWaveData_countdown_one::
+	.incbin "sound/direct_sound_samples/Countdown_One.bin"
+
+	.align 2
+DirectSoundWaveData_orchestra_hit::
+	.incbin "sound/direct_sound_samples/Orchestra_Hit.bin"

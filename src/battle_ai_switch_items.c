@@ -2131,6 +2131,8 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
     u32 bestResist = UQ_4_12(2.0), bestResistEffective = UQ_4_12(2.0), typeMatchup; // 2.0 is the default "Neutral" matchup from GetBattleMonTypeMatchup
     bool32 isFreeSwitch = IsFreeSwitch(switchType, battlerIn1, opposingBattler), isSwitchinFirst, isSwitchinFirstPriority, canSwitchinWin1v1;
     bool32 isHealingWish = gBattleStruct->battlerState[battler].storedHealingWish || gBattleStruct->battlerState[battler].storedLunarDance;
+    // Check if Wish will activate next turn (counter == 1 means it activates at the end of the current turn)
+    bool32 isWish = (gWishFutureKnock.wishCounter[battler] == 1);
     u32 invalidMons = 0;
     uq4_12_t effectiveness = UQ_4_12(1.0);
 
@@ -2186,8 +2188,8 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
         if (gAiLogicData->switchinCandidate.battleMon.ability == ABILITY_TRUANT && IsTruantMonVulnerable(battler, opposingBattler))
             continue;
 
-        // Check for Healing Wish / Lunar Dance; prioritize mons that are damaged or have a status condition
-        if (isHealingWish)
+        // Check for Healing Wish / Lunar Dance / Wish; prioritize mons that are damaged or have a status condition
+        if (isHealingWish || isWish)
         {
             int score = 0;
             if (gAiLogicData->switchinCandidate.battleMon.status1 != STATUS1_NONE)

@@ -2192,7 +2192,8 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
         if (isHealingWish || isWish)
         {
             int score = 0;
-            if (gAiLogicData->switchinCandidate.battleMon.status1 != STATUS1_NONE)
+            // Only Healing Wish / Lunar Dance cure status, so only prioritize status for them
+            if (isHealingWish && gAiLogicData->switchinCandidate.battleMon.status1 != STATUS1_NONE)
                 score += 10;
 
             int lostHP = gAiLogicData->switchinCandidate.battleMon.maxHP - gAiLogicData->switchinCandidate.battleMon.hp;

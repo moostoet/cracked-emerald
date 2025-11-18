@@ -9840,7 +9840,12 @@ bool32 IsPartnerMonFromSameTrainer(u32 battler)
     else if (IsOnPlayerSide(battler) && gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER)
         return FALSE;
     else if (gBattleTypeFlags & BATTLE_TYPE_MULTI)
-        return FALSE;
+    {
+        if (gBattleTypeFlags & BATTLE_TYPE_LINK)
+            return FALSE;
+        else
+            return TRUE;
+    }
     else
         return TRUE;
 }

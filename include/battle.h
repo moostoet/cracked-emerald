@@ -913,6 +913,7 @@ struct BattleScripting
     u8 switchCase;  // Special switching conditions, eg. red card
     u8 overrideBerryRequirements;
     u8 stickyWebStatDrop; // To prevent Defiant activating on a Court Change'd Sticky Web
+    bool8 abilityPreventedMove; // Allows ability-absorbed status moves to continue resolving
 };
 
 struct BattleSpriteInfo

@@ -63,3 +63,30 @@ SINGLE_BATTLE_TEST("Ion Deluge makes Normal type moves Electric type")
         MESSAGE("It's super effective!"); // Because Scratch is now electric type.
     }
 }
+
+DOUBLE_BATTLE_TEST("Ion Deluge turns Howl into Electric and Lightning Rod absorbs the ally boost")
+{
+    ASSUME(GetMoveEffect(MOVE_HOWL) == EFFECT_ATTACK_UP || GetMoveEffect(MOVE_HOWL) == EFFECT_ATTACK_UP_USER_ALLY);
+
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Speed(5); }
+        PLAYER(SPECIES_MANECTRIC) { Ability(ABILITY_LIGHTNING_ROD); Speed(4); }
+        OPPONENT(SPECIES_HELIOLISK) { Speed(15); }
+        OPPONENT(SPECIES_WOBBUFFET) { Speed(3); }
+    } WHEN {
+        TURN { MOVE(opponentLeft, MOVE_ION_DELUGE); MOVE(playerLeft, MOVE_HOWL); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ION_DELUGE, opponentLeft);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HOWL, playerLeft);
+        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, playerLeft);
+        MESSAGE("Wobbuffet's Attack rose!");
+        ABILITY_POPUP(playerRight, ABILITY_LIGHTNING_ROD);
+        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, playerRight);
+        MESSAGE("Manectric's Sp. Atk rose!");
+        NONE_OF { MESSAGE("Manectric's Attack rose!"); }
+    } THEN {
+        EXPECT_EQ(playerLeft->statStages[STAT_ATK], DEFAULT_STAT_STAGE + 1);
+        EXPECT_EQ(playerRight->statStages[STAT_ATK], DEFAULT_STAT_STAGE);
+        EXPECT_EQ(playerRight->statStages[STAT_SPATK], DEFAULT_STAT_STAGE + 1);
+    }
+}

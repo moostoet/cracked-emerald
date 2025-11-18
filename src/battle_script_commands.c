@@ -1131,7 +1131,8 @@ static void Cmd_attackcanceler(void)
                 abilityDef,
                 gCurrentMove,
                 GetBattleMoveType(gCurrentMove),
-                RUN_SCRIPT))
+                RUN_SCRIPT,
+                NULL))
             return;
     }
 
@@ -1324,7 +1325,8 @@ static void JumpIfMoveFailed(u32 adder, u32 move, u32 moveType, const u8 *failIn
                                  GetBattlerAbility(gBattlerTarget),
                                  move,
                                  moveType,
-                                 RUN_SCRIPT))
+                                 RUN_SCRIPT,
+                                 NULL))
             return;
     }
 
@@ -1383,7 +1385,8 @@ static void AccuracyCheck(bool32 recalcDragonDarts, const u8 *nextInstr, const u
                                      GetBattlerAbility(gBattlerTarget),
                                      gCurrentMove,
                                      GetBattleMoveType(gCurrentMove),
-                                     RUN_SCRIPT);
+                                     RUN_SCRIPT,
+                                     NULL);
         }
     }
     else if (gSpecialStatuses[gBattlerAttacker].parentalBondState == PARENTAL_BOND_2ND_HIT
@@ -12093,16 +12096,24 @@ static void Cmd_trysetperishsong(void)
 
     s32 i;
     s32 notAffectedCount = 0;
+    u32 moveType = GetBattleMoveType(gCurrentMove);
 
     for (i = 0; i < gBattlersCount; i++)
     {
-        if (gBattleMons[i].volatiles.perishSong
-            || GetBattlerAbility(i) == ABILITY_SOUNDPROOF
-            || BlocksPrankster(gCurrentMove, gBattlerAttacker, i, TRUE)
-            || gBattleMons[i].volatiles.semiInvulnerable == STATE_COMMANDER)
+        bool32 blocked = gBattleMons[i].volatiles.perishSong
+                       || gBattleMons[i].volatiles.semiInvulnerable == STATE_COMMANDER;
+
+        if (!blocked && i != gBattlerAttacker)
         {
-            notAffectedCount++;
+            u32 ability = GetBattlerAbility(i);
+            if (ability == ABILITY_SOUNDPROOF
+             || BlocksPrankster(gCurrentMove, gBattlerAttacker, i, TRUE)
+             || CanAbilityAbsorbMove(gBattlerAttacker, i, ability, gCurrentMove, moveType, CHECK_TRIGGER, NULL))
+                blocked = TRUE;
         }
+
+        if (blocked)
+            notAffectedCount++;
         else
         {
             gBattleMons[i].volatiles.perishSong = TRUE;
@@ -16088,12 +16099,41 @@ void BS_JumpIfBlockedBySoundproof(void)
 {
     NATIVE_ARGS(u8 battler, const u8 *jumpInstr);
     u32 battler = GetBattlerForBattleScript(cmd->battler);
-    if (IsSoundMove(gCurrentMove) && GetBattlerAbility(battler) == ABILITY_SOUNDPROOF)
+    if (battler == gBattlerAttacker)
+    {
+        gBattlescriptCurrInstr = cmd->nextInstr;
+    }
+    else if (IsSoundMove(gCurrentMove) && GetBattlerAbility(battler) == ABILITY_SOUNDPROOF)
     {
         gLastUsedAbility = ABILITY_SOUNDPROOF;
         gBattlescriptCurrInstr = cmd->jumpInstr;
         RecordAbilityBattle(battler, gLastUsedAbility);
         gBattlerAbility = battler;
+    }
+    else
+    {
+        gBattlescriptCurrInstr = cmd->nextInstr;
+    }
+}
+
+void BS_JumpIfAbsorbedByImmunity(void)
+{
+    NATIVE_ARGS(u8 battler, const u8 *jumpInstr);
+
+    u32 battler = GetBattlerForBattleScript(cmd->battler);
+    if (battler == gBattlerAttacker)
+    {
+        gBattlescriptCurrInstr = cmd->nextInstr;
+    }
+    else if (CanAbilityAbsorbMove(gBattlerAttacker,
+                                  battler,
+                                  GetBattlerAbility(battler),
+                                  gCurrentMove,
+                                  GetBattleMoveType(gCurrentMove),
+                                  RUN_SCRIPT,
+                                  cmd->jumpInstr))
+    {
+        return;
     }
     else
     {

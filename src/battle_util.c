@@ -2561,7 +2561,7 @@ static enum MoveCanceler CancelerMultiTargetMoves(void)
                 gBattleStruct->moveResultFlags[battlerDef] = 0;
                 gBattleStruct->noResultString[battlerDef] = WILL_FAIL;
             }
-            else if (CanAbilityAbsorbMove(gBattlerAttacker, battlerDef, abilityDef, gCurrentMove, GetBattleMoveType(gCurrentMove), CHECK_TRIGGER))
+            else if (CanAbilityAbsorbMove(gBattlerAttacker, battlerDef, abilityDef, gCurrentMove, GetBattleMoveType(gCurrentMove), CHECK_TRIGGER, NULL))
             {
                 gBattleStruct->moveResultFlags[battlerDef] = 0;
                 gBattleStruct->noResultString[battlerDef] = CHECK_ACCURACY;
@@ -3106,7 +3106,7 @@ bool32 CanAbilityBlockMove(u32 battlerAtk, u32 battlerDef, u32 abilityAtk, u32 a
     return TRUE;
 }
 
-bool32 CanAbilityAbsorbMove(u32 battlerAtk, u32 battlerDef, u32 abilityDef, u32 move, u32 moveType, enum FunctionCallOption option)
+bool32 CanAbilityAbsorbMove(u32 battlerAtk, u32 battlerDef, u32 abilityDef, u32 move, u32 moveType, enum FunctionCallOption option, const u8 *returnInstr)
 {
     enum MoveAbsorbed effect = MOVE_ABSORBED_BY_NO_ABILITY;
     const u8 *battleScript = NULL;
@@ -3258,6 +3258,15 @@ bool32 CanAbilityAbsorbMove(u32 battlerAtk, u32 battlerDef, u32 abilityDef, u32 
         gLastUsedAbility = abilityDef;
         RecordAbilityBattle(battlerDef, abilityDef);
         gBattleScripting.battler = gBattlerAbility = battlerDef;
+        if (returnInstr != NULL)
+        {
+            BattleScriptPush(returnInstr);
+            gBattleScripting.abilityPreventedMove = TRUE;
+        }
+        else
+        {
+            gBattleScripting.abilityPreventedMove = FALSE;
+        }
         gBattlescriptCurrInstr = battleScript;
     }
 
@@ -9767,7 +9776,7 @@ uq4_12_t GetOverworldTypeEffectiveness(struct Pokemon *mon, u8 moveType)
         MulByTypeEffectiveness(&ctx, &modifier, type2);
 
     if ((modifier <= UQ_4_12(1.0) && abilityDef == ABILITY_WONDER_GUARD)
-     || CanAbilityAbsorbMove(0, 0, abilityDef, MOVE_NONE, moveType, CHECK_TRIGGER))
+     || CanAbilityAbsorbMove(0, 0, abilityDef, MOVE_NONE, moveType, CHECK_TRIGGER, NULL))
         modifier = UQ_4_12(0.0);
 
     return modifier;
@@ -11322,7 +11331,7 @@ static inline bool32 DoesBattlerHaveAbilityImmunity(u32 battlerAtk, u32 battlerD
     u32 abilityDef = GetBattlerAbility(battlerDef);
 
     return CanAbilityBlockMove(battlerAtk, battlerDef, GetBattlerAbility(battlerAtk), abilityDef, gCurrentMove, CHECK_TRIGGER)
-        || CanAbilityAbsorbMove(battlerAtk, battlerDef, abilityDef, gCurrentMove, moveType, CHECK_TRIGGER);
+        || CanAbilityAbsorbMove(battlerAtk, battlerDef, abilityDef, gCurrentMove, moveType, CHECK_TRIGGER, NULL);
 }
 
 bool32 TargetFullyImmuneToCurrMove(u32 battlerAtk, u32 battlerDef)
@@ -11492,7 +11501,7 @@ void UpdateStallMons(void)
         u32 moveType = GetBattleMoveType(gCurrentMove); //  Probably doesn't handle dynamic move types right now
         u32 abilityAtk = GetBattlerAbility(gBattlerAttacker);
         u32 abilityDef = GetBattlerAbility(gBattlerTarget);
-        if (CanAbilityAbsorbMove(gBattlerAttacker, gBattlerTarget, abilityDef, gCurrentMove, moveType, CHECK_TRIGGER))
+        if (CanAbilityAbsorbMove(gBattlerAttacker, gBattlerTarget, abilityDef, gCurrentMove, moveType, CHECK_TRIGGER, NULL))
         {
             gAiBattleData->playerStallMons[gBattlerPartyIndexes[gBattlerTarget]]++;
         }

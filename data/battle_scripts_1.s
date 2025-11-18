@@ -507,6 +507,7 @@ BattleScript_EffectAttackUpUserAlly_End:
 	goto BattleScript_MoveEnd
 BattleScript_EffectAttackUpUserAlly_TryAlly_:
 	jumpifblockedbysoundproof BS_ATTACKER_PARTNER, BattleScript_EffectAttackUpUserAlly_TryAllyBlocked
+	jumpifabsorbedbyimmunity BS_ATTACKER_PARTNER, BattleScript_EffectAttackUpUserAlly_End
 	setstatchanger STAT_ATK, 1, FALSE
 	statbuffchange BS_TARGET, STAT_CHANGE_ALLOW_PTR, BattleScript_EffectAttackUpUserAlly_End
 	jumpifbyte CMP_NOT_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_INCREASE, BattleScript_EffectAttackUpUserAlly_AllyString
@@ -3953,6 +3954,7 @@ BattleScript_EffectPerishSong::
 BattleScript_PerishSongLoop::
 	jumpifblockedbysoundproof BS_TARGET, BattleScript_PerishSongBlocked
 	jumpifpranksterblocked BattleScript_PerishSongNotAffected
+	jumpifabsorbedbyimmunity BS_TARGET, BattleScript_PerishSongLoopIncrement
 BattleScript_PerishSongLoopIncrement::
 	addbyte gBattlerTarget, 1
 	jumpifbytenotequal gBattlerTarget, gBattlersCount, BattleScript_PerishSongLoop
@@ -7799,7 +7801,11 @@ BattleScript_MoveHPDrain::
 	printstring STRINGID_PKMNRESTOREDHPUSING
 	waitmessage B_WAIT_TIME_LONG
 	setmoveresultflags MOVE_RESULT_DOESNT_AFFECT_FOE
+	jumpifbyte CMP_EQUAL, sABILITY_PREVENTS_MOVE, TRUE, BattleScript_MoveHPDrain_Return
 	goto BattleScript_MoveEnd
+BattleScript_MoveHPDrain_Return:
+	setbyte sABILITY_PREVENTS_MOVE, FALSE
+	return
 
 BattleScript_MoveStatDrain_PPLoss::
 	ppreduce
@@ -7817,7 +7823,11 @@ BattleScript_MoveStatDrain::
 .endif
 BattleScript_MoveStatDrain_Cont:
 	clearsemiinvulnerablebit
+	jumpifbyte CMP_EQUAL, sABILITY_PREVENTS_MOVE, TRUE, BattleScript_MoveStatDrain_Return
 	goto BattleScript_MoveEnd
+BattleScript_MoveStatDrain_Return:
+	setbyte sABILITY_PREVENTS_MOVE, FALSE
+	return
 
 BattleScript_MonMadeMoveUseless_PPLoss::
 	ppreduce
@@ -7838,7 +7848,11 @@ BattleScript_FlashFireBoost::
 	call BattleScript_AbilityPopUp
 	printfromtable gFlashFireStringIds
 	waitmessage B_WAIT_TIME_LONG
+	jumpifbyte CMP_EQUAL, sABILITY_PREVENTS_MOVE, TRUE, BattleScript_FlashFire_Return
 	goto BattleScript_MoveEnd
+BattleScript_FlashFire_Return:
+	setbyte sABILITY_PREVENTS_MOVE, FALSE
+	return
 
 BattleScript_AbilityPreventsPhasingOut::
 	call BattleScript_AbilityPreventsPhasingOutRet

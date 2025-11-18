@@ -714,7 +714,7 @@ static u32 PpStallReduction(u32 move, u32 battlerAtk)
         u32 abilityAtk = ABILITY_NONE;
         u32 abilityDef = GetPartyMonAbility(&gPlayerParty[partyIndex]);
         u32 moveType = GetBattleMoveType(move); //  Probably doesn't handle dynamic types right now
-        if (CanAbilityAbsorbMove(battlerAtk, tempBattleMonIndex, abilityDef, move, moveType, CHECK_TRIGGER)
+        if (CanAbilityAbsorbMove(battlerAtk, tempBattleMonIndex, abilityDef, move, moveType, CHECK_TRIGGER, NULL)
          || CanAbilityBlockMove(battlerAtk, tempBattleMonIndex, abilityAtk, abilityDef, move, CHECK_TRIGGER)
          || (CalcPartyMonTypeEffectivenessMultiplier(move, species, abilityDef) == 0))
         {
@@ -1144,7 +1144,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         if (CanAbilityBlockMove(battlerAtk, battlerDef, abilityAtk, abilityDef, move, AI_CHECK))
             RETURN_SCORE_MINUS(20);
 
-        if (CanAbilityAbsorbMove(battlerAtk, battlerDef, abilityDef, move, moveType, AI_CHECK))
+        if (CanAbilityAbsorbMove(battlerAtk, battlerDef, abilityDef, move, moveType, AI_CHECK, NULL))
             RETURN_SCORE_MINUS(20);
 
         switch (abilityDef)

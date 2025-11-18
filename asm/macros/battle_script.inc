@@ -1748,6 +1748,12 @@
 	.4byte \failInstr
 	.endm
 
+	.macro jumpifabsorbedbyimmunity battler:req, failInstr:req
+	callnative BS_JumpIfAbsorbedByImmunity
+	.byte \battler
+	.4byte \failInstr
+	.endm
+
 	.macro setmagiccoattarget
 	callnative BS_SetMagicCoatTarget
 	.endm

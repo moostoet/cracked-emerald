@@ -2123,12 +2123,14 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
 {
     int revengeKillerId = PARTY_SIZE, slowRevengeKillerId = PARTY_SIZE, fastThreatenId = PARTY_SIZE, slowThreatenId = PARTY_SIZE, damageMonId = PARTY_SIZE, generic1v1MonId = PARTY_SIZE;
     int batonPassId = PARTY_SIZE, typeMatchupId = PARTY_SIZE, typeMatchupEffectiveId = PARTY_SIZE, defensiveMonId = PARTY_SIZE, aceMonId = PARTY_SIZE, trapperId = PARTY_SIZE;
-    int i, j, aliveCount = 0, bits = 0, aceMonCount = 0;
+    int bestHealingCandidateId = PARTY_SIZE;
+    int i, j, aliveCount = 0, bits = 0, aceMonCount = 0, bestHealingCandidateScore = 0;
     s32 defensiveMonHitKOThreshold = 3; // 3HKO threshold that candidate defensive mons must exceed
     s32 playerMonHP = gBattleMons[opposingBattler].hp, maxDamageDealt = 0, damageDealt = 0;
     u32 aiMove, hitsToKOAI, hitsToKOPlayer, hitsToKOAIPriority, bestPlayerMove = MOVE_NONE, bestPlayerPriorityMove = MOVE_NONE, maxHitsToKO = 0;
     u32 bestResist = UQ_4_12(2.0), bestResistEffective = UQ_4_12(2.0), typeMatchup; // 2.0 is the default "Neutral" matchup from GetBattleMonTypeMatchup
     bool32 isFreeSwitch = IsFreeSwitch(switchType, battlerIn1, opposingBattler), isSwitchinFirst, isSwitchinFirstPriority, canSwitchinWin1v1;
+    bool32 isHealingWish = gBattleStruct->battlerState[battler].storedHealingWish || gBattleStruct->battlerState[battler].storedLunarDance;
     u32 invalidMons = 0;
     uq4_12_t effectiveness = UQ_4_12(1.0);
 
@@ -2136,17 +2138,35 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
     for (i = firstId; i < lastId; i++)
     {
         // Check mon validity
-        if (!IsValidForBattle(&party[i])
-            || gBattlerPartyIndexes[battlerIn1] == i
-            || gBattlerPartyIndexes[battlerIn2] == i
-            || i == gBattleStruct->monToSwitchIntoId[battlerIn1]
-            || i == gBattleStruct->monToSwitchIntoId[battlerIn2])
+        if (switchType == SWITCH_REVIVAL_BLESSING)
         {
-            invalidMons |= 1u << i;
-            continue;
+            // For Revival Blessing, we want to switch into a fainted mon.
+            if (GetMonData(&party[i], MON_DATA_HP) != 0
+                || GetMonData(&party[i], MON_DATA_IS_EGG)
+                || gBattlerPartyIndexes[battlerIn1] == i
+                || gBattlerPartyIndexes[battlerIn2] == i
+                || i == gBattleStruct->monToSwitchIntoId[battlerIn1]
+                || i == gBattleStruct->monToSwitchIntoId[battlerIn2])
+            {
+                invalidMons |= 1u << i;
+                continue;
+            }
         }
+        else
+        {
+            if (!IsValidForBattle(&party[i])
+                || gBattlerPartyIndexes[battlerIn1] == i
+                || gBattlerPartyIndexes[battlerIn2] == i
+                || i == gBattleStruct->monToSwitchIntoId[battlerIn1]
+                || i == gBattleStruct->monToSwitchIntoId[battlerIn2])
+            {
+                invalidMons |= 1u << i;
+                continue;
+            }
+        }
+
         // Save Ace Pokemon for last
-        else if (IsAceMon(battler, i))
+        if (IsAceMon(battler, i))
         {
             aceMonId = i;
             aceMonCount++;
@@ -2158,9 +2178,33 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
 
         InitializeSwitchinCandidate(&party[i]);
 
+        // For Revival Blessing, we assume the mon will be revived with half HP.
+        if (switchType == SWITCH_REVIVAL_BLESSING)
+            gAiLogicData->switchinCandidate.battleMon.hp = gAiLogicData->switchinCandidate.battleMon.maxHP / 2;
+
         // While not really invalid per se, not really wise to switch into this mon
         if (gAiLogicData->switchinCandidate.battleMon.ability == ABILITY_TRUANT && IsTruantMonVulnerable(battler, opposingBattler))
             continue;
+
+        // Check for Healing Wish / Lunar Dance; prioritize mons that are damaged or have a status condition
+        if (isHealingWish)
+        {
+            int score = 0;
+            if (gAiLogicData->switchinCandidate.battleMon.status1 != STATUS1_NONE)
+                score += 10;
+
+            int lostHP = gAiLogicData->switchinCandidate.battleMon.maxHP - gAiLogicData->switchinCandidate.battleMon.hp;
+            score += (lostHP * 100) / gAiLogicData->switchinCandidate.battleMon.maxHP;
+
+            if (IsAceMon(battler, i))
+                score += 5;
+
+            if (score > bestHealingCandidateScore)
+            {
+                bestHealingCandidateScore = score;
+                bestHealingCandidateId = i;
+            }
+        }
 
         // Get max number of hits for player to KO AI mon and type matchup for defensive switching
         hitsToKOAI = GetSwitchinHitsToKO(GetMaxDamagePlayerCouldDealToSwitchin(battler, opposingBattler, gAiLogicData->switchinCandidate.battleMon, &bestPlayerMove), battler);
@@ -2279,6 +2323,9 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
 
     batonPassId = GetRandomSwitchinWithBatonPass(aliveCount, bits, firstId, lastId, i);
 
+    if (isHealingWish && bestHealingCandidateId != PARTY_SIZE)
+        return bestHealingCandidateId;
+
     // Different switching priorities depending on switching mid battle vs switching after a KO or slow switch
     if (isFreeSwitch)
     {
@@ -2310,9 +2357,31 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
         return aceMonId;
 
     // Fallback
-    u32 bestMonId = GetFirstNonInvalidMon(firstId, lastId, invalidMons, battlerIn1, battlerIn2);
-    if (bestMonId != PARTY_SIZE)
-        return bestMonId;
+    if (switchType == SWITCH_REVIVAL_BLESSING)
+    {
+         if (damageMonId != PARTY_SIZE) return damageMonId;
+         if (generic1v1MonId != PARTY_SIZE) return generic1v1MonId;
+         
+         // If no best mon was found, just pick the first valid fainted mon
+         for (i = firstId; i < lastId; i++)
+         {
+            if (GetMonData(&party[i], MON_DATA_HP) == 0
+                && !GetMonData(&party[i], MON_DATA_IS_EGG)
+                && gBattlerPartyIndexes[battlerIn1] != i
+                && gBattlerPartyIndexes[battlerIn2] != i
+                && i != gBattleStruct->monToSwitchIntoId[battlerIn1]
+                && i != gBattleStruct->monToSwitchIntoId[battlerIn2])
+            {
+                return i;
+            }
+         }
+    }
+    else
+    {
+        u32 bestMonId = GetFirstNonInvalidMon(firstId, lastId, invalidMons, battlerIn1, battlerIn2);
+        if (bestMonId != PARTY_SIZE)
+            return bestMonId;
+    }
 
     return PARTY_SIZE;
 }

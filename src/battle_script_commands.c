@@ -10313,6 +10313,10 @@ static u32 ChangeStatBuffs(u32 battler, s8 statValue, u32 statId, union StatChan
         {
             return STAT_CHANGE_DIDNT_WORK;
         }
+        else if (CanAbilityAbsorbMove(gBattlerAttacker, battler, battlerAbility, gCurrentMove, GetBattleMoveType(gCurrentMove), CHECK_TRIGGER, NULL))
+        {
+            return STAT_CHANGE_DIDNT_WORK;
+        }
         else if ((battlerHoldEffect == HOLD_EFFECT_CLEAR_AMULET || CanAbilityPreventStatLoss(battlerAbility))
               && (flags.statDropPrevention || gBattlerAttacker != gBattlerTarget || flags.mirrorArmored) && !flags.certain && gCurrentMove != MOVE_CURSE)
         {

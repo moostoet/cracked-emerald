@@ -2326,7 +2326,7 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
 
     batonPassId = GetRandomSwitchinWithBatonPass(aliveCount, bits, firstId, lastId, i);
 
-    if (isHealingWish && bestHealingCandidateId != PARTY_SIZE)
+    if ((isHealingWish || isWish) && bestHealingCandidateId != PARTY_SIZE)
         return bestHealingCandidateId;
 
     // Different switching priorities depending on switching mid battle vs switching after a KO or slow switch

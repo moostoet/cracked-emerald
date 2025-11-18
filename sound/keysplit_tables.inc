@@ -33,3 +33,6 @@ keysplit tuba, 24
 keysplit french_horn, 36
 	split 0, 66
 	split 1, 108
+
+keysplit custom_cymbal, 0
+	split 0, 128

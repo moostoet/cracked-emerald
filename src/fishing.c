@@ -24,6 +24,7 @@ static bool32 Fishing_ShowDots(struct Task *);
 static bool32 Fishing_CheckForBite(struct Task *);
 static bool32 Fishing_GotBite(struct Task *);
 static bool32 Fishing_ChangeMinigame(struct Task *);
+static bool32 Fishing_WaitBeforeHook(struct Task *);
 static bool32 Fishing_WaitForA(struct Task *);
 static bool32 Fishing_APressNoMinigame(struct Task *);
 static bool32 Fishing_CheckMoreDots(struct Task *);
@@ -36,8 +37,8 @@ static bool32 Fishing_PutRodAway(struct Task *);
 static bool32 Fishing_EndNoMon(struct Task *);
 static void AlignFishingAnimationFrames(void);
 static bool32 DoesFishingMinigameAllowCancel(void);
-static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void);
-static bool32 Fishing_RollForBite(u32, bool32);
+static bool32 __attribute__((unused)) Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void);
+static bool32 __attribute__((unused)) Fishing_RollForBite(u32, bool32);
 static u32 CalculateFishingBiteOdds(u32, bool32);
 static u32 CalculateFishingFollowerBoost(void);
 static u32 CalculateFishingProximityBoost(void);
@@ -90,6 +91,7 @@ enum
     FISHING_CHECK_FOR_BITE,
     FISHING_GOT_BITE,
     FISHING_CHANGE_MINIGAME,
+    FISHING_WAIT_BEFORE_HOOK,
     FISHING_WAIT_FOR_A,
     FISHING_A_PRESS_NO_MINIGAME,
     FISHING_CHECK_MORE_DOTS,
@@ -112,6 +114,7 @@ static bool32 (*const sFishingStateFuncs[])(struct Task *) =
     [FISHING_CHECK_FOR_BITE]        = Fishing_CheckForBite,
     [FISHING_GOT_BITE]              = Fishing_GotBite,
     [FISHING_CHANGE_MINIGAME]       = Fishing_ChangeMinigame,
+    [FISHING_WAIT_BEFORE_HOOK]      = Fishing_WaitBeforeHook,
     [FISHING_WAIT_FOR_A]            = Fishing_WaitForA,
     [FISHING_A_PRESS_NO_MINIGAME]   = Fishing_APressNoMinigame,
     [FISHING_CHECK_MORE_DOTS]       = Fishing_CheckMoreDots,
@@ -249,11 +252,8 @@ static bool32 Fishing_ShowDots(struct Task *task)
 
 static bool32 Fishing_CheckForBite(struct Task *task)
 {
-    bool32 bite, firstMonHasSuctionOrSticky;
-
     AlignFishingAnimationFrames();
     task->tStep = FISHING_GOT_BITE;
-    bite = FALSE;
 
     if (!DoesCurrentMapHaveFishingMons())
     {
@@ -261,20 +261,8 @@ static bool32 Fishing_CheckForBite(struct Task *task)
         return TRUE;
     }
 
-    firstMonHasSuctionOrSticky = Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold();
-
-    if(firstMonHasSuctionOrSticky && I_FISHING_STICKY_BOOST < GEN_4)
-        bite = RandomPercentage(RNG_FISHING_GEN3_STICKY, FISHING_GEN3_STICKY_CHANCE);
-
-    if (!bite)
-        bite = Fishing_RollForBite(task->tFishingRod, firstMonHasSuctionOrSticky);
-
-    if (!bite)
-        task->tStep = FISHING_NOT_EVEN_NIBBLE;
-
-    if (bite)
-        StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingBiteDirectionAnimNum(GetPlayerFacingDirection()));
-
+    // Always hook a Pokémon when fishing.
+    StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingBiteDirectionAnimNum(GetPlayerFacingDirection()));
     return TRUE;
 }
 
@@ -289,17 +277,19 @@ static bool32 Fishing_GotBite(struct Task *task)
 
 static bool32 Fishing_ChangeMinigame(struct Task *task)
 {
-    switch (I_FISHING_MINIGAME)
-    {
-        case GEN_1:
-        case GEN_2:
-            task->tStep = FISHING_A_PRESS_NO_MINIGAME;
-            break;
-        case GEN_3:
-        default:
-            task->tStep = FISHING_WAIT_FOR_A;
-            break;
-    }
+    // Skip the fishing minigame but still pause briefly before landing the Pokémon.
+    task->tFrameCounter = 0;
+    task->tStep = FISHING_WAIT_BEFORE_HOOK;
+    return TRUE;
+}
+
+// Add a short delay (about 2.5 seconds) before the Pokémon is landed.
+static bool32 Fishing_WaitBeforeHook(struct Task *task)
+{
+    AlignFishingAnimationFrames();
+    task->tFrameCounter++;
+    if (task->tFrameCounter >= 150) // ~2.5 seconds at 60 FPS
+        task->tStep = FISHING_MON_ON_HOOK;
     return TRUE;
 }
 
@@ -477,7 +467,7 @@ static bool32 DoesFishingMinigameAllowCancel(void)
     }
 }
 
-static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void)
+static bool32 __attribute__((unused)) Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void)
 {
     enum Ability ability;
 
@@ -489,7 +479,7 @@ static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void)
     return (ability == ABILITY_SUCTION_CUPS || ability == ABILITY_STICKY_HOLD);
 }
 
-static bool32 Fishing_RollForBite(u32 rod, bool32 isStickyHold)
+static bool32 __attribute__((unused)) Fishing_RollForBite(u32 rod, bool32 isStickyHold)
 {
     return ((RandomUniform(RNG_FISHING_BITE, 1, 100)) <= CalculateFishingBiteOdds(rod, isStickyHold));
 }

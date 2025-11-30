@@ -6453,10 +6453,6 @@ DirectSoundWaveData_sd90_enhanced_delay_shaku::
 	.incbin "sound/direct_sound_samples/sd90_enhanced_delay_shaku.bin"
 
 	.align 2
-DirectSoundWaveData_cymbal::
-	.incbin "sound/direct_sound_samples/cymbal.bin"
-
-	.align 2
 DirectSoundWaveData_countdown_five::
 	.incbin "sound/direct_sound_samples/Countdown_Five.bin"
 

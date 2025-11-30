@@ -7488,7 +7488,7 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct DamageContext *ctx)
     case ABILITY_MAGMA_CORE:
         if (moveType == TYPE_WATER)
         {
-            modifier = uq4_12_multiply(modifier, UQ_4_12(0.667));
+            modifier = uq4_12_multiply(modifier, UQ_4_12(0.5));
         }
     case ABILITY_DRY_SKIN:
         if (moveType == TYPE_FIRE)

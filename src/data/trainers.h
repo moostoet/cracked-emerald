@@ -588,7 +588,7 @@ F_TRAINER_FEMALE |
             .species = SPECIES_QWILFISH_HISUI,
             .gender = TRAINER_MON_RANDOM_GENDER,
 #line 298
-            .heldItem = ITEM_POISON_BARB,
+            .heldItem = ITEM_MYSTIC_WATER,
 #line 302
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 299
@@ -26161,7 +26161,7 @@ F_TRAINER_FEMALE |
             .species = SPECIES_BRONZOR,
             .gender = TRAINER_MON_RANDOM_GENDER,
 #line 10078
-            .heldItem = ITEM_EVIOLITE,
+            .heldItem = ITEM_ROOM_SERVICE,
 #line 10082
             .iv = TRAINER_PARTY_IVS(31, 0, 31, 0, 31, 31),
 #line 10079
@@ -26460,7 +26460,7 @@ F_TRAINER_FEMALE |
             .species = SPECIES_AIPOM,
             .gender = TRAINER_MON_RANDOM_GENDER,
 #line 10198
-            .heldItem = ITEM_KINGS_ROCK,
+            .heldItem = ITEM_NORMAL_GEM,
 #line 10202
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 10199

@@ -4345,9 +4345,11 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
             }
             break;
         case ABILITY_NOBLE_AURA:
-            if (!gSpecialStatuses[battler].switchInAbilityDone)
+            if (!gSpecialStatuses[battler].switchInAbilityDone && !IsOpposingSideEmpty(battler))
             {
+                SaveBattlerAttacker(gBattlerAttacker);
                 gBattlerAttacker = battler;
+                gBattlerAbility = battler;
                 gSpecialStatuses[battler].switchInAbilityDone = TRUE;
                 SET_STATCHANGER(STAT_SPATK, 1, TRUE);
                 BattleScriptPushCursorAndCallback(BattleScript_NobleAuraActivates);

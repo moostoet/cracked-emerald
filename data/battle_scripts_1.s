@@ -6689,18 +6689,9 @@ BattleScript_IntimidateInReverse::
 	call BattleScript_TryIntimidateHoldEffects
 	goto BattleScript_IntimidateLoopIncrement
 
-BattleScript_TryNobleAuraHoldEffect:
-	goto BattleScript_TryNobleAuraHoldEffectsRet
-BattleScript_TryNobleAuraHoldEffectsRet:
-	return
-
 BattleScript_NobleAuraActivates::
-	copybyte sSAVED_BATTLER, gBattlerTarget
-.if B_ABILITY_POP_UP == TRUE
-	showabilitypopup BS_ATTACKER
-	pause B_WAIT_TIME_LONG
-	destroyabilitypopup
-.endif
+	savetarget
+	call BattleScript_AbilityPopUp
 	setbyte gBattlerTarget, 0
 BattleScript_NobleAuraLoop:
 	jumpifbyteequal gBattlerTarget, gBattlerAttacker, BattleScript_NobleAuraLoopIncrement
@@ -6716,15 +6707,20 @@ BattleScript_NobleAuraEffect:
 	printstring STRINGID_PKMNCUTSSPATKWITH
 BattleScript_NobleAura_WaitString:
 	waitmessage B_WAIT_TIME_LONG
+	saveattacker
+	savetarget
 	copybyte sBATTLER, gBattlerTarget
 	call BattleScript_TryIntimidateHoldEffects
+	restoreattacker
+	restoretarget
 BattleScript_NobleAuraLoopIncrement:
 	addbyte gBattlerTarget, 1
 	jumpifbytenotequal gBattlerTarget, gBattlersCount, BattleScript_NobleAuraLoop
 BattleScript_NobleAuraEnd:
 	copybyte sBATTLER, gBattlerAttacker
 	destroyabilitypopup
-	copybyte gBattlerTarget, sSAVED_BATTLER
+	restoretarget
+	restoreattacker
 	pause B_WAIT_TIME_MED
 	end3
 

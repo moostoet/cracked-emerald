@@ -218,7 +218,7 @@ enum VolatileFlags
     F(VOLATILE_VESSEL_OF_RUIN,              vesselOfRuin,                  (u32, 1)) \
     F(VOLATILE_SWORD_OF_RUIN,               swordOfRuin,                   (u32, 1)) \
     F(VOLATILE_TABLETS_OF_RUIN,             tabletsOfRuin,                 (u32, 1)) \
-    F(VOLATILE_BEADS_OF_RUIN,               beadsOfRuin,                   (u32, 1))
+    F(VOLATILE_BEADS_OF_RUIN,               beadsOfRuin,                   (u32, 1)) 
 
 
 /* Use within a macro to get the maximum allowed value for a volatile. Requires _typeMaxValue as input. */
@@ -420,6 +420,7 @@ enum __attribute__((packed)) MoveEffect
     MOVE_EFFECT_RAGE,
     MOVE_EFFECT_PREVENT_ESCAPE,
     MOVE_EFFECT_NIGHTMARE,
+    MOVE_EFFECT_GLAIVE_RUSH,
     MOVE_EFFECT_ALL_STATS_UP,
     MOVE_EFFECT_REMOVE_STATUS,
     MOVE_EFFECT_ATK_DEF_DOWN,

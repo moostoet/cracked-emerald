@@ -415,6 +415,7 @@ extern const u8 BattleScript_SelectingNotAllowedMoveGorillaTacticsInPalace[];
 extern const u8 BattleScript_WanderingSpiritActivates[];
 extern const u8 BattleScript_MirrorArmorReflect[];
 extern const u8 BattleScript_GooeyActivates[];
+extern const u8 BattleScript_DrunkenFistActivates[];
 extern const u8 BattleScript_PastelVeilActivates[];
 extern const u8 BattleScript_BattlerFormChangeEnd3NoPopup[];
 extern const u8 BattleScript_AttackerFormChangeMoveEffect[];

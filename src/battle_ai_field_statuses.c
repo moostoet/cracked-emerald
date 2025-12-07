@@ -154,7 +154,6 @@ static bool32 DoesAbilityBenefitFromWeather(enum Ability ability, u32 weather)
     case ABILITY_CHLOROPHYLL:
     case ABILITY_FLOWER_GIFT:
     case ABILITY_HARVEST:
-    case ABILITY_LEAF_GUARD:
     case ABILITY_ORICHALCUM_PULSE:
     case ABILITY_PROTOSYNTHESIS:
     case ABILITY_SOLAR_POWER:
@@ -493,5 +492,4 @@ static enum FieldEffectOutcome BenefitsFromTrickRoom(u32 battler)
 
     return FIELD_EFFECT_POSITIVE;
 }
-
 

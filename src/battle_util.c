@@ -4958,6 +4958,21 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
                 effect++;
             }
             break;
+        case ABILITY_DRUNKEN_FIST:
+            if (IsBattlerAlive(gBattlerAttacker)
+             && IsBattlerAlive(battler)
+             && (CompareStat(battler, STAT_ATK, MAX_STAT_STAGE, CMP_LESS_THAN, gLastUsedAbility)
+                 || CompareStat(gBattlerAttacker, STAT_ACC, MIN_STAT_STAGE, CMP_GREATER_THAN, gLastUsedAbility)
+                 || GetBattlerAbility(gBattlerAttacker) == ABILITY_MIRROR_ARMOR)
+             && !gProtectStructs[gBattlerAttacker].confusionSelfDmg
+             && IsBattlerTurnDamaged(gBattlerTarget)
+             && !CanBattlerAvoidContactEffects(gBattlerAttacker, gBattlerTarget, GetBattlerAbility(gBattlerAttacker), GetBattlerHoldEffect(gBattlerAttacker), move))
+            {
+                PREPARE_ABILITY_BUFFER(gBattleTextBuff1, gLastUsedAbility);
+                BattleScriptCall(BattleScript_DrunkenFistActivates);
+                effect++;
+            }
+            break;
         case ABILITY_ROUGH_SKIN:
         case ABILITY_IRON_BARBS:
             if (IsBattlerAlive(gBattlerAttacker)
@@ -6191,6 +6206,7 @@ bool32 CanSetNonVolatileStatus(u32 battlerAtk, u32 battlerDef, enum Ability abil
     else if (IsLeafGuardProtected(battlerDef, abilityDef))
     {
         abilityAffected = TRUE;
+        gDisableStructs[battlerDef].leafGuardUsed = TRUE;
         battleScript = BattleScript_AbilityProtectsDoesntAffect;
     }
     else if (IsShieldsDownProtected(battlerDef, abilityDef))

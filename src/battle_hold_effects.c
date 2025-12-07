@@ -73,17 +73,7 @@ enum ItemEffect TryBoosterEnergy(u32 battler, enum Ability ability)
 
 static enum ItemEffect TryRoomService(u32 battler)
 {
-    if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM && CompareStat(battler, STAT_SPEED, MIN_STAT_STAGE, CMP_GREATER_THAN, GetBattlerAbility(battler)))
-    {
-        gEffectBattler = gBattleScripting.battler = battler;
-        SET_STATCHANGER(STAT_SPEED, 1, TRUE);
-        gBattleScripting.animArg1 = STAT_ANIM_PLUS1 + STAT_SPEED;
-        gBattleScripting.animArg2 = 0;
-        gLastUsedItem = gBattleMons[battler].item;
-        BattleScriptCall(BattleScript_ConsumableStatRaiseRet);
-        return ITEM_STATS_CHANGE;
-    }
-
+    (void)battler;
     return ITEM_NO_EFFECT;
 }
 
@@ -599,6 +589,12 @@ static enum ItemEffect TryToxicOrb(u32 battler)
     enum ItemEffect effect = ITEM_NO_EFFECT;
     enum Ability ability = GetBattlerAbility(battler);
 
+    if (ability == ABILITY_LEAF_GUARD && !gDisableStructs[battler].leafGuardUsed)
+    {
+        gDisableStructs[battler].leafGuardUsed = TRUE;
+        return ITEM_NO_EFFECT;
+    }
+
     if (CanBePoisoned(battler, battler, ability, ability)) // Can corrosion trigger toxic orb on itself?
     {
         gBattleMons[battler].status1 = STATUS1_TOXIC_POISON;
@@ -613,6 +609,12 @@ static enum ItemEffect TryFlameOrb(u32 battler)
 {
     enum ItemEffect effect = ITEM_NO_EFFECT;
     enum Ability ability = GetBattlerAbility(battler);
+
+    if (ability == ABILITY_LEAF_GUARD && !gDisableStructs[battler].leafGuardUsed)
+    {
+        gDisableStructs[battler].leafGuardUsed = TRUE;
+        return ITEM_NO_EFFECT;
+    }
 
     if (CanBeBurned(battler, battler, ability))
     {

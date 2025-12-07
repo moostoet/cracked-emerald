@@ -128,7 +128,7 @@ struct DisableStruct
     u8 magmaCoreBoosted:1;
     u8 flashFireBoosted:1;
     u8 boosterEnergyActivated:1;
-    u8 padding1:1;
+    u8 leafGuardUsed:1;
     u16 overwrittenAbility;   // abilities overwritten during battle (keep separate from battle history in case of switching)
     u8 roostActive:1;
     u8 unburdenActive:1;
@@ -201,7 +201,7 @@ struct SpecialStatus
     u8 instructedChosenTarget:3;
     u8 berryReduced:1;
     u8 neutralizingGasRemoved:1;    // See VARIOUS_TRY_END_NEUTRALIZING_GAS
-    u8 padding2:1;
+    u8 switchInAbilityDone:1;
     // End of byte
     u8 gemParam:7;
     u8 gemBoost:1;

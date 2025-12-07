@@ -763,8 +763,8 @@ const struct AbilityInfo gAbilitiesInfo[ABILITIES_COUNT] =
     [ABILITY_LEAF_GUARD] =
     {
         .name = _("Leaf Guard"),
-        .description = COMPOUND_STRING("Blocks status in sunshine."),
-        .aiRating = 2,
+        .description = COMPOUND_STRING("Blocks the first\nstatus after it\nswitches in."),
+        .aiRating = 3,
         .breakable = TRUE,
     },
 
@@ -2445,10 +2445,10 @@ const struct AbilityInfo gAbilitiesInfo[ABILITIES_COUNT] =
         .aiRating = 10,
     },
 
-    [ABILITY_JUMBLED] = 
+    [ABILITY_DRUNKEN_FIST] = 
     {
-        .name = ("Jumbled"),
-        .description = COMPOUND_STRING("High acc. > low, low > high."),
-        .aiRating = 7,
+        .name = _("Drunken Fist"),
+        .description = COMPOUND_STRING("Contact boosts Atk; lowers\nfoe's accuracy."),
+        .aiRating = 8,
     },
 };

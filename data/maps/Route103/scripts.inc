@@ -93,6 +93,7 @@ Route103_EventScript_AfterMayBattle::
 	giveitem ITEM_RARE_CANDY
 	giveitem ITEM_INFINITE_REPEL
 	giveitem ITEM_POKEMON_BOX_LINK
+	giveitem ITEM_HEALING_KIT
 	goto Route103_EventScript_RivalExit
 	end
 
@@ -101,6 +102,7 @@ Route103_EventScript_AfterBrendanBattle::
 	giveitem ITEM_RARE_CANDY
 	giveitem ITEM_INFINITE_REPEL
 	giveitem ITEM_POKEMON_BOX_LINK
+	giveitem ITEM_HEALING_KIT
 	goto Route103_EventScript_RivalExit
 	end
 

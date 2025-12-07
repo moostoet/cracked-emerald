@@ -9016,10 +9016,7 @@ u32 IsFlowerVeilProtected(u32 battler)
 
 u32 IsLeafGuardProtected(u32 battler, enum Ability ability)
 {
-    if (IsBattlerWeatherAffected(battler, B_WEATHER_SUN))
-        return ability == ABILITY_LEAF_GUARD;
-    else
-        return 0;
+    return (ability == ABILITY_LEAF_GUARD && !gDisableStructs[battler].leafGuardUsed);
 }
 
 bool32 IsShieldsDownProtected(u32 battler, enum Ability ability)
@@ -12437,6 +12434,14 @@ static void Cmd_setdamagetohealthdifference(void)
 
 static void HandleRoomMove(u32 statusFlag, u16 *timer, u8 stringId)
 {
+    bool32 extendRoom = FALSE;
+
+    if (statusFlag == STATUS_FIELD_TRICK_ROOM)
+    {
+        if (IsBattlerAlive(gBattlerAttacker) && GetBattlerHoldEffect(gBattlerAttacker) == HOLD_EFFECT_ROOM_SERVICE)
+            extendRoom = TRUE;
+    }
+
     if (gFieldStatuses & statusFlag)
     {
         gFieldStatuses &= ~statusFlag;
@@ -12445,7 +12450,7 @@ static void HandleRoomMove(u32 statusFlag, u16 *timer, u8 stringId)
     else
     {
         gFieldStatuses |= statusFlag;
-        *timer = 5;
+        *timer = extendRoom ? 8 : 5;
         gBattleCommunication[MULTISTRING_CHOOSER] = stringId;
     }
 }

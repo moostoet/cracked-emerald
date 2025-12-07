@@ -15071,6 +15071,25 @@ const struct Item gItemsInfo[] =
         .iconPic = gItemIcon_PokeshiDoll,
         .iconPalette = gItemIconPalette_PokeshiDoll,
     },
+
+    [ITEM_HEALING_KIT] =
+    {
+        .name = ITEM_NAME("Healing Kit"),
+        .pluralName = ITEM_PLURAL_NAME("Healing Kits"),
+        .price = 0,
+        .importance = 1,
+        .description = COMPOUND_STRING(
+            "Fully heals and\n"
+            "cures your whole\n"
+            "party anywhere."),
+        .pocket = POCKET_KEY_ITEMS,
+        .sortType = ITEM_TYPE_FIELD_USE,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_SacredAsh,
+        .effect = gItemEffect_HealingKit,
+        .iconPic = gItemIcon_LargePotion,
+        .iconPalette = gItemIconPalette_FullRestore,
+    },
 };
 
 #undef ITEM_NAME

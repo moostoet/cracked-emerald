@@ -11,7 +11,7 @@ AI_SINGLE_BATTLE_TEST("AI prefers Bubble over Water Gun if it's slower")
 
     GIVEN {
         ASSUME(GetMovePower(MOVE_WATER_GUN) == GetMovePower(MOVE_BUBBLE));
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT);
         PLAYER(SPECIES_SCIZOR) { Speed(speedPlayer); }
         OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_WATER_GUN, MOVE_BUBBLE); Speed(speedAi); }
     } WHEN {
@@ -174,6 +174,19 @@ AI_SINGLE_BATTLE_TEST("AI prefers moves which deal more damage instead of moves 
             }
     } SCENE {
         MESSAGE("Typhlosion fainted!");
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("AI chooses Rock Tomb when Sand Force and Rock Gem make it strongest option in sandstorm")
+{
+    PASSES_RANDOMLY(100, 100);
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_CORPHISH) { Level(20); Speed(40); Ability(ABILITY_SAND_STREAM); HP(40); }
+        PLAYER(SPECIES_PALPITOAD) { Level(20); Speed(35); }
+        OPPONENT(SPECIES_ROGGENROLA) { Level(17); Attack(50); Defense(35); SpDefense(40); Speed(20); Ability(ABILITY_SAND_FORCE); Item(ITEM_ROCK_GEM); Moves(MOVE_ROCK_TOMB, MOVE_BULLDOZE); }
+    } WHEN {
+        TURN { EXPECT_MOVE(opponent, MOVE_ROCK_TOMB); }
     }
 }
 

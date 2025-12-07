@@ -54,6 +54,151 @@ def convert_ability(tok):
         return ab.replace("_", " ").title()
     return tok
 
+#------------------------------------------------------------------------------
+# Configuration parsing for generation-dependent data
+#------------------------------------------------------------------------------
+def parse_gen_constants(emerald_dir=None):
+    """
+    Parse GEN_* constants from include/config/general.h.
+    Returns a mapping like {"GEN_1": 0, "GEN_2": 1, ..., "GEN_LATEST": 8}.
+    """
+    if emerald_dir is None:
+        # Default: assume we're in src/data/pokemon/species_info/
+        emerald_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
+
+    general_h = os.path.join(emerald_dir, "include", "config", "general.h")
+    constants = {}
+
+    # Fallback defaults
+    for i in range(1, 10):
+        constants[f"GEN_{i}"] = i - 1
+    constants["GEN_LATEST"] = 8
+
+    if not os.path.exists(general_h):
+        return constants
+
+    with open(general_h, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # Match patterns like: #define GEN_1 0
+    pattern = re.compile(r"#define\s+(GEN_\d+)\s+(\d+)")
+    for match in pattern.finditer(content):
+        constants[match.group(1)] = int(match.group(2))
+
+    # Match GEN_LATEST which references another constant
+    latest_pattern = re.compile(r"#define\s+(GEN_LATEST)\s+(GEN_\d+)")
+    match = latest_pattern.search(content)
+    if match:
+        ref = match.group(2)
+        constants["GEN_LATEST"] = constants.get(ref, 8)
+
+    return constants
+
+
+def parse_pokemon_config(emerald_dir=None, gen_constants=None):
+    """
+    Parse P_UPDATED_* config values from include/config/pokemon.h.
+    Resolves references like GEN_LATEST to their numeric values.
+    """
+    if emerald_dir is None:
+        emerald_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
+
+    if gen_constants is None:
+        gen_constants = parse_gen_constants(emerald_dir)
+
+    pokemon_h = os.path.join(emerald_dir, "include", "config", "pokemon.h")
+    config = {}
+
+    # Fallback: assume all P_UPDATED_* are GEN_LATEST
+    latest = gen_constants.get("GEN_LATEST", 8)
+    for key in ["P_UPDATED_TYPES", "P_UPDATED_STATS", "P_UPDATED_ABILITIES",
+                "P_UPDATED_EGG_GROUPS", "P_UPDATED_EXP_YIELDS"]:
+        config[key] = latest
+
+    if not os.path.exists(pokemon_h):
+        return config
+
+    with open(pokemon_h, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # Match patterns like: #define P_UPDATED_STATS GEN_LATEST
+    pattern = re.compile(r"#define\s+(P_[A-Z_]+)\s+(GEN_\w+|\d+)")
+    for match in pattern.finditer(content):
+        key = match.group(1)
+        value_str = match.group(2)
+
+        if value_str.isdigit():
+            config[key] = int(value_str)
+        elif value_str in gen_constants:
+            config[key] = gen_constants[value_str]
+
+    return config
+
+
+def evaluate_config_condition(condition, pokemon_config, gen_constants):
+    """
+    Evaluate a preprocessor condition like 'P_UPDATED_STATS >= GEN_7'.
+    Returns True if the condition is met, False otherwise.
+    """
+    condition = condition.strip()
+
+    # Match comparison: P_UPDATED_X >= GEN_Y (or other operators)
+    cmp_pattern = re.compile(
+        r"(P_[A-Z_]+)\s*(>=|<=|>|<|==|!=)\s*(GEN_\w+|\d+)"
+    )
+    match = cmp_pattern.match(condition)
+    if match:
+        left_name = match.group(1)
+        operator = match.group(2)
+        right_str = match.group(3)
+
+        left_val = pokemon_config.get(left_name)
+        if left_val is None:
+            # Unknown config, assume true (modern)
+            return True
+
+        if right_str.isdigit():
+            right_val = int(right_str)
+        else:
+            right_val = gen_constants.get(right_str, 0)
+
+        if operator == ">=":
+            return left_val >= right_val
+        elif operator == "<=":
+            return left_val <= right_val
+        elif operator == ">":
+            return left_val > right_val
+        elif operator == "<":
+            return left_val < right_val
+        elif operator == "==":
+            return left_val == right_val
+        elif operator == "!=":
+            return left_val != right_val
+
+    # For unrecognized conditions, assume true
+    return True
+
+
+# Global config - loaded once when module is imported
+_gen_constants = None
+_pokemon_config = None
+
+
+def get_config(emerald_dir=None):
+    """Get or initialize the global config."""
+    global _gen_constants, _pokemon_config
+    if _gen_constants is None:
+        _gen_constants = parse_gen_constants(emerald_dir)
+        _pokemon_config = parse_pokemon_config(emerald_dir, _gen_constants)
+    return _pokemon_config, _gen_constants
+
+
+def reset_config():
+    """Reset the global config (useful for testing or re-parsing with different dir)."""
+    global _gen_constants, _pokemon_config
+    _gen_constants = None
+    _pokemon_config = None
+
 # Define allowed operators
 allowed_operators = {
     ast.Add: op.add,
@@ -339,11 +484,15 @@ def extract_macros(lines):
             i += 1
     return macros
 
-def extract_constants(lines):
+def extract_constants(lines, pokemon_config=None, gen_constants=None):
     """
     Extract constant definitions from lines.
-    For conditional macros we always choose the modern value.
+    For conditional macros, evaluate using pokemon_config.
     """
+    # Load config if not provided
+    if pokemon_config is None or gen_constants is None:
+        pokemon_config, gen_constants = get_config()
+
     constants = {}
     pattern = re.compile(r'#define\s+([A-Z0-9_]+)\s+\(([^)]+)\)')
     for line in lines:
@@ -351,9 +500,20 @@ def extract_constants(lines):
         if m:
             name = m.group(1)
             definition = m.group(2).strip()
-            m_expr = re.search(r'P_UPDATED_STATS\s*>=\s*GEN_\d+\s*\?\s*(\d+)\s*:\s*(\d+)', definition)
+            # Match ternary: P_UPDATED_X >= GEN_Y ? val1 : val2
+            m_expr = re.search(
+                r'(P_[A-Z_]+)\s*(>=|<=|>|<|==|!=)\s*(GEN_\w+|\d+)\s*\?\s*(\d+)\s*:\s*(\d+)',
+                definition
+            )
             if m_expr:
-                constants[name] = int(m_expr.group(1))
+                condition = f"{m_expr.group(1)} {m_expr.group(2)} {m_expr.group(3)}"
+                true_val = int(m_expr.group(4))
+                false_val = int(m_expr.group(5))
+
+                if evaluate_config_condition(condition, pokemon_config, gen_constants):
+                    constants[name] = true_val
+                else:
+                    constants[name] = false_val
             else:
                 try:
                     constants[name] = int(definition)
@@ -379,16 +539,38 @@ def expand_macro(macro_def, arg_values):
             body = re.sub(r'\b' + re.escape(param) + r'\b', arg, body)
     return body
 
-def evaluate_stat_expression(expr, constants):
+def evaluate_stat_expression(expr, constants, pokemon_config=None, gen_constants=None):
     """
     Evaluate a base stat expression.
-    For ternary operators choose the true_value.
+    For ternary operators, evaluate the condition using pokemon_config.
     Replace tokens via constants and evaluate.
     """
+    # Load config if not provided
+    if pokemon_config is None or gen_constants is None:
+        pokemon_config, gen_constants = get_config()
+
     if "?" in expr:
-        m = re.search(r'\?(.*?)\:(.*)', expr)
-        if m:
-            expr = m.group(1).strip()
+        # Match ternary: CONDITION ? true_val : false_val
+        # Condition is typically like: P_UPDATED_STATS >= GEN_7
+        ternary_match = re.match(
+            r'(P_[A-Z_]+\s*(?:>=|<=|>|<|==|!=)\s*(?:GEN_\w+|\d+))\s*\?\s*([^:]+)\s*:\s*(.+)',
+            expr.strip()
+        )
+        if ternary_match:
+            condition = ternary_match.group(1)
+            true_val = ternary_match.group(2).strip()
+            false_val = ternary_match.group(3).strip()
+
+            if evaluate_config_condition(condition, pokemon_config, gen_constants):
+                expr = true_val
+            else:
+                expr = false_val
+        else:
+            # Fallback: old behavior for unrecognized ternary patterns
+            m = re.search(r'\?(.*?)\:(.*)', expr)
+            if m:
+                expr = m.group(1).strip()
+
     def replacer(match):
         token = match.group(0)
         if token.isdigit():
@@ -426,9 +608,82 @@ def recursively_expand(text, macros):
     return text
 
 #------------------------------------------------------------------------------
+# Preprocess block text to handle #if/#else/#endif conditionals
+#------------------------------------------------------------------------------
+def preprocess_conditionals(block_text, pokemon_config=None, gen_constants=None):
+    """
+    Process #if/#else/#endif blocks in the text, keeping only the branches
+    that match the current config.
+    """
+    if pokemon_config is None or gen_constants is None:
+        pokemon_config, gen_constants = get_config()
+
+    lines = block_text.split('\n')
+    result_lines = []
+
+    # Stack to track nested conditionals: [(condition_met, in_else_branch), ...]
+    condition_stack = []
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+
+        # Check for #if directive
+        if_match = re.match(r'#if\s+(.+)', stripped)
+        if if_match:
+            condition = if_match.group(1).strip()
+            condition_met = evaluate_config_condition(condition, pokemon_config, gen_constants)
+            condition_stack.append((condition_met, False))  # (met, in_else)
+            i += 1
+            continue
+
+        # Check for #elif directive
+        elif_match = re.match(r'#elif\s+(.+)', stripped)
+        if elif_match and condition_stack:
+            prev_met, _ = condition_stack[-1]
+            if prev_met:
+                # Previous condition was met, so skip this branch
+                condition_stack[-1] = (True, True)  # Mark as already handled
+            else:
+                # Check this condition
+                condition = elif_match.group(1).strip()
+                condition_met = evaluate_config_condition(condition, pokemon_config, gen_constants)
+                condition_stack[-1] = (condition_met, False)
+            i += 1
+            continue
+
+        # Check for #else directive
+        if stripped == '#else' and condition_stack:
+            prev_met, _ = condition_stack[-1]
+            # In else branch, include if previous conditions were NOT met
+            condition_stack[-1] = (not prev_met, True)
+            i += 1
+            continue
+
+        # Check for #endif directive
+        if stripped == '#endif' and condition_stack:
+            condition_stack.pop()
+            i += 1
+            continue
+
+        # For regular lines, include if all conditions in stack are met
+        should_include = all(met for met, _ in condition_stack)
+        if should_include:
+            result_lines.append(line)
+
+        i += 1
+
+    return '\n'.join(result_lines)
+
+
+#------------------------------------------------------------------------------
 # Parse a block of text (inside curly braces) to extract fields.
 #------------------------------------------------------------------------------
 def parse_pokemon_block(block_text, constants, macros):
+    # Preprocess to handle #if/#else/#endif conditionals
+    block_text = preprocess_conditionals(block_text)
+
     data = {}
     m = re.search(r'\.speciesName\s*=\s*_\("([^"]+)"\)', block_text)
     data["name"] = m.group(1) if m else ""
@@ -506,7 +761,18 @@ def parse_pokemon_block(block_text, constants, macros):
 #------------------------------------------------------------------------------
 # Process one .h file: locate Pokémon definitions and extract initializer blocks.
 #------------------------------------------------------------------------------
-def parse_file(filename):
+def parse_file(filename, emerald_dir=None):
+    """
+    Parse a species header file and return pokemon entries.
+    If emerald_dir is provided, config will be loaded from that directory.
+    """
+    # Initialize config from the emerald directory
+    if emerald_dir is not None:
+        reset_config()
+        get_config(emerald_dir)
+
+    pokemon_config, gen_constants = get_config()
+
     pokemon_entries = []
     try:
         with open(filename, "r", encoding="utf-8") as f:
@@ -515,7 +781,7 @@ def parse_file(filename):
         print(f"Error reading {filename}: {e}")
         return pokemon_entries
     macros = extract_macros(lines)
-    constants = extract_constants(lines)
+    constants = extract_constants(lines, pokemon_config, gen_constants)
     i = 0
     total = len(lines)
     while i < total:

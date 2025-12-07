@@ -54,6 +54,7 @@
 #include "pokemon_storage_system.h"
 #include "pokemon_summary_screen.h"
 #include "region_map.h"
+#include "script_pokemon_util.h"
 #include "reshow_battle_screen.h"
 #include "scanline_effect.h"
 #include "script.h"
@@ -2072,6 +2073,13 @@ static void BufferBagFullCantTakeItemMessage(u16 itemUnused)
 static void Task_PartyMenuModifyHP(u8 taskId)
 {
     s16 *data = gTasks[taskId].data;
+
+    if (tHPToAdd <= 0)
+    {
+        ConvertIntToDecimalStringN(gStringVar2, 0, STR_CONV_MODE_LEFT_ALIGN, 3);
+        SwitchTaskToFollowupFunc(taskId);
+        return;
+    }
 
     tHP += tHPIncrement;
     tHPToAdd--;
@@ -6075,12 +6083,107 @@ void ItemUseCB_DynamaxCandy(u8 taskId, TaskFunc task)
 #undef tDynamaxLevel
 #undef tOldFunc
 
+static bool8 MonNeedsPokemonCenterHeal(struct Pokemon *mon)
+{
+    u8 i;
+    u8 ppBonuses;
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
+    u16 hp = GetMonData(mon, MON_DATA_HP);
+    u16 maxHp = GetMonData(mon, MON_DATA_MAX_HP);
+
+    if (species == SPECIES_NONE)
+        return FALSE;
+
+    if (hp < maxHp)
+        return TRUE;
+
+    if (GetMonData(mon, MON_DATA_STATUS) != STATUS1_NONE)
+        return TRUE;
+
+    ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES);
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        u16 move = GetMonData(mon, MON_DATA_MOVE1 + i);
+        if (move != MOVE_NONE)
+        {
+            u8 pp = GetMonData(mon, MON_DATA_PP1 + i);
+            if (pp < CalculatePPWithBonus(move, ppBonuses, i))
+                return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+static bool8 DoesHealingKitNeedUse(void)
+{
+    u8 i;
+
+    for (i = 0; i < gPlayerPartyCount; i++)
+    {
+        if (MonNeedsPokemonCenterHeal(&gPlayerParty[i]))
+            return TRUE;
+    }
+
+    if (B_FLAG_TERA_ORB_CHARGED != 0
+        && CheckBagHasItem(ITEM_TERA_ORB, 1)
+        && !FlagGet(B_FLAG_TERA_ORB_CHARGED))
+        return TRUE;
+
+    return FALSE;
+}
+
+static void RefreshPartyMenuAfterHealingKit(void)
+{
+    u8 i;
+
+    for (i = 0; i < gPlayerPartyCount; i++)
+    {
+        struct Pokemon *mon = &gPlayerParty[i];
+
+        SetPartyMonAilmentGfx(mon, &sPartyMenuBoxes[i]);
+        if (gSprites[sPartyMenuBoxes[i].statusSpriteId].invisible)
+            DisplayPartyPokemonLevelCheck(mon, &sPartyMenuBoxes[i], 1);
+        DisplayPartyPokemonHPCheck(mon, &sPartyMenuBoxes[i], 1);
+        DisplayPartyPokemonHPBarCheck(mon, &sPartyMenuBoxes[i]);
+    }
+}
+
+static void ItemUseCB_HealingKit(u8 taskId, TaskFunc task)
+{
+    (void)task;
+
+    if (!DoesHealingKitNeedUse())
+    {
+        gPartyMenuUseExitCallback = FALSE;
+        PlaySE(SE_SELECT);
+        DisplayPartyMenuMessage(gText_WontHaveEffect, TRUE);
+        ScheduleBgCopyTilemapToVram(2);
+        gTasks[taskId].func = Task_ClosePartyMenuAfterText;
+        return;
+    }
+
+    gPartyMenuUseExitCallback = TRUE;
+    PlaySE(SE_USE_ITEM);
+    HealPlayerParty();
+    RefreshPartyMenuAfterHealingKit();
+    DisplayPartyMenuMessage(gText_PartyFullyHealed, TRUE);
+    ScheduleBgCopyTilemapToVram(2);
+    gTasks[taskId].func = Task_ClosePartyMenuAfterText;
+}
+
 #define tUsedOnSlot   data[0]
 #define tHadEffect    data[1]
 #define tLastSlotUsed data[2]
 
 void ItemUseCB_SacredAsh(u8 taskId, TaskFunc task)
 {
+    if (gSpecialVar_ItemId == ITEM_HEALING_KIT)
+    {
+        ItemUseCB_HealingKit(taskId, task);
+        return;
+    }
+
     sPartyMenuInternal->tUsedOnSlot = FALSE;
     sPartyMenuInternal->tHadEffect = FALSE;
     sPartyMenuInternal->tLastSlotUsed = gPartyMenu.slotId;
@@ -6091,6 +6194,7 @@ static void UseSacredAsh(u8 taskId)
 {
     struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
     u16 hp;
+    u32 status;
 
     if (GetMonData(mon, MON_DATA_SPECIES) == SPECIES_NONE)
     {
@@ -6099,6 +6203,7 @@ static void UseSacredAsh(u8 taskId)
     }
 
     hp = GetMonData(mon, MON_DATA_HP);
+    status = GetMonData(mon, MON_DATA_STATUS);
     if (ExecuteTableBasedItemEffect(mon, gSpecialVar_ItemId, gPartyMenu.slotId, 0))
     {
         gTasks[taskId].func = Task_SacredAshLoop;
@@ -6109,12 +6214,30 @@ static void UseSacredAsh(u8 taskId)
     SetPartyMonAilmentGfx(mon, &sPartyMenuBoxes[gPartyMenu.slotId]);
     if (gSprites[sPartyMenuBoxes[gPartyMenu.slotId].statusSpriteId].invisible)
         DisplayPartyPokemonLevelCheck(mon, &sPartyMenuBoxes[gPartyMenu.slotId], 1);
-    AnimatePartySlot(sPartyMenuInternal->tLastSlotUsed, 0);
-    AnimatePartySlot(gPartyMenu.slotId, 1);
-    PartyMenuModifyHP(taskId, gPartyMenu.slotId, 1, GetMonData(mon, MON_DATA_HP) - hp, Task_SacredAshDisplayHPRestored);
-    ResetHPTaskData(taskId, 0, hp);
-    sPartyMenuInternal->tUsedOnSlot = TRUE;
-    sPartyMenuInternal->tHadEffect = TRUE;
+    {
+        s16 hpDiff = GetMonData(mon, MON_DATA_HP) - hp;
+        bool32 statusChanged = (status != GetMonData(mon, MON_DATA_STATUS));
+
+        if (hpDiff > 0)
+        {
+            AnimatePartySlot(sPartyMenuInternal->tLastSlotUsed, 0);
+            AnimatePartySlot(gPartyMenu.slotId, 1);
+            PartyMenuModifyHP(taskId, gPartyMenu.slotId, 1, hpDiff, Task_SacredAshDisplayHPRestored);
+            ResetHPTaskData(taskId, 0, hp);
+        }
+        else if (statusChanged)
+        {
+            AnimatePartySlot(sPartyMenuInternal->tLastSlotUsed, 0);
+            AnimatePartySlot(gPartyMenu.slotId, 1);
+            GetMonNickname(mon, gStringVar1);
+            DisplayPartyMenuMessage(gText_PkmnBecameHealthy, FALSE);
+            ScheduleBgCopyTilemapToVram(2);
+            gTasks[taskId].func = Task_SacredAshLoop;
+        }
+
+        sPartyMenuInternal->tUsedOnSlot = TRUE;
+        sPartyMenuInternal->tHadEffect = TRUE;
+    }
 }
 
 static void Task_SacredAshLoop(u8 taskId)

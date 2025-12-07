@@ -7330,6 +7330,18 @@ BattleScript_GooeyActivates::
 BattleScript_GooeyActivatesRet:
 	return
 
+BattleScript_DrunkenFistActivates::
+	call BattleScript_AbilityPopUp
+	modifybattlerstatstage BS_TARGET, STAT_ATK, INCREASE, 1, BattleScript_DrunkenFistTryAccDrop, ANIM_ON
+BattleScript_DrunkenFistTryAccDrop:
+	swapattackerwithtarget  @ for defiant, mirror armor
+	statbuffchange BS_ATTACKER, STAT_CHANGE_ONLY_CHECKING, BattleScript_DrunkenFistEnd
+	waitstate
+	seteffectsecondary BS_ATTACKER, BS_TARGET, MOVE_EFFECT_ACC_MINUS_1
+	swapattackerwithtarget
+BattleScript_DrunkenFistEnd:
+	return
+
 BattleScript_AbilityStatusEffect::
 	waitstate
 	call BattleScript_AbilityPopUp

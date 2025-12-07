@@ -4329,12 +4329,12 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
 #if P_FAMILY_PETILIL
     [SPECIES_PETILIL] =
     {
-        .baseHP        = 45,
+        .baseHP        = 60,
         .baseAttack    = 35,
-        .baseDefense   = 50,
+        .baseDefense   = 60,
         .baseSpeed     = 30,
-        .baseSpAttack  = 70,
-        .baseSpDefense = 50,
+        .baseSpAttack  = 75,
+        .baseSpDefense = 60,
         .types = MON_TYPES(TYPE_GRASS),
         .catchRate = 190,
         .expYield = 56,

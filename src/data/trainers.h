@@ -13114,7 +13114,7 @@ F_TRAINER_FEMALE |
             .moves = {
 #line 5092
                 MOVE_WHIRLPOOL,
-                MOVE_STRENGTH_SAP,
+                MOVE_PAIN_SPLIT,
                 MOVE_WILL_O_WISP,
                 MOVE_NIGHT_SHADE,
             },
@@ -13201,7 +13201,7 @@ F_TRAINER_FEMALE |
 #line 5130
             .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
 #line 5127
-            .ability = ABILITY_JUMBLED,
+            .ability = ABILITY_DRUNKEN_FIST,
 #line 5128
             .lvl = 25,
 #line 5129
@@ -26648,7 +26648,7 @@ F_TRAINER_FEMALE |
 #line 10276
             .ability = ABILITY_NOBLE_AURA,
 #line 10277
-            .lvl = 6,
+            .lvl = 5,
 #line 10278
             .nature = NATURE_MILD,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -26886,7 +26886,7 @@ F_TRAINER_FEMALE |
 #line 10372
             .ability = ABILITY_ADAPTABILITY,
 #line 10373
-            .lvl = 6,
+            .lvl = 5,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -27123,7 +27123,7 @@ F_TRAINER_FEMALE |
 #line 10464
             .ability = ABILITY_DAZZLING,
 #line 10465
-            .lvl = 6,
+            .lvl = 5,
 #line 10466
             .nature = NATURE_ADAMANT,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -27363,7 +27363,7 @@ F_TRAINER_FEMALE |
 #line 10558
             .ability = ABILITY_NOBLE_AURA,
 #line 10559
-            .lvl = 6,
+            .lvl = 5,
 #line 10560
             .nature = NATURE_MILD,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -27607,7 +27607,7 @@ F_TRAINER_FEMALE |
 #line 10654
             .ability = ABILITY_ADAPTABILITY,
 #line 10655
-            .lvl = 6,
+            .lvl = 5,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -27850,7 +27850,7 @@ F_TRAINER_FEMALE |
 #line 10746
             .ability = ABILITY_DAZZLING,
 #line 10747
-            .lvl = 6,
+            .lvl = 5,
 #line 10748
             .nature = NATURE_ADAMANT,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,

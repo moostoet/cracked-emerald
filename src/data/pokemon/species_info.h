@@ -98,6 +98,8 @@
 #define NO_FLIP 1
 
 const struct SpeciesInfo gSpeciesInfo[] =
+{
+    [SPECIES_NONE] =
     {
         .speciesName = _("??????????"),
         .cryId = CRY_NONE,
@@ -143,9 +145,15 @@ const struct SpeciesInfo gSpeciesInfo[] =
             .subspriteTables = sOamTables_32x32,
             .anims = sAnimTable_Following,
             .images = sPicTable_Substitute,
+            .affineAnims = gDummySpriteAffineAnimTable,
         },
+    #endif
+        .levelUpLearnset = sNoneLevelUpLearnset,
+        .teachableLearnset = sNoneTeachableLearnset,
+        .eggMoveLearnset = sNoneEggMoveLearnset,
+    },
 
-#include "species_info/gen_1_families.h"
+    #include "species_info/gen_1_families.h"
 #include "species_info/gen_2_families.h"
 #include "species_info/gen_3_families.h"
 #include "species_info/gen_4_families.h"

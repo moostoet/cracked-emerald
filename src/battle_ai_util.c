@@ -203,7 +203,7 @@ u32 GetIncomingMove(u32 battler, u32 opposingBattler, struct AiLogicData *aiData
 // When not predicting, don't want to reference player's previous move; leads to weird behaviour for cases like Fake Out or Protect, especially in doubles
 u32 GetIncomingMoveSpeedCheck(u32 battler, u32 opposingBattler, struct AiLogicData *aiData)
 {
-    if (aiData->predictingMove && CanAiPredictMove())
+    if (aiData->predictingMove && CanAiPredictMove(battler))
         {
         // Ignore moves that don't do damage or only have priority one time
         if (GetMovePower(aiData->predictedMove[opposingBattler]) != 0 && GetMoveEffect(aiData->predictedMove[opposingBattler]) != EFFECT_FIRST_TURN_ONLY)

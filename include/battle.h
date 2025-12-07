@@ -1236,7 +1236,9 @@ static inline bool32 IsDoubleBattle(void)
 
 static inline bool32 IsSpreadMove(u32 moveTarget)
 {
-    return IsDoubleBattle() && (moveTarget == MOVE_TARGET_BOTH || moveTarget == MOVE_TARGET_FOES_AND_ALLY);
+    return IsDoubleBattle() && (moveTarget == MOVE_TARGET_BOTH
+                             || moveTarget == MOVE_TARGET_FOES_AND_ALLY
+                             || moveTarget == MOVE_TARGET_USER_PARTNER);
 }
 
 static inline bool32 IsDoubleSpreadMove(void)
@@ -1248,6 +1250,12 @@ static inline bool32 IsDoubleSpreadMove(void)
 
 static inline bool32 IsBattlerInvalidForSpreadMove(u32 battlerAtk, u32 battlerDef, u32 moveTarget)
 {
+    if (moveTarget == MOVE_TARGET_USER_PARTNER)
+    {
+        // Only user and partner are valid targets
+        return (battlerDef != battlerAtk && battlerDef != BATTLE_PARTNER(battlerAtk))
+            || !IsBattlerAlive(battlerDef);
+    }
     return battlerDef == battlerAtk
         || !IsBattlerAlive(battlerDef)
         || (battlerDef == BATTLE_PARTNER(battlerAtk) && (moveTarget == MOVE_TARGET_BOTH));

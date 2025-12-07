@@ -7,13 +7,12 @@ SINGLE_BATTLE_TEST("Howl raises user's Attack by 1 stage", s16 damage)
     PARAMETRIZE { raiseAttack = FALSE; }
     PARAMETRIZE { raiseAttack = TRUE; }
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_HOWL) == EFFECT_ATTACK_UP
-            || GetMoveEffect(MOVE_HOWL) == EFFECT_ATTACK_UP_USER_ALLY);
+        ASSUME(GetMoveEffect(MOVE_HOWL) == EFFECT_ATTACK_UP);
         ASSUME(GetMoveCategory(MOVE_SCRATCH) == DAMAGE_CATEGORY_PHYSICAL);
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
-        if (raiseAttack) TURN { MOVE(player, MOVE_HOWL); }
+        if (raiseAttack) TURN { MOVE(player, MOVE_HOWL, target: player); }
         TURN { MOVE(player, MOVE_SCRATCH); }
     } SCENE {
         if (raiseAttack) {
@@ -34,14 +33,15 @@ DOUBLE_BATTLE_TEST("Howl raises user's and partner's Attack by 1 stage", s16 dam
     PARAMETRIZE { raiseAttack = FALSE; }
     PARAMETRIZE { raiseAttack = TRUE; }
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_HOWL) == EFFECT_ATTACK_UP_USER_ALLY);
+        ASSUME(B_UPDATED_MOVE_DATA >= GEN_8);
+        ASSUME(GetMoveTarget(MOVE_HOWL) == MOVE_TARGET_USER_PARTNER);
         ASSUME(GetMoveCategory(MOVE_SCRATCH) == DAMAGE_CATEGORY_PHYSICAL);
         PLAYER(SPECIES_WOBBUFFET) { Speed(15); }
         PLAYER(SPECIES_WYNAUT) { Speed(10); }
         OPPONENT(SPECIES_WOBBUFFET) { Speed(13); }
         OPPONENT(SPECIES_WYNAUT) { Speed(12); }
     } WHEN {
-        if (raiseAttack) TURN { MOVE(playerLeft, MOVE_HOWL); }
+        if (raiseAttack) TURN { MOVE(playerLeft, MOVE_HOWL, target: playerLeft); }
         TURN { MOVE(playerLeft, MOVE_SCRATCH, target: opponentLeft); }
         TURN { MOVE(playerRight, MOVE_SCRATCH, target: opponentRight); }
     } SCENE {
@@ -67,7 +67,9 @@ DOUBLE_BATTLE_TEST("Howl does not work on partner if it has Soundproof")
     s16 damage[2];
 
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_HOWL) == EFFECT_ATTACK_UP_USER_ALLY);
+        ASSUME(B_UPDATED_MOVE_DATA >= GEN_8);
+        ASSUME(B_UPDATED_MOVE_FLAGS >= GEN_8); // Howl is a sound move in Gen 8+
+        ASSUME(GetMoveTarget(MOVE_HOWL) == MOVE_TARGET_USER_PARTNER);
         ASSUME(GetMoveCategory(MOVE_SCRATCH) == DAMAGE_CATEGORY_PHYSICAL);
         PLAYER(SPECIES_WOBBUFFET) { Speed(15); }
         PLAYER(SPECIES_VOLTORB) { Speed(10); Ability(ABILITY_SOUNDPROOF); }
@@ -75,7 +77,7 @@ DOUBLE_BATTLE_TEST("Howl does not work on partner if it has Soundproof")
         OPPONENT(SPECIES_WYNAUT) { Speed(1); }
     } WHEN {
         TURN { MOVE(playerRight, MOVE_SCRATCH, target: opponentLeft); }
-        TURN { MOVE(playerLeft, MOVE_HOWL); MOVE(playerRight, MOVE_SCRATCH, target: opponentLeft); }
+        TURN { MOVE(playerLeft, MOVE_HOWL, target: playerLeft); MOVE(playerRight, MOVE_SCRATCH, target: opponentLeft); }
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_SCRATCH, playerRight);
         HP_BAR(opponentLeft, captureDamage: &damage[0]);
@@ -85,7 +87,7 @@ DOUBLE_BATTLE_TEST("Howl does not work on partner if it has Soundproof")
         MESSAGE("Wobbuffet's Attack rose!");
         NONE_OF {
             ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, playerRight);
-            MESSAGE("Wynaut's Attack rose!");
+            MESSAGE("Voltorb's Attack rose!");
         }
         ABILITY_POPUP(playerRight, ABILITY_SOUNDPROOF);
         MESSAGE("Voltorb's Soundproof blocks Howl!");

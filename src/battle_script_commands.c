@@ -5386,6 +5386,18 @@ static inline bool32 TryTriggerSymbiosis(u32 battler, u32 ally)
 static u32 GetNextTarget(u32 moveTarget, bool32 excludeCurrent)
 {
     u32 battler;
+
+    // MOVE_TARGET_USER_PARTNER only targets user and partner
+    if (moveTarget == MOVE_TARGET_USER_PARTNER)
+    {
+        u32 partner = BATTLE_PARTNER(gBattlerAttacker);
+        if (!gBattleStruct->battlerState[gBattlerAttacker].targetsDone[partner]
+         && IsBattlerAlive(partner)
+         && !(excludeCurrent && partner == gBattlerTarget))
+            return partner;
+        return MAX_BATTLERS_COUNT;
+    }
+
     for (battler = 0; battler < MAX_BATTLERS_COUNT; battler++)
     {
         if (battler == gBattlerAttacker || !IsBattlerAlive(battler))
@@ -6336,7 +6348,8 @@ static void Cmd_moveend(void)
                 && IsDoubleBattle()
                 && !gProtectStructs[gBattlerAttacker].chargingTurn
                 && (moveTarget == MOVE_TARGET_BOTH
-                    || moveTarget == MOVE_TARGET_FOES_AND_ALLY))
+                    || moveTarget == MOVE_TARGET_FOES_AND_ALLY
+                    || moveTarget == MOVE_TARGET_USER_PARTNER))
             {
                 u32 nextTarget = GetNextTarget(moveTarget, FALSE);
 

@@ -2968,10 +2968,15 @@ static enum MoveCanceler CancelerMultiTargetMoves(struct BattleContext *ctx)
 
             enum Ability abilityDef = GetBattlerAbility(battlerDef);
 
-            if (ctx->battlerAtk == battlerDef
-             || !IsBattlerAlive(battlerDef)
+            // For MOVE_TARGET_USER_PARTNER, only user and partner are valid targets
+            bool32 invalidUserPartnerTarget = (moveTarget == MOVE_TARGET_USER_PARTNER)
+                && (battlerDef != ctx->battlerAtk && battlerDef != BATTLE_PARTNER(ctx->battlerAtk));
+
+            if (invalidUserPartnerTarget
+             || (!IsBattlerAlive(battlerDef) && battlerDef != ctx->battlerAtk)
              || (GetMoveEffect(ctx->move) == EFFECT_SYNCHRONOISE && !DoBattlersShareType(ctx->battlerAtk, battlerDef))
              || (moveTarget == MOVE_TARGET_BOTH && ctx->battlerAtk == BATTLE_PARTNER(battlerDef))
+             || (moveTarget != MOVE_TARGET_USER_PARTNER && ctx->battlerAtk == battlerDef)
              || IsBattlerProtected(ctx->battlerAtk, battlerDef, ctx->move)) // Missing Invulnerable check
             {
                 gBattleStruct->moveResultFlags[battlerDef] = MOVE_RESULT_NO_EFFECT;
@@ -2995,6 +3000,8 @@ static enum MoveCanceler CancelerMultiTargetMoves(struct BattleContext *ctx)
         }
         if (moveTarget == MOVE_TARGET_BOTH)
             gBattleStruct->numSpreadTargets = CountAliveMonsInBattle(BATTLE_ALIVE_EXCEPT_BATTLER_SIDE, ctx->battlerAtk);
+        else if (moveTarget == MOVE_TARGET_USER_PARTNER)
+            gBattleStruct->numSpreadTargets = 1 + (IsBattlerAlive(BATTLE_PARTNER(ctx->battlerAtk)) ? 1 : 0);
         else
             gBattleStruct->numSpreadTargets = CountAliveMonsInBattle(BATTLE_ALIVE_EXCEPT_BATTLER, ctx->battlerAtk);
     }
@@ -6418,6 +6425,10 @@ u32 GetBattleMoveTarget(u16 move, u8 setTarget)
             targetBattler = BATTLE_PARTNER(gBattlerAttacker);
         else
             targetBattler = gBattlerAttacker;
+        break;
+    case MOVE_TARGET_USER_PARTNER:
+        // Start with user, MOVEEND_NEXT_TARGET will iterate to partner
+        targetBattler = gBattlerAttacker;
         break;
     }
 

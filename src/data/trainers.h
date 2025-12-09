@@ -1194,7 +1194,7 @@ F_TRAINER_FEMALE |
             .species = SPECIES_KILOWATTREL,
             .gender = TRAINER_MON_RANDOM_GENDER,
 #line 532
-            .heldItem = ITEM_WIDE_LENS,
+            .heldItem = ITEM_MENTAL_HERB,
 #line 536
             .iv = TRAINER_PARTY_IVS(31, 0, 31, 31, 31, 31),
 #line 533
@@ -1206,8 +1206,8 @@ F_TRAINER_FEMALE |
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
 #line 537
-                MOVE_HURRICANE,
-                MOVE_THUNDER,
+                MOVE_AIR_SLASH,
+                MOVE_DISCHARGE,
                 MOVE_HEAT_WAVE,
                 MOVE_UPROAR,
             },

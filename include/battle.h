@@ -168,7 +168,7 @@ struct ProtectStruct
     u32 assuranceDoubled:1;
     u32 forcedSwitch:1;
     u32 myceliumMight:1;
-    u32 padding1:1;
+    u32 confusionSelfDmg:1;
     // End of 32-bit bitfield
     u16 helpingHand:3;
     u16 revengeDoubled:4;

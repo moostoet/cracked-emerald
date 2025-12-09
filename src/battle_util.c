@@ -2247,6 +2247,7 @@ static enum MoveCanceler CancelerConfused(struct BattleContext *ctx)
             if (RandomPercentage(RNG_CONFUSION, (GetConfig(CONFIG_CONFUSION_SELF_DMG_CHANCE) >= GEN_7 ? 33 : 50)))
             {
                 gBattleCommunication[MULTISTRING_CHOOSER] = TRUE;
+                gProtectStructs[ctx->battlerAtk].confusionSelfDmg = TRUE;
                 struct BattleContext dmgCtx = {0};
                 dmgCtx.battlerAtk = dmgCtx.battlerDef = ctx->battlerAtk;
                 dmgCtx.move = dmgCtx.chosenMove = MOVE_NONE;

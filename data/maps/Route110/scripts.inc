@@ -987,3 +987,105 @@ Route110_Text_KeepAnEyeOutForRival:
 	.string "Well, I had better get going.\n"
 	.string "See you again, {PLAYER}{KUN}!$"
 
+@ ============================================
+@ Route 110 - CoolTrainer Hyde (Boss Trainer)
+@ Requires defeating: Timmy, Joseph, Edwin, Alyssa, Edward
+@ After battle, teaches Earthquake to one Pokemon
+@ ============================================
+
+Route110_CoolTrainer_Boss_Hyde::
+	lock
+	faceplayer
+	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_EARTHQUAKE_HYDE, Route110_EventScript_HydeAlreadyTaught
+	goto_if_defeated TRAINER_HYDE, Route110_EventScript_HydeOfferTutor
+	goto_if_not_defeated TRAINER_TIMMY, Route110_EventScript_HydeNotReady
+	goto_if_not_defeated TRAINER_JOSEPH, Route110_EventScript_HydeNotReady
+	goto_if_not_defeated TRAINER_EDWIN_1, Route110_EventScript_HydeNotReady
+	goto_if_not_defeated TRAINER_ALYSSA, Route110_EventScript_HydeNotReady
+	goto_if_not_defeated TRAINER_EDWARD, Route110_EventScript_HydeNotReady
+	@ All trainers defeated - allow battle
+	msgbox Route110_Text_HydeIntro, MSGBOX_DEFAULT
+	trainerbattle_no_intro TRAINER_HYDE, Route110_Text_HydeDefeated
+	goto Route110_EventScript_HydeOfferTutor
+	end
+
+Route110_EventScript_HydeNotReady::
+	msgbox Route110_Text_HydeNotReady, MSGBOX_DEFAULT
+	release
+	end
+
+Route110_EventScript_HydeOfferTutor::
+	msgbox Route110_Text_HydeOfferTeach, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, Route110_EventScript_HydeDeclined
+	call MoveTutor_EventScript_CanOnlyBeLearnedOnce
+	goto_if_eq VAR_RESULT, NO, Route110_EventScript_HydeDeclined
+	msgbox Route110_Text_HydeWhichMon, MSGBOX_DEFAULT
+	setvar VAR_ITEM_ID, MOVE_EARTHQUAKE
+	buffermovename STR_VAR_1, MOVE_EARTHQUAKE
+	call MoveTutor_EventScript_OpenBox
+	goto_if_eq VAR_RESULT, 4, Route110_EventScript_HydeDeclined
+	setflag FLAG_MOVE_TUTOR_TAUGHT_EARTHQUAKE_HYDE
+	goto Route110_EventScript_HydeAlreadyTaught
+	end
+
+Route110_EventScript_HydeDeclined::
+	msgbox Route110_Text_HydeDeclined, MSGBOX_DEFAULT
+	release
+	end
+
+Route110_EventScript_HydeAlreadyTaught::
+	msgbox Route110_Text_HydeAlreadyTaught, MSGBOX_DEFAULT
+	release
+	end
+
+@ ============================================
+@ Hyde Text Strings
+@ ============================================
+
+Route110_Text_HydeNotReady:
+	.string "You want to battle me?\p"
+	.string "Ha! You're not ready yet.\p"
+	.string "First, prove yourself by defeating\n"
+	.string "the other TRAINERS on this route.\p"
+	.string "Come back when you've faced them all.$"
+
+Route110_Text_HydeIntro:
+	.string "So, you've defeated the other\n"
+	.string "TRAINERS here. Not bad.\p"
+	.string "I came to this route to train my\n"
+	.string "GROUND-type POKéMON.\p"
+	.string "I was certain WATTSON would fall\n"
+	.string "to my team's EARTHQUAKE…\p"
+	.string "But it wasn't enough. His team\n"
+	.string "was tougher than I expected.\p"
+	.string "Now I train here every day,\n"
+	.string "preparing for a rematch.\p"
+	.string "Show me what you've got!$"
+
+Route110_Text_HydeDefeated:
+	.string "Gah! You're strong…\n"
+	.string "Perhaps stronger than WATTSON.$"
+
+Route110_Text_HydeOfferTeach:
+	.string "You've got real talent.\p"
+	.string "In return for the battle, I'd like\n"
+	.string "to teach one of your POKéMON\l"
+	.string "the move I've been perfecting.\p"
+	.string "Want me to teach a POKéMON\n"
+	.string "EARTHQUAKE?$"
+
+Route110_Text_HydeWhichMon:
+	.string "Which POKéMON should I teach\n"
+	.string "EARTHQUAKE to?$"
+
+Route110_Text_HydeDeclined:
+	.string "No? That's a shame.\p"
+	.string "If you change your mind, come\n"
+	.string "talk to me again.$"
+
+Route110_Text_HydeAlreadyTaught:
+	.string "I'm still training every day.\p"
+	.string "Use EARTHQUAKE well, and perhaps\n"
+	.string "you'll have better luck against\l"
+	.string "WATTSON than I did.$"
+

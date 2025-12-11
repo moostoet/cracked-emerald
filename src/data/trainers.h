@@ -47489,3 +47489,80 @@ F_TRAINER_FEMALE |
             },
         },
     },
+#line 18372
+    [DIFFICULTY_NORMAL][TRAINER_HYDE] =
+    {
+#line 18373
+        .trainerName = _("HYDE"),
+#line 18374
+        .trainerClass = TRAINER_CLASS_COOLTRAINER,
+#line 18375
+        .trainerPic = TRAINER_PIC_COOLTRAINER_M,
+        .encounterMusic_gender =
+#line 18377
+            TRAINER_ENCOUNTER_MUSIC_COOL,
+#line 18378
+        .battleType = TRAINER_BATTLE_TYPE_SINGLES,
+#line 18379
+        .aiFlags = AI_FLAG_SMART_TRAINER,
+#line 0
+        .trainerBackPic = TRAINER_PIC_COOLTRAINER_M,
+        .partySize = 3,
+        .party = (const struct TrainerMon[])
+        {
+            {
+#line 18381
+            .species = SPECIES_SANDSLASH,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 18383
+            .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
+#line 18382
+            .lvl = 28,
+            .nature = NATURE_HARDY,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 18384
+                MOVE_EARTHQUAKE,
+                MOVE_SLASH,
+                MOVE_SAND_TOMB,
+                MOVE_RAPID_SPIN,
+            },
+            },
+            {
+#line 18389
+            .species = SPECIES_NIDOKING,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 18391
+            .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
+#line 18390
+            .lvl = 28,
+            .nature = NATURE_HARDY,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 18392
+                MOVE_EARTHQUAKE,
+                MOVE_POISON_JAB,
+                MOVE_THRASH,
+                MOVE_HORN_ATTACK,
+            },
+            },
+            {
+#line 18397
+            .species = SPECIES_VIBRAVA,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 18399
+            .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
+#line 18398
+            .lvl = 28,
+            .nature = NATURE_HARDY,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 18400
+                MOVE_EARTHQUAKE,
+                MOVE_DRAGON_BREATH,
+                MOVE_SAND_TOMB,
+                MOVE_SCREECH,
+            },
+            },
+        },
+    },

@@ -18368,3 +18368,36 @@ Double Battle: No
 Kyogre
 Level: 5
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+
+=== TRAINER_HYDE ===
+Name: HYDE
+Class: Cooltrainer
+Pic: Cooltrainer M
+Gender: Male
+Music: Cool
+Double Battle: No
+AI: Smart Trainer
+
+Sandslash
+Level: 28
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- Earthquake
+- Slash
+- Sand Tomb
+- Rapid Spin
+
+Nidoking
+Level: 28
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- Earthquake
+- Poison Jab
+- Thrash
+- Horn Attack
+
+Vibrava
+Level: 28
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- Earthquake
+- Dragon Breath
+- Sand Tomb
+- Screech

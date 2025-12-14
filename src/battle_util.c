@@ -4005,14 +4005,14 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
             if (effect)
                 return TRUE;
         }
-        else if (gBattleStruct->startingStatus & STARTING_STATUS_RISING_TIDE)
+        else if (gStartingStatuses.risingTide)
         {
             effect = SetStartingFieldStatus(
                         STATUS_FIELD_RISING_TIDE,
                         B_MSG_SET_RISING_TIDE,
                         0,
-                        &gFieldTimers.terrainTimer);
-            gBattleStruct->startingStatus &= ~STARTING_STATUS_RISING_TIDE;
+                        &gFieldTimers.terrainTimer, 0);
+            gStartingStatuses.risingTide = FALSE;
             isTerrain = TRUE;
             if (effect)
             {

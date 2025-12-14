@@ -8709,7 +8709,7 @@ F_TRAINER_FEMALE |
 #line 3396
         .aiFlags = AI_FLAG_SMART_TRAINER,
 #line 3397
-        .startingStatus = STARTING_STATUS_RISING_TIDE,
+        .startingStatus = { .risingTide = TRUE, },
 #line 0
         .trainerBackPic = TRAINER_PIC_BLACK_BELT,
         .partySize = 3,
@@ -13161,7 +13161,7 @@ F_TRAINER_FEMALE |
 #line 5113
         .aiFlags = AI_FLAG_SMART_TRAINER,
 #line 5114
-        .startingStatus = STARTING_STATUS_RISING_TIDE,
+        .startingStatus = { .risingTide = TRUE, },
 #line 0
         .trainerBackPic = TRAINER_PIC_LEADER_BRAWLY,
         .partySize = 6,
@@ -21487,7 +21487,7 @@ F_TRAINER_FEMALE |
 #line 8315
         .aiFlags = AI_FLAG_SMART_TRAINER,
 #line 8316
-        .startingStatus = STARTING_STATUS_RISING_TIDE,
+        .startingStatus = { .risingTide = TRUE, },
 #line 0
         .trainerBackPic = TRAINER_PIC_BATTLE_GIRL,
         .partySize = 3,
@@ -21583,7 +21583,7 @@ F_TRAINER_FEMALE |
 #line 8352
         .aiFlags = AI_FLAG_SMART_TRAINER,
 #line 8353
-        .startingStatus = STARTING_STATUS_RISING_TIDE,
+        .startingStatus = { .risingTide = TRUE, },
 #line 0
         .trainerBackPic = TRAINER_PIC_BATTLE_GIRL,
         .partySize = 3,
@@ -30107,7 +30107,7 @@ F_TRAINER_FEMALE |
 #line 11594
         .aiFlags = AI_FLAG_SMART_TRAINER,
 #line 11595
-        .startingStatus = STARTING_STATUS_RISING_TIDE,
+        .startingStatus = { .risingTide = TRUE, },
 #line 0
         .trainerBackPic = TRAINER_PIC_SAILOR,
         .partySize = 2,
@@ -30180,7 +30180,7 @@ F_TRAINER_FEMALE |
 #line 11622
         .aiFlags = AI_FLAG_SMART_TRAINER,
 #line 11623
-        .startingStatus = STARTING_STATUS_RISING_TIDE,
+        .startingStatus = { .risingTide = TRUE, },
 #line 0
         .trainerBackPic = TRAINER_PIC_BATTLE_GIRL,
         .partySize = 2,
@@ -30251,7 +30251,7 @@ F_TRAINER_FEMALE |
 #line 11651
         .aiFlags = AI_FLAG_SMART_TRAINER,
 #line 11652
-        .startingStatus = STARTING_STATUS_RISING_TIDE,
+        .startingStatus = { .risingTide = TRUE, },
 #line 0
         .trainerBackPic = TRAINER_PIC_BLACK_BELT,
         .partySize = 2,

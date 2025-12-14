@@ -64,8 +64,6 @@ bool32 IsAiVsAiBattle(void)
 bool32 BattlerIsPlayer(u32 battlerId)
 {
     return (gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_PLAYER
-        || gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_RECORDED_PLAYER);    
-    return (gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_PLAYER
          || gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_RECORDED_PLAYER);
 }
 
@@ -96,6 +94,11 @@ bool32 BattlerIsLink(u32 battlerId)
          || gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_LINK_OPPONENT);
 }
 
+bool32 BattlerIsWally(u32 battlerId)
+{
+    return (gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_WALLY);
+}
+
 bool32 BattlerHasAi(u32 battlerId)
 {
     switch (gBattlerBattleController[battlerId])
@@ -108,10 +111,10 @@ bool32 BattlerHasAi(u32 battlerId)
     default:
         break;
     }
-    
+
     if (IsAiVsAiBattle())
         return TRUE;
-    
+
     return FALSE;
 }
 
@@ -445,6 +448,11 @@ static inline bool32 IsControllerLinkPartner(u32 battler)
     return (gBattlerControllerEndFuncs[battler] == LinkPartnerBufferExecCompleted);
 }
 
+static inline bool32 IsControllerSafari(u32 battler)
+{
+    return (gBattlerControllerEndFuncs[battler] == SafariBufferExecCompleted);
+}
+
 bool32 ShouldUpdateTvData(u32 battler)
 {
     return (IsControllerPlayer(battler)
@@ -464,58 +472,27 @@ static void SetBattlePartyIds(void)
             {
                 if (i < 2)
                 {
-                    if (IsOnPlayerSide(i))
+                    if (IsValidForBattle(&GetBattlerParty(i)[j]))
                     {
-                        if (IsValidForBattle(&gPlayerParty[j]))
-                        {
-                            gBattlerPartyIndexes[i] = j;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        if (IsValidForBattle(&gEnemyParty[j]))
-                        {
-                            gBattlerPartyIndexes[i] = j;
-                            break;
-                        }
+                        gBattlerPartyIndexes[i] = j;
+                        break;
                     }
                 }
                 else
                 {
-                    if (IsOnPlayerSide(i))
+                    if (gBattlerPartyIndexes[i - 2] == j)
                     {
-                        if (gBattlerPartyIndexes[i - 2] == j)
-                        {
-                            // Exclude already assigned pokemon;
-                        }
-                        else if (IsValidForBattle(&gPlayerParty[j]))
-                        {
-                            gBattlerPartyIndexes[i] = j;
-                            break;
-                        }
-                        else if (IsValidForBattleButDead(&gPlayerParty[j]) && gBattlerPartyIndexes[i] < PARTY_SIZE)
-                        {
-                            // Put an "option" on a dead mon that can be revived;
-                            gBattlerPartyIndexes[i] = j + PARTY_SIZE;
-                        }
+                        // Exclude already assigned pokemon;
                     }
-                    else
+                    else if (IsValidForBattle(&GetBattlerParty(i)[j]))
                     {
-                        if (gBattlerPartyIndexes[i - 2] == j)
-                        {
-                            // Exclude already assigned pokemon;
-                        }
-                        else if (IsValidForBattle(&gEnemyParty[j]))
-                        {
-                            gBattlerPartyIndexes[i] = j;
-                            break;
-                        }
-                        else if (IsValidForBattleButDead(&gEnemyParty[j]) && gBattlerPartyIndexes[i] < PARTY_SIZE)
-                        {
-                            // Put an "option" on a dead mon that can be revived;
-                            gBattlerPartyIndexes[i] = j + PARTY_SIZE;
-                        }
+                        gBattlerPartyIndexes[i] = j;
+                        break;
+                    }
+                    else if (IsValidForBattleButDead(&GetBattlerParty(i)[j]) && gBattlerPartyIndexes[i] < PARTY_SIZE)
+                    {
+                        // Put an "option" on a dead mon that can be revived;
+                        gBattlerPartyIndexes[i] = j + PARTY_SIZE;
                     }
 
                     if (gBattlerPartyIndexes[i] >= PARTY_SIZE)
@@ -955,15 +932,6 @@ static void UNUSED BtlController_EmitPaletteFade(u32 battler, u32 bufferId)
     gBattleResources->transferBuffer[1] = CONTROLLER_PALETTEFADE;
     gBattleResources->transferBuffer[2] = CONTROLLER_PALETTEFADE;
     gBattleResources->transferBuffer[3] = CONTROLLER_PALETTEFADE;
-    PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 4);
-}
-
-static void UNUSED BtlController_EmitSuccessBallThrowAnim(u32 battler, u32 bufferId)
-{
-    gBattleResources->transferBuffer[0] = CONTROLLER_SUCCESSBALLTHROWANIM;
-    gBattleResources->transferBuffer[1] = CONTROLLER_SUCCESSBALLTHROWANIM;
-    gBattleResources->transferBuffer[2] = CONTROLLER_SUCCESSBALLTHROWANIM;
-    gBattleResources->transferBuffer[3] = CONTROLLER_SUCCESSBALLTHROWANIM;
     PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 4);
 }
 
@@ -2573,14 +2541,22 @@ static void HandleBallThrow(u32 battler, u32 target, u32 animId, bool32 allowCri
     gBattlerControllerFuncs[battler] = Controller_WaitForBallThrow;
 }
 
-void BtlController_HandleSuccessBallThrowAnim(u32 battler, u32 target, u32 animId, bool32 allowCriticalCapture)
+void BtlController_HandleBallThrowAnim(u32 battler)
 {
-    gBattleSpritesDataPtr->animationData->ballThrowCaseId = BALL_3_SHAKES_SUCCESS;
-    HandleBallThrow(battler, target, animId, allowCriticalCapture);
-}
+    bool32 allowCriticalCapture = FALSE;
+    u32 animId = B_ANIM_BALL_THROW;
+    u32 target = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
 
-void BtlController_HandleBallThrowAnim(u32 battler, u32 target, u32 animId, bool32 allowCriticalCapture)
-{
+    if (BattlerIsPlayer(battler))
+    {
+        allowCriticalCapture = TRUE;
+        target = gBattlerTarget;
+    }
+    else if (IsControllerSafari(battler) || IsControllerWally(battler))
+    {
+        animId = B_ANIM_BALL_THROW_WITH_TRAINER;
+    }
+
     gBattleSpritesDataPtr->animationData->ballThrowCaseId = gBattleResources->bufferA[battler][1];
     HandleBallThrow(battler, target, animId, allowCriticalCapture);
 }
@@ -2701,7 +2677,7 @@ void BtlController_HandleStatusAnimation(u32 battler)
 
 void BtlController_HandleHitAnimation(u32 battler)
 {
-    if (gSprites[gBattlerSpriteIds[battler]].invisible == TRUE || gTestRunnerHeadless)
+    if (gSprites[gBattlerSpriteIds[battler]].invisible == TRUE || (gTestRunnerHeadless && !gBattleTestRunnerState->forceMoveAnim))
     {
         BtlController_Complete(battler);
     }
@@ -2716,7 +2692,7 @@ void BtlController_HandleHitAnimation(u32 battler)
 
 void BtlController_HandlePlaySE(u32 battler)
 {
-    if (gTestRunnerHeadless)
+    if (gTestRunnerHeadless && !gBattleTestRunnerState->forceMoveAnim)
     {
         BtlController_Complete(battler);
         return;
@@ -2729,7 +2705,7 @@ void BtlController_HandlePlaySE(u32 battler)
 
 void BtlController_HandlePlayFanfareOrBGM(u32 battler)
 {
-    if (gTestRunnerHeadless)
+    if (gTestRunnerHeadless && !gBattleTestRunnerState->forceMoveAnim)
     {
         BtlController_Complete(battler);
         return;
@@ -2749,19 +2725,13 @@ void BtlController_HandlePlayFanfareOrBGM(u32 battler)
 
 void BtlController_HandleFaintingCry(u32 battler)
 {
-    struct Pokemon *party;
+    struct Pokemon *party = GetBattlerParty(battler);
     s8 pan;
 
     if (IsOnPlayerSide(battler))
-    {
-        party = gPlayerParty;
         pan = -25;
-    }
     else
-    {
-        party = gEnemyParty;
         pan = 25;
-    }
 
     PlayCry_ByMode(GetMonData(&party[gBattlerPartyIndexes[battler]], MON_DATA_SPECIES), pan, CRY_MODE_FAINT);
     BtlController_Complete(battler);

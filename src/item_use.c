@@ -1661,6 +1661,18 @@ void ItemUseOutOfBattle_TownMap(u8 taskId)
     }
 }
 
+extern const u8 EventScript_UseThiefFinder[];
 
+static void Task_UseThiefFinder(u8 taskId)
+{
+    ScriptContext_SetupScript(EventScript_UseThiefFinder);
+    DestroyTask(taskId);
+}
+
+void ItemUseOutOfBattle_ThiefFinder(u8 taskId)
+{
+    sItemUseOnFieldCB = Task_UseThiefFinder;
+    SetUpItemUseOnFieldCallback(taskId);
+}
 
 #undef tUsingRegisteredKeyItem

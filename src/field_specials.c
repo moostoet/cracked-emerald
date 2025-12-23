@@ -76,6 +76,7 @@
 #include "palette.h"
 #include "battle_util.h"
 #include "naming_screen.h"
+#include "wild_encounter.h"
 
 #define TAG_ITEM_ICON 5500
 
@@ -4661,4 +4662,248 @@ void SetAbility(void)
 {
     u32 ability = gSpecialVar_Result;
     SetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_ABILITY_NUM, &ability);
+}
+
+// Thievable Items NPC Feature
+#define MAX_THIEVABLE_ITEMS 32
+
+static EWRAM_DATA u16 sThievableItemsBuffer[MAX_THIEVABLE_ITEMS] = {0};
+static EWRAM_DATA u16 sThievableItemsCount = 0;
+static EWRAM_DATA u16 sSelectedItemId = ITEM_NONE;
+
+// Check if any party Pokemon knows Covet or Thief
+void Special_CheckPartyHasCoveOrThief(void)
+{
+    u32 i;
+    gSpecialVar_Result = FALSE;
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) == SPECIES_NONE)
+            continue;
+
+        if (GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG))
+            continue;
+
+        if (MonKnowsMove(&gPlayerParty[i], MOVE_COVET) || MonKnowsMove(&gPlayerParty[i], MOVE_THIEF))
+        {
+            gSpecialVar_Result = TRUE;
+            return;
+        }
+    }
+}
+
+// Helper function to add item to buffer if not already present
+static bool8 AddItemToThievableBuffer(u16 itemId)
+{
+    u32 i;
+
+    if (itemId == ITEM_NONE)
+        return FALSE;
+
+    // Check if item already exists in buffer
+    for (i = 0; i < sThievableItemsCount; i++)
+    {
+        if (sThievableItemsBuffer[i] == itemId)
+            return FALSE; // Already in buffer
+    }
+
+    // Add to buffer if space available
+    if (sThievableItemsCount < MAX_THIEVABLE_ITEMS)
+    {
+        sThievableItemsBuffer[sThievableItemsCount] = itemId;
+        sThievableItemsCount++;
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+// Helper: Check if any Pokemon in encounter info has been seen
+static bool32 HasSeenAnyInEncounterInfo(const struct WildPokemonInfo *info, u32 count)
+{
+    u32 slot;
+    u16 species, nationalDexNum;
+
+    if (info == NULL || info->wildPokemon == NULL)
+        return FALSE;
+
+    for (slot = 0; slot < count; slot++)
+    {
+        species = info->wildPokemon[slot].species;
+        if (species == SPECIES_NONE)
+            continue;
+
+        nationalDexNum = SpeciesToNationalPokedexNum(species);
+        if (GetSetPokedexFlag(nationalDexNum, FLAG_GET_SEEN))
+            return TRUE;
+    }
+    return FALSE;
+}
+
+// Helper: Add all items from encounter info (no seen check)
+static void AddAllItemsFromEncounterInfo(const struct WildPokemonInfo *info, u32 count)
+{
+    u32 slot;
+    u16 species;
+
+    if (info == NULL || info->wildPokemon == NULL)
+        return;
+
+    for (slot = 0; slot < count; slot++)
+    {
+        species = info->wildPokemon[slot].species;
+        if (species == SPECIES_NONE)
+            continue;
+
+        AddItemToThievableBuffer(gSpeciesInfo[species].itemCommon);
+        AddItemToThievableBuffer(gSpeciesInfo[species].itemRare);
+    }
+}
+
+// Get all thievable items from current map's wild encounters
+// If player has seen at least one Pokemon on the route, show items from ALL Pokemon
+void Special_GetRouteThievableItems(void)
+{
+    u16 headerId;
+    u32 timeOfDay;
+    const struct WildPokemonHeader *header;
+    const struct WildEncounterTypes *encounterTypes;
+    bool32 hasSeenAny = FALSE;
+
+    // Reset buffer
+    sThievableItemsCount = 0;
+
+    // Get current map's wild encounter header
+    headerId = GetCurrentMapWildMonHeaderId();
+    if (headerId == HEADER_NONE)
+    {
+        gSpecialVar_Result = 0;
+        return;
+    }
+
+    header = &gWildMonHeaders[headerId];
+
+    // First pass: Check if player has seen ANY Pokemon on this route
+    for (timeOfDay = 0; timeOfDay < TIMES_OF_DAY_COUNT && !hasSeenAny; timeOfDay++)
+    {
+        encounterTypes = &header->encounterTypes[timeOfDay];
+
+        if (HasSeenAnyInEncounterInfo(encounterTypes->landMonsInfo, LAND_WILD_COUNT))
+            hasSeenAny = TRUE;
+        else if (HasSeenAnyInEncounterInfo(encounterTypes->waterMonsInfo, WATER_WILD_COUNT))
+            hasSeenAny = TRUE;
+        else if (HasSeenAnyInEncounterInfo(encounterTypes->fishingMonsInfo, FISH_WILD_COUNT))
+            hasSeenAny = TRUE;
+        else if (HasSeenAnyInEncounterInfo(encounterTypes->rockSmashMonsInfo, ROCK_WILD_COUNT))
+            hasSeenAny = TRUE;
+        else if (HasSeenAnyInEncounterInfo(encounterTypes->hiddenMonsInfo, HIDDEN_WILD_COUNT))
+            hasSeenAny = TRUE;
+    }
+
+    // If no Pokemon seen on this route, return 0
+    if (!hasSeenAny)
+    {
+        gSpecialVar_Result = 0;
+        return;
+    }
+
+    // Second pass: Add items from ALL Pokemon on the route
+    for (timeOfDay = 0; timeOfDay < TIMES_OF_DAY_COUNT; timeOfDay++)
+    {
+        encounterTypes = &header->encounterTypes[timeOfDay];
+
+        AddAllItemsFromEncounterInfo(encounterTypes->landMonsInfo, LAND_WILD_COUNT);
+        AddAllItemsFromEncounterInfo(encounterTypes->waterMonsInfo, WATER_WILD_COUNT);
+        AddAllItemsFromEncounterInfo(encounterTypes->fishingMonsInfo, FISH_WILD_COUNT);
+        AddAllItemsFromEncounterInfo(encounterTypes->rockSmashMonsInfo, ROCK_WILD_COUNT);
+        AddAllItemsFromEncounterInfo(encounterTypes->hiddenMonsInfo, HIDDEN_WILD_COUNT);
+    }
+
+    gSpecialVar_Result = sThievableItemsCount;
+}
+
+// Show item selection menu
+void Special_ShowThievableItemsMenu(void)
+{
+    u32 i;
+    struct ListMenuItem item;
+    u8 *itemName;
+
+    // Initialize the dynamic multichoice stack
+    for (i = 0; i < sThievableItemsCount; i++)
+    {
+        // Allocate space for item name
+        itemName = Alloc(32);
+        CopyItemName(sThievableItemsBuffer[i], itemName);
+
+        item.name = itemName;
+        item.id = i;
+
+        MultichoiceDynamic_PushElement(item);
+    }
+}
+
+// Handle item selection result
+void Special_HandleThievableItemSelection(void)
+{
+    s32 selection = gSpecialVar_Result;
+
+    if (selection >= 0 && selection < sThievableItemsCount)
+    {
+        sSelectedItemId = sThievableItemsBuffer[selection];
+        gSpecialVar_0x8004 = sSelectedItemId;
+        gSpecialVar_Result = TRUE;
+    }
+    else
+    {
+        sSelectedItemId = ITEM_NONE;
+        gSpecialVar_Result = FALSE;
+    }
+    // Note: Stack is already destroyed by dynmultistack command
+}
+
+// Handle quantity selection from multichoice menu
+// Selection: 0 = x1, 1 = x5, 2 = x10, 3 = x25, 4 = Cancel
+void Special_ThievableItems_HandleQuantitySelection(void)
+{
+    static const u16 quantities[] = {1, 5, 10, 25};
+    s32 selection = gSpecialVar_Result;
+
+    // Check for cancel (index 4) or B press (MULTI_B_PRESSED = 127)
+    if (selection == 4 || selection == MULTI_B_PRESSED)
+    {
+        gSpecialVar_Result = FALSE;
+        return;
+    }
+
+    // Valid selection (0-3)
+    if (selection >= 0 && selection < 4)
+    {
+        gSpecialVar_0x8005 = quantities[selection];
+        gSpecialVar_Result = TRUE;
+    }
+    else
+    {
+        gSpecialVar_Result = FALSE;
+    }
+}
+
+// Give the selected item with infinite quantity to the player
+void Special_ThievableItems_GiveItems(void)
+{
+    u16 itemId = gSpecialVar_0x8004;
+
+    // Ensure item exists in bag (add 1 if not present)
+    if (!CheckBagHasItem(itemId, 1))
+    {
+        if (!AddBagItem(itemId, 1))
+        {
+            gSpecialVar_Result = FALSE;
+            return;
+        }
+    }
+
+    // Set to infinite quantity
+    gSpecialVar_Result = SetBagItemQuantityInfinite(itemId);
 }

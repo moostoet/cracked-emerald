@@ -296,6 +296,13 @@ static inline bool32 NONNULL CheckSlotAndUpdateCount(struct BagPocket *pocket, u
     struct ItemSlot tempItem = BagPocket_GetSlotData(pocket, pocketPos);
     if (tempItem.itemId == ITEM_NONE || tempItem.itemId == itemId)
     {
+        // If slot is infinite, items merge into it without changing anything
+        if (tempItem.quantity == ITEM_QUANTITY_INFINITE)
+        {
+            *count = 0;
+            return TRUE;
+        }
+
         // The quantity already at the slot - zero if an empty slot
         if (tempItem.itemId == ITEM_NONE)
             tempItem.quantity = 0;
@@ -372,7 +379,17 @@ static bool32 NONNULL BagPocket_RemoveItem(struct BagPocket *pocket, u16 itemId,
 {
     u32 itemLookupIndex, itemRemoveIndex = 0, totalQuantity = 0;
     struct ItemSlot tempItem;
-    u16 *tempPocketSlotQuantities = AllocZeroed(sizeof(u16) * pocket->capacity);
+    u16 *tempPocketSlotQuantities;
+
+    // Check for infinite quantity - if found, succeed without decrementing
+    for (itemLookupIndex = 0; itemLookupIndex < pocket->capacity; itemLookupIndex++)
+    {
+        tempItem = BagPocket_GetSlotData(pocket, itemLookupIndex);
+        if (tempItem.itemId == itemId && tempItem.quantity == ITEM_QUANTITY_INFINITE)
+            return TRUE;
+    }
+
+    tempPocketSlotQuantities = AllocZeroed(sizeof(u16) * pocket->capacity);
 
     for (itemLookupIndex = 0; itemLookupIndex < pocket->capacity && totalQuantity < count; itemLookupIndex++)
     {
@@ -422,6 +439,29 @@ bool32 RemoveBagItem(u16 itemId, u16 count)
         return RemovePyramidBagItem(itemId, count);
 
     return BagPocket_RemoveItem(&gBagPockets[GetItemPocket(itemId)], itemId, count);
+}
+
+bool32 SetBagItemQuantityInfinite(u16 itemId)
+{
+    struct BagPocket *pocket;
+    struct ItemSlot tempItem;
+
+    if (GetItemPocket(itemId) >= POCKETS_COUNT || itemId == ITEM_NONE)
+        return FALSE;
+
+    pocket = &gBagPockets[GetItemPocket(itemId)];
+
+    for (u32 i = 0; i < pocket->capacity; i++)
+    {
+        tempItem = BagPocket_GetSlotData(pocket, i);
+        if (tempItem.itemId == itemId)
+        {
+            BagPocket_SetSlotItemIdAndCount(pocket, i, itemId, ITEM_QUANTITY_INFINITE);
+            return TRUE;
+        }
+    }
+
+    return FALSE;
 }
 
 // Unsafe function: Only use with functions that already check the slot and count are valid

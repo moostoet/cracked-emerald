@@ -15090,6 +15090,22 @@ const struct Item gItemsInfo[] =
         .iconPic = gItemIcon_LargePotion,
         .iconPalette = gItemIconPalette_FullRestore,
     },
+
+    [ITEM_THIEF_FINDER] =
+    {
+        .name = ITEM_NAME("Thief Finder"),
+        .price = 0,
+        .importance = 1,
+        .description = COMPOUND_STRING(
+            "Finds items held by\n"
+            "wild Pokémon using\n"
+            "Covet or Thief."),
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_ThiefFinder,
+        .iconPic = gItemIcon_DowsingMachine,
+        .iconPalette = gItemIconPalette_DowsingMachine,
+    },
 };
 
 #undef ITEM_NAME

@@ -1023,8 +1023,9 @@
 
 #define ITEM_INFINITE_REPEL 855
 #define ITEM_HEALING_KIT 856
+#define ITEM_THIEF_FINDER 857
 
-#define ITEMS_COUNT 857
+#define ITEMS_COUNT 858
 #define ITEM_FIELD_ARROW ITEMS_COUNT
 
 // A special item id associated with "Cancel"/"Exit" etc. in a list of items or decorations
@@ -1057,6 +1058,7 @@
 #define MAX_BAG_ITEM_CAPACITY         999
 #define MAX_PC_ITEM_CAPACITY          999
 #define MAX_PYRAMID_BAG_ITEM_CAPACITY  99 // Values higher than 255 require free SaveBlock2 space.
+#define ITEM_QUANTITY_INFINITE        0xFFFF // Sentinel value for infinite quantity
 
 #define MAX_ITEM_DIGITS         ((MAX_BAG_ITEM_CAPACITY > 99) ? 3 : 2)
 #define MAX_PYRAMID_ITEM_DIGITS ((MAX_PYRAMID_BAG_ITEM_CAPACITY > 99) ? 3 : 2)

@@ -219,6 +219,8 @@ static void Task_FadeAndCloseBagMenuIfMulch(u8 taskId);
 static const u8 sText_Var1CantBeHeldHere[] = _("The {STR_VAR_1} can't be held\nhere.");
 static const u8 sText_DepositHowManyVar1[] = _("Deposit how many\n{STR_VAR_1}?");
 static const u8 sText_DepositedVar2Var1s[] = _("Deposited {STR_VAR_2}\n{STR_VAR_1}.");
+static const u8 sText_InfiniteQuantity[] = _("×Inf.");
+static const u8 sText_AllQuantity[] = _("all");
 static const u8 sText_NoRoomForItems[] = _("There's no room to\nstore items.");
 static const u8 sText_CantStoreImportantItems[] = _("Important items\ncan't be stored in\nthe PC!");
 
@@ -1008,8 +1010,15 @@ static void BagMenu_ItemPrintCallback(u8 windowId, u32 itemIndex, u8 y)
         if (gBagPosition.pocket != POCKET_KEY_ITEMS && GetItemImportance(itemSlot.itemId) == FALSE)
         {
             // Print item quantity
-            ConvertIntToDecimalStringN(gStringVar1, itemSlot.quantity, STR_CONV_MODE_RIGHT_ALIGN, MAX_ITEM_DIGITS);
-            StringExpandPlaceholders(gStringVar4, gText_xVar1);
+            if (itemSlot.quantity == ITEM_QUANTITY_INFINITE)
+            {
+                StringCopy(gStringVar4, sText_InfiniteQuantity);
+            }
+            else
+            {
+                ConvertIntToDecimalStringN(gStringVar1, itemSlot.quantity, STR_CONV_MODE_RIGHT_ALIGN, MAX_ITEM_DIGITS);
+                StringExpandPlaceholders(gStringVar4, gText_xVar1);
+            }
             offset = GetStringRightAlignXOffset(FONT_NARROW, gStringVar4, 119);
             BagMenu_Print(windowId, FONT_NARROW, gStringVar4, offset, y, 0, 0, TEXT_SKIP_DRAW, COLORID_NORMAL);
         }
@@ -1889,7 +1898,8 @@ static void ItemMenu_Toss(u8 taskId)
 
     RemoveContextWindow();
     tItemCount = 1;
-    if (tQuantity == 1)
+    // Infinite items skip quantity selection and toss the entire stack
+    if (tQuantity == 1 || (u16)tQuantity == ITEM_QUANTITY_INFINITE)
     {
         AskTossItems(taskId);
     }
@@ -1911,7 +1921,11 @@ static void AskTossItems(u8 taskId)
 
     u8 *end = CopyItemNameHandlePlural(gSpecialVar_ItemId, gStringVar1, tItemCount);
     WrapFontIdToFit(gStringVar1, end, FONT_NORMAL, WindowWidthPx(WIN_DESCRIPTION) - 10 - 6);
-    ConvertIntToDecimalStringN(gStringVar2, tItemCount, STR_CONV_MODE_LEFT_ALIGN, MAX_ITEM_DIGITS);
+    // Use "all" for infinite items instead of showing a number
+    if ((u16)tQuantity == ITEM_QUANTITY_INFINITE)
+        StringCopy(gStringVar2, sText_AllQuantity);
+    else
+        ConvertIntToDecimalStringN(gStringVar2, tItemCount, STR_CONV_MODE_LEFT_ALIGN, MAX_ITEM_DIGITS);
     StringExpandPlaceholders(gStringVar4, gText_ConfirmTossItems);
     FillWindowPixelBuffer(WIN_DESCRIPTION, PIXEL_FILL(0));
     BagMenu_Print(WIN_DESCRIPTION, FONT_NORMAL, gStringVar4, 3, 1, 0, 0, 0, COLORID_NORMAL);
@@ -1955,7 +1969,11 @@ static void ConfirmToss(u8 taskId)
 
     u8 *end = CopyItemNameHandlePlural(gSpecialVar_ItemId, gStringVar1, tItemCount);
     WrapFontIdToFit(gStringVar1, end, FONT_NORMAL, WindowWidthPx(WIN_DESCRIPTION) - 10 - 6);
-    ConvertIntToDecimalStringN(gStringVar2, tItemCount, STR_CONV_MODE_LEFT_ALIGN, MAX_ITEM_DIGITS);
+    // Use "all" for infinite items instead of showing a number
+    if ((u16)tQuantity == ITEM_QUANTITY_INFINITE)
+        StringCopy(gStringVar2, sText_AllQuantity);
+    else
+        ConvertIntToDecimalStringN(gStringVar2, tItemCount, STR_CONV_MODE_LEFT_ALIGN, MAX_ITEM_DIGITS);
     StringExpandPlaceholders(gStringVar4, gText_ThrewAwayVar2Var1s);
     FillWindowPixelBuffer(WIN_DESCRIPTION, PIXEL_FILL(0));
     BagMenu_Print(WIN_DESCRIPTION, FONT_NORMAL, gStringVar4, 3, 1, 0, 0, 0, COLORID_NORMAL);
@@ -1974,7 +1992,11 @@ static void Task_TossItemFromBag(u8 taskId)
     if (JOY_NEW(A_BUTTON | B_BUTTON))
     {
         PlaySE(SE_SELECT);
-        RemoveBagItemFromSlot(&gBagPockets[gBagPosition.pocket], *scrollPos + *cursorPos, tItemCount);
+        // For infinite items, clear the entire slot; otherwise remove the count
+        if ((u16)tQuantity == ITEM_QUANTITY_INFINITE)
+            BagPocket_SetSlotItemIdAndCount(&gBagPockets[gBagPosition.pocket], *scrollPos + *cursorPos, ITEM_NONE, 0);
+        else
+            RemoveBagItemFromSlot(&gBagPockets[gBagPosition.pocket], *scrollPos + *cursorPos, tItemCount);
         DestroyListMenuTask(tListTaskId, scrollPos, cursorPos);
         UpdatePocketItemList(gBagPosition.pocket);
         UpdatePocketListPosition(gBagPosition.pocket);

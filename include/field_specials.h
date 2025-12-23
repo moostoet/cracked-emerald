@@ -37,4 +37,12 @@ void GetObjectPosition(u16*, u16*, u32, u32);
 bool32 CheckObjectAtXY(u32, u32);
 bool32 CheckPartyHasSpecies(u32);
 
+// Thievable Items NPC Feature
+void Special_CheckPartyHasCoveOrThief(void);
+void Special_GetRouteThievableItems(void);
+void Special_ShowThievableItemsMenu(void);
+void Special_HandleThievableItemSelection(void);
+void Special_ThievableItems_HandleQuantitySelection(void);
+void Special_ThievableItems_GiveItems(void);
+
 #endif // GUARD_FIELD_SPECIALS_H

@@ -534,37 +534,33 @@ void LoadSaveblockObjEventScripts(void)
         savObjTemplates[i].script = mapHeaderObjTemplates[i].script;
 }
 
+static struct ObjectEventTemplate *GetObjectEventTemplate(u8 localId)
+{
+    for (u32 i = 0; i < OBJECT_EVENT_TEMPLATES_COUNT; i++)
+    {
+        if (gSaveBlock1Ptr->objectEventTemplates[i].localId == localId)
+            return &gSaveBlock1Ptr->objectEventTemplates[i];
+    }
+
+    errorf("no object event template for localId %d", localId);
+    return NULL;
+}
+
 void SetObjEventTemplateCoords(u8 localId, s16 x, s16 y)
 {
-    s32 i;
-    struct ObjectEventTemplate *savObjTemplates = gSaveBlock1Ptr->objectEventTemplates;
-
-    for (i = 0; i < OBJECT_EVENT_TEMPLATES_COUNT; i++)
+    struct ObjectEventTemplate *objectEventTemplate = GetObjectEventTemplate(localId);
+    if (objectEventTemplate)
     {
-        struct ObjectEventTemplate *objectEventTemplate = &savObjTemplates[i];
-        if (objectEventTemplate->localId == localId)
-        {
-            objectEventTemplate->x = x;
-            objectEventTemplate->y = y;
-            return;
-        }
+        objectEventTemplate->x = x;
+        objectEventTemplate->y = y;
     }
 }
 
 void SetObjEventTemplateMovementType(u8 localId, u8 movementType)
 {
-    s32 i;
-
-    struct ObjectEventTemplate *savObjTemplates = gSaveBlock1Ptr->objectEventTemplates;
-    for (i = 0; i < OBJECT_EVENT_TEMPLATES_COUNT; i++)
-    {
-        struct ObjectEventTemplate *objectEventTemplate = &savObjTemplates[i];
-        if (objectEventTemplate->localId == localId)
-        {
-            objectEventTemplate->movementType = movementType;
-            return;
-        }
-    }
+    struct ObjectEventTemplate *objectEventTemplate = GetObjectEventTemplate(localId);
+    if (objectEventTemplate)
+        objectEventTemplate->movementType = movementType;
 }
 
 static void InitMapView(void)
@@ -1120,7 +1116,7 @@ static bool16 ShouldLegendaryMusicPlayAtLocation(struct WarpData *warp)
     return FALSE;
 }
 
-static bool16 NoMusicInSotopolisWithLegendaries(struct WarpData *warp)
+static bool16 NoMusicInSootopolisWithLegendaries(struct WarpData *warp)
 {
     if (VarGet(VAR_SKY_PILLAR_STATE) != 1)
         return FALSE;
@@ -1145,7 +1141,7 @@ static bool16 IsInfiltratedWeatherInstitute(struct WarpData *warp)
         return FALSE;
 }
 
-static bool16 IsInflitratedSpaceCenter(struct WarpData *warp)
+static bool16 IsInfiltratedSpaceCenter(struct WarpData *warp)
 {
     if (VarGet(VAR_MOSSDEEP_CITY_STATE) == 0)
         return FALSE;
@@ -1161,11 +1157,11 @@ static bool16 IsInflitratedSpaceCenter(struct WarpData *warp)
 
 u16 GetLocationMusic(struct WarpData *warp)
 {
-    if (NoMusicInSotopolisWithLegendaries(warp) == TRUE)
+    if (NoMusicInSootopolisWithLegendaries(warp) == TRUE)
         return MUS_NONE;
     else if (ShouldLegendaryMusicPlayAtLocation(warp) == TRUE)
         return MUS_ABNORMAL_WEATHER;
-    else if (IsInflitratedSpaceCenter(warp) == TRUE)
+    else if (IsInfiltratedSpaceCenter(warp) == TRUE)
         return MUS_ENCOUNTER_MAGMA;
     else if (IsInfiltratedWeatherInstitute(warp) == TRUE)
         return MUS_MT_CHIMNEY;
@@ -1711,11 +1707,12 @@ static void OverworldBasic(void)
         gTimeUpdateCounter = (SECONDS_PER_MINUTE * 60 / FakeRtc_GetSecondsRatio());
         UpdateTimeOfDay();
         FormChangeTimeUpdate();
-        if (bld0[0] != bld1[0]
+        if (MapHasNaturalLight(gMapHeader.mapType) &&
+           (bld0[0] != bld1[0]
          || bld0[1] != bld1[1]
-         || bld0[2] != bld1[2])
+         || bld0[2] != bld1[2]))
         {
-           ApplyWeatherColorMapIfIdle(gWeatherPtr->colorMapIndex);
+            ApplyWeatherColorMapIfIdle(gWeatherPtr->colorMapIndex);
         }
     }
 }

@@ -7236,7 +7236,7 @@ u32 IsFlowerVeilProtected(u32 battler)
 
 u32 IsLeafGuardProtected(u32 battler, enum Ability ability)
 {
-    return (ability == ABILITY_LEAF_GUARD && !gDisableStructs[battler].leafGuardUsed);
+    return (ability == ABILITY_LEAF_GUARD && !gBattleMons[battler].volatiles.leafGuardUsed);
 }
 
 bool32 IsShieldsDownProtected(u32 battler, enum Ability ability)

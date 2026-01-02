@@ -5175,7 +5175,7 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
             }
             break;
         case ABILITY_MAGMA_CORE:
-            if ((!gDisableStructs[battler].magmaCoreBoosted)
+            if ((!gBattleMons[battler].volatiles.magmaCoreBoosted)
              && (!(gBattleStruct->moveResultFlags[battler] & MOVE_RESULT_NO_EFFECT))
              && IsBattlerTurnDamaged(battler)
              && (moveType == TYPE_WATER)
@@ -5183,9 +5183,9 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
              {
                 gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_MAGMA_CORE_BOOST;
                 gEffectBattler = battler;
-                gDisableStructs[battler].magmaCoreBoosted = TRUE;
-                BattleScriptPushCursor(); 
-                gBattlescriptCurrInstr = BattleScript_TargetAbilityActivateMagmaCore; 
+                gBattleMons[battler].volatiles.magmaCoreBoosted = TRUE;
+                BattleScriptPushCursor();
+                gBattlescriptCurrInstr = BattleScript_TargetAbilityActivateMagmaCore;
                 effect++;
              }
              break;
@@ -6736,7 +6736,7 @@ bool32 CanSetNonVolatileStatus(u32 battlerAtk, u32 battlerDef, enum Ability abil
     else if (IsLeafGuardProtected(battlerDef, abilityDef))
     {
         abilityAffected = TRUE;
-        gDisableStructs[battlerDef].leafGuardUsed = TRUE;
+        gBattleMons[battlerDef].volatiles.leafGuardUsed = TRUE;
         battleScript = BattleScript_AbilityProtectsDoesntAffect;
     }
     else if (IsShieldsDownProtected(battlerDef, abilityDef))
@@ -8260,7 +8260,7 @@ static inline u32 CalcAttackStat(struct BattleContext *ctx)
             modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
         break;
     case ABILITY_MAGMA_CORE:
-        if (moveType == TYPE_FIRE && gDisableStructs[battlerAtk].magmaCoreBoosted)
+        if (moveType == TYPE_FIRE && gBattleMons[battlerAtk].volatiles.magmaCoreBoosted)
             modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
     case ABILITY_SWARM:
         if (moveType == TYPE_BUG && gBattleMons[battlerAtk].hp <= (gBattleMons[battlerAtk].maxHP / 3))

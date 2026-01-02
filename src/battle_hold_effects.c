@@ -588,9 +588,9 @@ static enum ItemEffect TryToxicOrb(u32 battler)
     enum ItemEffect effect = ITEM_NO_EFFECT;
     enum Ability ability = GetBattlerAbility(battler);
 
-    if (ability == ABILITY_LEAF_GUARD && !gDisableStructs[battler].leafGuardUsed)
+    if (ability == ABILITY_LEAF_GUARD && !gBattleMons[battler].volatiles.leafGuardUsed)
     {
-        gDisableStructs[battler].leafGuardUsed = TRUE;
+        gBattleMons[battler].volatiles.leafGuardUsed = TRUE;
         return ITEM_NO_EFFECT;
     }
 
@@ -609,9 +609,9 @@ static enum ItemEffect TryFlameOrb(u32 battler)
     enum ItemEffect effect = ITEM_NO_EFFECT;
     enum Ability ability = GetBattlerAbility(battler);
 
-    if (ability == ABILITY_LEAF_GUARD && !gDisableStructs[battler].leafGuardUsed)
+    if (ability == ABILITY_LEAF_GUARD && !gBattleMons[battler].volatiles.leafGuardUsed)
     {
-        gDisableStructs[battler].leafGuardUsed = TRUE;
+        gBattleMons[battler].volatiles.leafGuardUsed = TRUE;
         return ITEM_NO_EFFECT;
     }
 

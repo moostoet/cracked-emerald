@@ -1296,7 +1296,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 RETURN_SCORE_MINUS(10);
             break;
         case ABILITY_LEAF_GUARD:
-            if (IsNonVolatileStatusMove(move) && !gDisableStructs[battlerDef].leafGuardUsed)
+            if (IsNonVolatileStatusMove(move) && !gBattleMons[battlerDef].volatiles.leafGuardUsed)
                 RETURN_SCORE_MINUS(10);
             break;
         default:

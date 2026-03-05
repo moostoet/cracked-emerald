@@ -24,7 +24,6 @@ static bool32 Fishing_ShowDots(struct Task *);
 static bool32 Fishing_CheckForBite(struct Task *);
 static bool32 Fishing_GotBite(struct Task *);
 static bool32 Fishing_ChangeMinigame(struct Task *);
-static bool32 Fishing_WaitBeforeHook(struct Task *);
 static bool32 Fishing_WaitForA(struct Task *);
 static bool32 Fishing_APressNoMinigame(struct Task *);
 static bool32 Fishing_CheckMoreDots(struct Task *);
@@ -37,8 +36,8 @@ static bool32 Fishing_PutRodAway(struct Task *);
 static bool32 Fishing_EndNoMon(struct Task *);
 static void AlignFishingAnimationFrames(void);
 static bool32 DoesFishingMinigameAllowCancel(void);
-static bool32 __attribute__((unused)) Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void);
-static bool32 __attribute__((unused)) Fishing_RollForBite(u32, bool32);
+static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void);
+static bool32 Fishing_RollForBite(u32, bool32);
 static u32 CalculateFishingBiteOdds(u32, bool32);
 static u32 CalculateFishingFollowerBoost(void);
 static u32 CalculateFishingProximityBoost(void);
@@ -61,6 +60,11 @@ static u32 CalculateFishingTimeOfDayBoost(void);
     #define FISHING_GOOD_ROD_ODDS 33
     #define FISHING_SUPER_ROD_ODDS 50
 #endif
+
+static const u8 sText_OhABite[] = _("Oh! A bite!");
+static const u8 sText_PokemonOnHook[] = _("A POKéMON's on the hook!{PAUSE_UNTIL_PRESS}");
+static const u8 sText_NotEvenANibble[] = _("Not even a nibble…{PAUSE_UNTIL_PRESS}");
+static const u8 sText_ItGotAway[] = _("It got away…{PAUSE_UNTIL_PRESS}");
 
 struct FriendshipHookChanceBoost
 {
@@ -91,7 +95,6 @@ enum
     FISHING_CHECK_FOR_BITE,
     FISHING_GOT_BITE,
     FISHING_CHANGE_MINIGAME,
-    FISHING_WAIT_BEFORE_HOOK,
     FISHING_WAIT_FOR_A,
     FISHING_A_PRESS_NO_MINIGAME,
     FISHING_CHECK_MORE_DOTS,
@@ -114,7 +117,6 @@ static bool32 (*const sFishingStateFuncs[])(struct Task *) =
     [FISHING_CHECK_FOR_BITE]        = Fishing_CheckForBite,
     [FISHING_GOT_BITE]              = Fishing_GotBite,
     [FISHING_CHANGE_MINIGAME]       = Fishing_ChangeMinigame,
-    [FISHING_WAIT_BEFORE_HOOK]      = Fishing_WaitBeforeHook,
     [FISHING_WAIT_FOR_A]            = Fishing_WaitForA,
     [FISHING_A_PRESS_NO_MINIGAME]   = Fishing_APressNoMinigame,
     [FISHING_CHECK_MORE_DOTS]       = Fishing_CheckMoreDots,
@@ -252,8 +254,11 @@ static bool32 Fishing_ShowDots(struct Task *task)
 
 static bool32 Fishing_CheckForBite(struct Task *task)
 {
+    bool32 bite, firstMonHasSuctionOrSticky;
+
     AlignFishingAnimationFrames();
     task->tStep = FISHING_GOT_BITE;
+    bite = FALSE;
 
     if (!DoesCurrentMapHaveFishingMons())
     {
@@ -261,15 +266,27 @@ static bool32 Fishing_CheckForBite(struct Task *task)
         return TRUE;
     }
 
-    // Always hook a Pokémon when fishing.
-    StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingBiteDirectionAnimNum(GetPlayerFacingDirection()));
+    firstMonHasSuctionOrSticky = Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold();
+
+    if (firstMonHasSuctionOrSticky && I_FISHING_STICKY_BOOST < GEN_4)
+        bite = RandomPercentage(RNG_FISHING_GEN3_STICKY, FISHING_GEN3_STICKY_CHANCE);
+
+    if (!bite)
+        bite = Fishing_RollForBite(task->tFishingRod, firstMonHasSuctionOrSticky);
+
+    if (!bite)
+        task->tStep = FISHING_NOT_EVEN_NIBBLE;
+
+    if (bite)
+        StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingBiteDirectionAnimNum(GetPlayerFacingDirection()));
+
     return TRUE;
 }
 
 static bool32 Fishing_GotBite(struct Task *task)
 {
     AlignFishingAnimationFrames();
-    AddTextPrinterParameterized(0, FONT_NORMAL, gText_OhABite, 0, 17, 0, NULL);
+    AddTextPrinterParameterized(0, FONT_NORMAL, sText_OhABite, 0, 17, 0, NULL);
     task->tStep = FISHING_CHANGE_MINIGAME;
     task->tFrameCounter = 0;
     return FALSE;
@@ -277,19 +294,17 @@ static bool32 Fishing_GotBite(struct Task *task)
 
 static bool32 Fishing_ChangeMinigame(struct Task *task)
 {
-    // Skip the fishing minigame but still pause briefly before landing the Pokémon.
-    task->tFrameCounter = 0;
-    task->tStep = FISHING_WAIT_BEFORE_HOOK;
-    return TRUE;
-}
-
-// Add a short delay (about 2.5 seconds) before the Pokémon is landed.
-static bool32 Fishing_WaitBeforeHook(struct Task *task)
-{
-    AlignFishingAnimationFrames();
-    task->tFrameCounter++;
-    if (task->tFrameCounter >= 150) // ~2.5 seconds at 60 FPS
-        task->tStep = FISHING_MON_ON_HOOK;
+    switch (I_FISHING_MINIGAME)
+    {
+    case GEN_1:
+    case GEN_2:
+        task->tStep = FISHING_A_PRESS_NO_MINIGAME;
+        break;
+    case GEN_3:
+    default:
+        task->tStep = FISHING_WAIT_FOR_A;
+        break;
+    }
     return TRUE;
 }
 
@@ -350,7 +365,7 @@ static bool32 Fishing_MonOnHook(struct Task *task)
 {
     AlignFishingAnimationFrames();
     FillWindowPixelBuffer(0, PIXEL_FILL(1));
-    AddTextPrinterParameterized2(0, FONT_NORMAL, gText_PokemonOnHook, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+    AddTextPrinterParameterized2(0, FONT_NORMAL, sText_PokemonOnHook, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
     task->tStep = FISHING_START_ENCOUNTER;
     task->tFrameCounter = 0;
     return FALSE;
@@ -365,7 +380,7 @@ static bool32 Fishing_StartEncounter(struct Task *task)
 
     if (task->tFrameCounter == 0)
     {
-        if (!IsTextPrinterActive(0))
+        if (!IsTextPrinterActiveOnWindow(0))
         {
             struct ObjectEvent *playerObjEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
 
@@ -398,7 +413,7 @@ static bool32 Fishing_NotEvenNibble(struct Task *task)
     AlignFishingAnimationFrames();
     StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingNoCatchDirectionAnimNum(GetPlayerFacingDirection()));
     FillWindowPixelBuffer(0, PIXEL_FILL(1));
-    AddTextPrinterParameterized2(0, FONT_NORMAL, gText_NotEvenANibble, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+    AddTextPrinterParameterized2(0, FONT_NORMAL, sText_NotEvenANibble, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
     task->tStep = FISHING_NO_MON;
     return TRUE;
 }
@@ -409,7 +424,7 @@ static bool32 Fishing_GotAway(struct Task *task)
     AlignFishingAnimationFrames();
     StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingNoCatchDirectionAnimNum(GetPlayerFacingDirection()));
     FillWindowPixelBuffer(0, PIXEL_FILL(1));
-    AddTextPrinterParameterized2(0, FONT_NORMAL, gText_ItGotAway, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+    AddTextPrinterParameterized2(0, FONT_NORMAL, sText_ItGotAway, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
     task->tStep = FISHING_NO_MON;
     return TRUE;
 }
@@ -442,7 +457,7 @@ static bool32 Fishing_PutRodAway(struct Task *task)
 static bool32 Fishing_EndNoMon(struct Task *task)
 {
     RunTextPrinters();
-    if (!IsTextPrinterActive(0))
+    if (!IsTextPrinterActiveOnWindow(0))
     {
         gPlayerAvatar.preventStep = FALSE;
         UnlockPlayerFieldControls();
@@ -456,18 +471,18 @@ static bool32 Fishing_EndNoMon(struct Task *task)
 
 static bool32 DoesFishingMinigameAllowCancel(void)
 {
-    switch(I_FISHING_MINIGAME)
+    switch (I_FISHING_MINIGAME)
     {
-        case GEN_1:
-        case GEN_2:
-            return FALSE;
-        case GEN_3:
-        default:
+    case GEN_1:
+    case GEN_2:
+        return FALSE;
+    case GEN_3:
+    default:
             return TRUE;
     }
 }
 
-static bool32 __attribute__((unused)) Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void)
+static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void)
 {
     enum Ability ability;
 
@@ -479,7 +494,7 @@ static bool32 __attribute__((unused)) Fishing_DoesFirstMonInPartyHaveSuctionCups
     return (ability == ABILITY_SUCTION_CUPS || ability == ABILITY_STICKY_HOLD);
 }
 
-static bool32 __attribute__((unused)) Fishing_RollForBite(u32 rod, bool32 isStickyHold)
+static bool32 Fishing_RollForBite(u32 rod, bool32 isStickyHold)
 {
     return ((RandomUniform(RNG_FISHING_BITE, 1, 100)) <= CalculateFishingBiteOdds(rod, isStickyHold));
 }
@@ -526,7 +541,8 @@ static u32 CalculateFishingFollowerBoost()
 static u32 CalculateFishingProximityBoost()
 {
     s16 bobber_x, bobber_y, tile_x, tile_y;
-    u32 direction, facingDirection, numQualifyingTile = 0;
+    enum Direction direction, facingDirection;
+    u32 numQualifyingTile = 0;
     struct ObjectEvent *objectEvent;
 
     if (!I_FISHING_PROXIMITY)
@@ -552,7 +568,7 @@ static u32 CalculateFishingProximityBoost()
             numQualifyingTile++;
         else if (MapGridGetCollisionAt(tile_x, tile_y))
             numQualifyingTile++;
-        else if (GetMapBorderIdAt(tile_x, tile_y) == -1)
+        else if (GetMapBorderIdAt(tile_x, tile_y) == CONNECTION_INVALID)
             numQualifyingTile++;
     }
 

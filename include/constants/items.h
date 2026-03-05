@@ -1051,6 +1051,11 @@ enum __attribute__((packed)) Item
     ITEM_TATSUGIRINITE = 872,
     ITEM_GLIMMORANITE = 873,
 
+    // Custom items
+    ITEM_INFINITE_REPEL = 874,
+    ITEM_HEALING_KIT = 875,
+    ITEM_THIEF_FINDER = 876,
+
     ITEMS_COUNT,
     ITEM_FIELD_ARROW = ITEMS_COUNT,
 };
@@ -1095,6 +1100,7 @@ enum __attribute__((packed)) Item
 #define MAX_BAG_ITEM_CAPACITY         999
 #define MAX_PC_ITEM_CAPACITY          999
 #define MAX_PYRAMID_BAG_ITEM_CAPACITY  99 // Values higher than 255 require free SaveBlock2 space.
+#define ITEM_QUANTITY_INFINITE      0xFFFF
 
 #define MAX_ITEM_DIGITS         ((MAX_BAG_ITEM_CAPACITY > 99) ? 3 : 2)
 #define MAX_PYRAMID_ITEM_DIGITS ((MAX_PYRAMID_BAG_ITEM_CAPACITY > 99) ? 3 : 2)

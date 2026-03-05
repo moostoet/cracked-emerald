@@ -563,8 +563,15 @@ gSpecials::
 	def_special UseBlankMessageToCancelPokemonPic
 	def_special EnterCode
 	def_special GetCodeFeedback
+	def_special GetNumOwnedBadges
 	def_special SetHiddenNature
 	def_special SetAbility
+	def_special Special_CheckPartyHasCoveOrThief
+	def_special Special_GetRouteThievableItems
+	def_special Special_ShowThievableItemsMenu
+	def_special Special_HandleThievableItemSelection
+	def_special Special_ThievableItems_HandleQuantitySelection
+	def_special Special_ThievableItems_GiveItems
 	def_special CanTeachMoveBoxMon
 	def_special ObjectEventInteractionGetApricornTreeData
 	def_special ObjectEventInteractionPickApricornTree

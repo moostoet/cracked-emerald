@@ -100,6 +100,10 @@
 #define FLAG_UNUSED_0x04E    0x4E // Unused Flag
 #define FLAG_UNUSED_0x04F    0x4F // Unused Flag
 
+// Custom progression flags (mapped to unused slots)
+#define FLAG_MOVE_TUTOR_TAUGHT_EARTHQUAKE_HYDE  FLAG_UNUSED_0x020
+#define FLAG_OBTAINED_THIEF_FINDER              FLAG_UNUSED_0x021
+
 // Scripts
 #define FLAG_HIDE_SKY_PILLAR_TOP_RAYQUAZA_STILL  0x50
 #define FLAG_SET_WALL_CLOCK                      0x51
@@ -1225,6 +1229,8 @@
 #define FLAG_UNUSED_0x493                                           0x493 // Unused Flag
 #define FLAG_UNUSED_0x494                                           0x494 // Unused Flag
 #define FLAG_UNUSED_0x495                                           0x495 // Unused Flag
+#define FLAG_HIDE_AQUA_ENTRANCE                                     0x494 // Unused Flag
+#define FLAG_HIDE_BRAWLY_BLOCK                                      0x495 // Unused Flag
 #define FLAG_UNUSED_0x496                                           0x496 // Unused Flag
 #define FLAG_UNUSED_0x497                                           0x497 // Unused Flag
 #define FLAG_UNUSED_0x498                                           0x498 // Unused Flag
@@ -1507,13 +1513,13 @@
 
 #define FLAG_RECEIVED_POKEDEX_FROM_BIRCH            (SYSTEM_FLAGS + 0x84)
 
-#define FLAG_UNUSED_0x8E5                           (SYSTEM_FLAGS + 0x85) // Unused Flag
-#define FLAG_UNUSED_0x8E6                           (SYSTEM_FLAGS + 0x86) // Unused Flag
-#define FLAG_UNUSED_0x8E7                           (SYSTEM_FLAGS + 0x87) // Unused Flag
-#define FLAG_UNUSED_0x8E8                           (SYSTEM_FLAGS + 0x88) // Unused Flag
-#define FLAG_UNUSED_0x8E9                           (SYSTEM_FLAGS + 0x89) // Unused Flag
-#define FLAG_UNUSED_0x8EA                           (SYSTEM_FLAGS + 0x8A) // Unused Flag
-#define FLAG_UNUSED_0x8EB                           (SYSTEM_FLAGS + 0x8B) // Unused Flag
+#define FLAG_RECEIVED_HDB                           (SYSTEM_FLAGS + 0x85) // Unused Flag
+#define FLAG_GRUNT_PETALBURG                        (SYSTEM_FLAGS + 0x86) // Unused Flag
+#define FLAG_WALLY_PETALBURG                        (SYSTEM_FLAGS + 0x87) // Unused Flag
+#define FLAG_DEWFORD_DEFEATED                       (SYSTEM_FLAGS + 0x88) // Unused Flag
+#define FLAG_RIVAL_RUST_DEFEATED                    (SYSTEM_FLAGS + 0x89) // Unused Flag
+#define FLAG_ARCHIE_OCEANIC_DEFEATED                (SYSTEM_FLAGS + 0x8A) // Unused Flag
+#define FLAG_COLRESS_NM_DEFEATED                    (SYSTEM_FLAGS + 0x8B) // Unused Flag
 #define FLAG_UNUSED_0x8EC                           (SYSTEM_FLAGS + 0x8C) // Unused Flag
 #define FLAG_UNUSED_0x8ED                           (SYSTEM_FLAGS + 0x8D) // Unused Flag
 #define FLAG_UNUSED_0x8EE                           (SYSTEM_FLAGS + 0x8E) // Unused Flag

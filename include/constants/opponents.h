@@ -859,12 +859,21 @@
 #define TRAINER_LEAF                        852
 #define TRAINER_BRENDAN_PLACEHOLDER         853
 #define TRAINER_MAY_PLACEHOLDER             854
+#define TRAINER_GRUNT_OCEANIC_LEFT          855
+#define TRAINER_GRUNT_OCEANIC_RIGHT         856
+#define TRAINER_ARCHIE_OCEANIC              857
+#define TRAINER_WALLY_PETALBURG             858
+#define TRAINER_OLLIE_SCHOOL                859
+#define TRAINER_HARRY_SCHOOL                860
+#define TRAINER_FIONA_SCHOOL                861
+#define TRAINER_WILSON_SCHOOL               862
+#define TRAINER_HYDE                        863
 
 // NOTE: Because each Trainer uses a flag to determine when they are defeated, there is only space for 9 additional trainers before trainer flag space overflows
 //       More space can be made by shifting flags around in constants/flags.h or changing how trainer flags are handled
 //       MAX_TRAINERS_COUNT can be increased but will take up additional saveblock space
 
-#define TRAINERS_COUNT_EMERALD     855
+#define TRAINERS_COUNT_EMERALD     864
 #define MAX_TRAINERS_COUNT_EMERALD 864
 
 #if IS_FRLG

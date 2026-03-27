@@ -200,7 +200,32 @@ Route103_EventScript_Boy::
 	end
 
 Route103_EventScript_Man::
-	msgbox Route103_Text_ShortcutToOldale, MSGBOX_NPC
+	lock
+	faceplayer
+	goto_if_set FLAG_RECEIVED_LIFE_ORB_ROUTE_103, Route103_EventScript_ManReceivedLifeOrb
+	goto_if_not_defeated TRAINER_DAISY, Route103_EventScript_ManNeedMoreBattles
+	goto_if_not_defeated TRAINER_AMY_AND_LIV_1, Route103_EventScript_ManNeedMoreBattles
+	goto_if_not_defeated TRAINER_ANDREW, Route103_EventScript_ManNeedMoreBattles
+	goto_if_not_defeated TRAINER_MIGUEL_1, Route103_EventScript_ManNeedMoreBattles
+	goto_if_not_defeated TRAINER_MARCOS, Route103_EventScript_ManNeedMoreBattles
+	goto_if_not_defeated TRAINER_RHETT, Route103_EventScript_ManNeedMoreBattles
+	goto_if_not_defeated TRAINER_PETE, Route103_EventScript_ManNeedMoreBattles
+	goto_if_not_defeated TRAINER_ISABELLE, Route103_EventScript_ManNeedMoreBattles
+	msgbox Route103_Text_ManGiveLifeOrb, MSGBOX_DEFAULT
+	giveitem ITEM_LIFE_ORB
+	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
+	setflag FLAG_RECEIVED_LIFE_ORB_ROUTE_103
+	release
+	end
+
+Route103_EventScript_ManNeedMoreBattles::
+	msgbox Route103_Text_ManNeedMoreBattles, MSGBOX_DEFAULT
+	release
+	end
+
+Route103_EventScript_ManReceivedLifeOrb::
+	msgbox Route103_Text_ManAfterLifeOrb, MSGBOX_DEFAULT
+	release
 	end
 
 Route103_EventScript_RouteSign::
@@ -354,10 +379,28 @@ Route103_Text_ShouldHaveBroughtPotion:
 	.string "My POKéMON is staggeringly tired…\n"
 	.string "I should have brought a POTION…$"
 
-Route103_Text_ShortcutToOldale:
-	.string "If you cross the sea from here,\n"
-	.string "it'll be a shortcut to OLDALE TOWN.\p"
-	.string "Fufufu, that's useful, isn't it?$"
+Route103_Text_ManNeedMoreBattles:
+	.string "I've been watching the TRAINERS on\n"
+	.string "ROUTE 103 for a long time now.\p"
+	.string "They're a spirited bunch!\p"
+	.string "If you can defeat every TRAINER\n"
+	.string "on this route, come see me.\p"
+	.string "I've got something special for\n"
+	.string "anyone with that kind of grit!$"
+
+Route103_Text_ManGiveLifeOrb:
+	.string "Well, well! You really went and\n"
+	.string "defeated every TRAINER here!\p"
+	.string "That's the kind of spirit I love\n"
+	.string "to see in a young TRAINER!\p"
+	.string "Here, you've earned this!$"
+
+Route103_Text_ManAfterLifeOrb:
+	.string "That LIFE ORB powers up a POKéMON's\n"
+	.string "moves, but it costs a little HP\l"
+	.string "each time.\p"
+	.string "It's a double-edged sword, so use\n"
+	.string "it wisely!$"
 
 Route103_Text_RouteSign:
 	.string "ROUTE 103\n"

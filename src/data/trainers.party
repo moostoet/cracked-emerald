@@ -797,13 +797,34 @@ Music: Female
 Double Battle: No
 AI: Check Bad Move
 
-Shroomish
-Level: 14
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Ribombee @ Focus Sash  
+Ability: Shield Dust  
+Level: 31  
+Timid Nature  
+IVs: 0 Atk  
+- Sticky Web  
+- Stun Spore  
+- Pollen Puff  
+- Draining Kiss  
 
-Roselia
-Level: 14
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Roserade @ Black Sludge  
+Ability: Technician  
+Level: 32  
+Timid Nature  
+IVs: 0 Atk  
+- Sleep Powder  
+- Magical Leaf  
+- Weather Ball  
+- Toxic Spikes  
+
+Scovillain @ Heat Rock  
+Ability: Chlorophyll  
+Level: 32    
+Modest Nature  
+- Sunny Day  
+- Flamethrower  
+- Solar Beam  
+- Growth  
 
 === TRAINER_ROSE_1 ===
 Name: ROSE
@@ -5127,9 +5148,9 @@ Spinda-Drunken @ Lum Berry
 Ability: Drunken Fist  
 Level: 25   
 Adamant Nature  
-- Dynamic Punch  
-- Mega Kick   
+- Drain Punch  
 - Sing  
+- Dizzy Punch  
 - Stone Edge  
 
 Hariyama @ Flame Orb  
@@ -5840,9 +5861,25 @@ Music: Twins
 Double Battle: No
 AI: Check Bad Move
 
-Skitty @ Oran Berry
-Level: 15
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Dachsbun @ Rocky Helmet
+Ability: Well-Baked Body
+Level: 32
+Tera Type: Fairy
+Impish Nature
+- Body Press
+- Yawn
+- Protect
+- Roar
+
+Espathra @ Leftovers
+Ability: Speed Boost
+Level: 33
+Tera Type: Psychic
+Timid Nature
+- Calm Mind
+- Substitute
+- Stored Power
+- Dazzling Gleam
 
 === TRAINER_COLTON ===
 Name: COLTON
@@ -6733,17 +6770,32 @@ Music: Hiker
 Double Battle: No
 AI: Check Bad Move
 
-Magikarp
-Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Pelipper @ Damp Rock
+Ability: Drizzle
+Level: 33
+Bold Nature
+- Scald
+- Hurricane
+- U-turn
+- Roost
 
-Tentacool
-Level: 10
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Floatzel @ Mystic Water
+Ability: Technician
+Level: 33
+Jolly Nature
+- Flip Turn
+- Mach Punch
+- Wave Crash
+- Ice Spinner
 
-Magikarp
-Level: 15
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Clodsire @ Black Sludge
+Ability: Water Absorb
+Level: 32
+Careful Nature
+- Toxic Spikes
+- Earthquake
+- Recover
+- Yawn
 
 === TRAINER_IVAN ===
 Name: IVAN
@@ -9293,13 +9345,41 @@ Music: Twins
 Double Battle: Yes
 AI: Check Bad Move
 
-Plusle
-Level: 15
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+SPECIES_MAUSHOLD_FOUR @ Focus Sash
+Ability: Friend Guard
+Level: 31
+Jolly Nature
+- Beat Up
+- Follow Me
+- Encore
+- Protect
 
-Minun
-Level: 15
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Mudsdale @ Sitrus Berry
+Ability: Stamina
+Level: 32
+Adamant Nature
+- Earthquake
+- Rock Slide
+- Body Press
+- Protect
+
+Jumpluff @ Covert Cloak
+Ability: Chlorophyll
+Level: 31
+Timid Nature
+- Tailwind
+- Sleep Powder
+- Rage Powder
+- Strength Sap
+
+Talonflame @ Sharp Beak
+Ability: Gale Wings
+Level: 32
+Jolly Nature
+- Brave Bird
+- Flare Blitz
+- Tailwind
+- Quick Guard
 
 === TRAINER_AMY_AND_LIV_2 ===
 Name: AMY & LIV
@@ -14475,9 +14555,26 @@ Music: Intense
 Double Battle: No
 AI: Check Bad Move
 
-Voltorb
-Level: 15
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+SPECIES_TOXTRICITY_LOW_KEY @ Throat Spray
+Ability: Punk Rock
+Level: 33
+Tera Type: Electric
+Timid Nature
+IVs: 0 Atk
+- Overdrive
+- Sludge Bomb
+- Snarl
+- Volt Switch
+
+Kilowattrel @ Heavy-Duty Boots
+Ability: Competitive
+Level: 33
+Tera Type: Electric
+Timid Nature
+- Thunderbolt
+- Hurricane
+- Roost
+- U-turn
 
 === TRAINER_RHETT ===
 Name: RHETT
@@ -14488,9 +14585,32 @@ Music: Intense
 Double Battle: No
 AI: Check Bad Move
 
-Makuhita
-Level: 15
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+Hariyama @ Flame Orb
+Ability: Guts
+Level: 32
+Naughty Nature
+- Fake Out
+- Drain Punch
+- Knock Off
+- Bullet Punch
+
+Machoke @ Eviolite
+Ability: No Guard
+Level: 31
+Adamant Nature
+- Dynamic Punch
+- Knock Off
+- Bullet Punch
+- Bulk Up
+
+Chesnaught @ Leftovers
+Ability: Bulletproof
+Level: 32
+Impish Nature
+- Drain Punch
+- Spiky Shield
+- Seed Bomb
+- Bulk Up
 
 === TRAINER_TYRON ===
 Name: TYRON

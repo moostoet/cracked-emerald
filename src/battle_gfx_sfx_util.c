@@ -1026,7 +1026,10 @@ void BattleLoadSubstituteOrMonSpriteGfx(enum BattlerId battler, bool8 loadMonSpr
         else
             DecompressDataWithHeaderVram(gBattleAnimSpriteGfx_SubstituteBack, gMonSpritesGfxPtr->spritesGfx[position]);
 
-        for (i = 1; i < 4; i++)
+        // Battler sprite buffers only allocate MAX_MON_PIC_FRAMES frames.
+        // Copying beyond that corrupts neighboring battler gfx, and for the
+        // opponent-right slot it writes past the end of the allocation.
+        for (i = 1; i < MAX_MON_PIC_FRAMES; i++)
         {
             Dma3CopyLarge32_(gMonSpritesGfxPtr->spritesGfx[position], &gMonSpritesGfxPtr->spritesGfx[position][MON_PIC_SIZE * i], MON_PIC_SIZE);
         }

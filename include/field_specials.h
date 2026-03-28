@@ -39,6 +39,14 @@ bool32 CheckPartyHasSpecies(u32);
 bool8 CutMoveRuinValleyCheck(void);
 void CutMoveOpenDottedHoleDoor(void);
 
+// Written to gSpecialVar_0x8006 by Special_GetRouteThievableItems.
+enum ThievableItemsStatus
+{
+    THIEVABLE_ITEMS_STATUS_NO_ENCOUNTERS_SEEN,
+    THIEVABLE_ITEMS_STATUS_NO_ITEMS,
+    THIEVABLE_ITEMS_STATUS_HAS_ITEMS,
+};
+
 // Thievable Items NPC Feature
 void Special_CheckPartyHasCoveOrThief(void);
 void Special_GetRouteThievableItems(void);

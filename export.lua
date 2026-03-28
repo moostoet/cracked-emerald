@@ -2636,18 +2636,100 @@ levelCap = 0 -- Sets the level for all mons based on first party slot
 
 local terminator=0xFF
 local monNameLength=10
-local playerNameLength=10
+local speciesNameLength=12
+local playerNameLength=7
 local boxMonSize=80
 local partyMonSize=100
-local speciesStructSize=260
+local speciesStructSizeFallback=260
+local speciesStructSize=speciesStructSizeFallback
+local speciesNameOffset=0x2c
+local gfRomHeader=0x08000100
+local gfSpeciesInfoOffset=0xbc
 
-local partyCount=0x02031aad -- gPlayerPartyCount
-local partyloc=0x02031d0c -- gPlayerParty
-local storageLoc= emu:read32(0x030051f0) -- gPokemonStoragePtr
-local speciesInfo=0x0865fae0 -- gSpeciesInfo
+local partyCount=0x02031b6d -- gPlayerPartyCount
+local partyloc=0x02031dcc -- gPlayerParty
+local storageLocPtr=0x030051c8 -- gPokemonStoragePtr
+local storageLoc=0
+local speciesInfoFallback=0x086c48ec
+local speciesInfo=speciesInfoFallback
+
+function isRomPointer(address)
+	return address ~= nil and address >= 0x08000000 and address < 0x0A000000
+end
+
+function detectSpeciesStructSize(speciesInfoBase)
+	local candidates = {260, 244, 228, 212, 196}
+	local targets = {
+		{species = 1, name = "Bulbasaur"},
+		{species = 4, name = "Charmander"},
+		{species = 7, name = "Squirtle"},
+	}
+
+	for _, candidate in ipairs(candidates) do
+		local matches = 0
+		for _, target in ipairs(targets) do
+			local raw = toString(emu:readRange(speciesInfoBase + (candidate * target.species) + speciesNameOffset, speciesNameLength + 1))
+			if raw == target.name then
+				matches = matches + 1
+			end
+		end
+		if matches >= 2 then
+			return candidate
+		end
+	end
+
+	return speciesStructSizeFallback
+end
+
+function refreshRuntimeAddresses()
+	storageLoc = emu:read32(storageLocPtr)
+
+	local headerSpeciesInfo = emu:read32(gfRomHeader + gfSpeciesInfoOffset)
+	if isRomPointer(headerSpeciesInfo) then
+		speciesInfo = headerSpeciesInfo
+	else
+		speciesInfo = speciesInfoFallback
+	end
+
+	speciesStructSize = detectSpeciesStructSize(speciesInfo)
+end
+
+function getSpeciesInfoBase()
+	if not isRomPointer(speciesInfo) then
+		refreshRuntimeAddresses()
+	end
+	return speciesInfo
+end
 
 function getCurve(n)
-	return emu:read8(speciesInfo+(speciesStructSize*n)+21)
+	local speciesInfoBase = getSpeciesInfoBase()
+	return emu:read8(speciesInfoBase+(speciesStructSize*n)+21)
+end
+
+function getSpeciesName(species)
+	local speciesInfoBase = getSpeciesInfoBase()
+	local raw = toString(emu:readRange(speciesInfoBase + (speciesStructSize * species) + speciesNameOffset, speciesNameLength + 1))
+	if raw ~= nil and raw ~= "" and raw ~= "??????????" then
+		return raw
+	end
+	if mons[species] ~= nil then
+		return mons[species]
+	end
+	if raw ~= nil and raw ~= "" then
+		return raw
+	end
+	return string.format("Species %d", species)
+end
+
+function getMoveName(moveId)
+	if moveId == 0 then
+		return ""
+	end
+	local current = move[moveId + 1]
+	if current == nil or current == "" then
+		return string.format("Move %d", moveId)
+	end
+	return current
 end
 function slowCurve(n)
     return math.floor((5*(n^3))/4)
@@ -2693,12 +2775,14 @@ end
 
 function expRequired(species, level)
 	expCurve = getCurve(species)
+	if (expCurve == nil) then return medfastCurve(level) end
 	if (expCurve == 0) then return medfastCurve(level) end
 	if (expCurve == 1) then return erraticCurve(level) end
 	if (expCurve == 2) then return flutuatingCurve(level) end
 	if (expCurve == 3) then return medslowCurve(level) end
 	if (expCurve == 4) then return fastCurve(level) end
 	if (expCurve == 5) then return slowCurve(level) end
+	return medfastCurve(level)
 end
 
 function getParty()
@@ -2731,14 +2815,16 @@ function readBoxMon(address)
 	mon.personality = emu:read32(address + 0)
 	mon.otId = emu:read32(address + 4)
 	mon.nickname = toString(emu:readRange(address + 8, monNameLength))
-	mon.language = emu:read8(address + 18)
+	local langNature = emu:read8(address + 18)
+	mon.language = langNature & 0x7
+	mon.hiddenNatureModifier = (langNature >> 3) & 0x1F
 
 	local flags = emu:read8(address + 19)
 	mon.isBadEgg = flags & 1
 	mon.hasSpecies = (flags >> 1) & 1
 	mon.isEgg = (flags >> 2) & 1
 	mon.otName = toString(emu:readRange(address + 20, playerNameLength))
-	mon.markings = emu:read8(address + 27)
+	mon.markings = emu:read8(address + 27) & 0xF
 
 	local key = mon.otId ~ mon.personality
 	local substructSelector = {
@@ -2781,28 +2867,26 @@ function readBoxMon(address)
 		ss3[i] = emu:read32(address + 32 + pSel[4] * 12 + i * 4) ~ key
 	end
 
-	mon.species = ss0[0] & 0x7FF
-	mon.heldItem = ss0[0] >> 16
-	mon.experience = ss0[1] & 0x1FFFFF
-	mon.ppBonuses = ss0[2] & 0xFF
-	mon.friendship = (ss0[2] >> 8) & 0xFF
+		mon.species = ss0[0] & 0x7FF
+		mon.heldItem = (ss0[0] >> 16) & 0x3FF
+		mon.experience = ss0[1] & 0x1FFFFF
+		mon.ppBonuses = ss0[2] & 0xFF
+		mon.friendship = (ss0[2] >> 8) & 0xFF
+		mon.pokeball = (ss0[2] >> 16) & 0x3F
 
-	mon.moves = {
-		ss1[0] & 0xFFFF,
-		ss1[0] >> 16,
-		ss1[1] & 0x7FF,
-		ss1[1] >> 16
-	}
+		mon.moves = {
+			ss1[0] & 0x7FF,
+			(ss1[0] >> 16) & 0x7FF,
+			ss1[1] & 0x7FF,
+			(ss1[1] >> 16) & 0x7FF
+		}
 
-	mon.hiddenNature = (ss1[1] >> 11) & 0x1F
-	-- console:log(string.format("%d", mon.hiddenNature))
-
-	mon.pp = {
-		ss1[2] & 0xFF,
-		(ss1[2] >> 8) & 0xFF,
-		(ss1[2] >> 16) & 0xFF,
-		ss1[2] >> 24
-	}
+		mon.pp = {
+			ss1[2] & 0x7F,
+			(ss1[2] >> 8) & 0x7F,
+			(ss1[2] >> 16) & 0x7F,
+			(ss1[2] >> 24) & 0x7F
+		}
 
 	mon.hpEV = ss2[0] & 0xFF
 	mon.attackEV = (ss2[0] >> 8) & 0xFF
@@ -2818,14 +2902,14 @@ function readBoxMon(address)
 	mon.sheen = ss2[2] >> 24
 
 	mon.pokerus = ss3[0] & 0xFF
-	mon.metLocation = (ss3[0] >> 8) & 0xFF
-	flags = ss3[0] >> 16
-	mon.metLevel = flags & 0x7F
-	mon.metGame = (flags >> 7) & 0xF
-	mon.pokeball = (flags >> 11) & 0xF
-	mon.otGender = (flags >> 15) & 0x1
-	flags = ss3[1]
-	mon.hpIV = (flags >> 0) & 0x1F
+		mon.metLocation = (ss3[0] >> 8) & 0xFF
+		flags = ss3[0] >> 16
+		mon.metLevel = flags & 0x7F
+		mon.metGame = (flags >> 7) & 0xF
+		mon.dynamaxLevel = (flags >> 11) & 0xF
+		mon.otGender = (flags >> 15) & 0x1
+		flags = ss3[1]
+		mon.hpIV = (flags >> 0) & 0x1F
 	mon.attackIV = (flags >> 5) & 0x1F
 	mon.defenseIV = (flags >> 10) & 0x1F
 	mon.speedIV = (flags >> 15) & 0x1F
@@ -2861,7 +2945,7 @@ function readPartyMon(address)
 	-- if (levelCap == 0) then
 	-- 	levelCap = mon.level
 	-- end
-	mon.mail = emu:read32(address + 85)
+	mon.mail = emu:read8(address + 85)
 	mon.hp = emu:read16(address + 86)
 	mon.maxHP = emu:read16(address + 88)
 	mon.attack = emu:read16(address + 90)
@@ -2873,62 +2957,77 @@ function readPartyMon(address)
 end
 
 function getAbility(mon)
-	current = abilities[emu:read16(speciesInfo+(speciesStructSize*mon.species)+24+(mon.altAbility*2))]
-    if (mons[mon.species] == "Tapu Koko") then
+	local speciesName = getSpeciesName(mon.species)
+	local speciesInfoBase = getSpeciesInfoBase()
+	local abilityBase = speciesInfoBase + (speciesStructSize * mon.species) + 24
+	local abilityId = emu:read16(abilityBase + (mon.altAbility * 2))
+	if abilityId > #abilities then
+		abilityId = emu:read8(abilityBase + mon.altAbility)
+	end
+	current = abilities[abilityId]
+    if (speciesName == "Tapu Koko") then
         current = "Telepathy"
 
-	elseif (mons[mon.species] == "Togedemaru") then
+	elseif (speciesName == "Togedemaru") then
         current = "Iron Barbs"
 
-	elseif (mons[mon.species] == "Vaporeon") then
+	elseif (speciesName == "Vaporeon") then
         current = "Hydration"
 
-	elseif (mons[mon.species] == "Flareon") then
+	elseif (speciesName == "Flareon") then
         current = "Guts"
 
-	elseif (mons[mon.species] == "Jolteon") then
+	elseif (speciesName == "Jolteon") then
         current = "Quick Feet"
 
-	elseif (mons[mon.species] == "Espeon") then
+	elseif (speciesName == "Espeon") then
         current = "Synchronize"
 
-	elseif (mons[mon.species] == "Umbreon") then
+	elseif (speciesName == "Umbreon") then
         current = "Synchronize"
 
-	elseif (mons[mon.species] == "Leafeon") then
+	elseif (speciesName == "Leafeon") then
         current = "Technician"
 
-	elseif (mons[mon.species] == "Glaceon") then
+	elseif (speciesName == "Glaceon") then
         current = "Slush Rush"
 
-	elseif (mons[mon.species] == "Sylveon") then
+	elseif (speciesName == "Sylveon") then
         current = "Pixilate"
 
-    end
-    return current
+	    end
+	    if current ~= nil and current ~= "" then
+	    	return current
+	    end
+	    if abilityId == 0 then
+	    	return "None"
+	    end
+	    return string.format("Ability %d", abilityId)
 end
 
 function getNature(mon)
-	if (mon.hiddenNature == 0) then
-		return nature[(mon.personality % 25)+1]
+	local baseNature = mon.personality % 25
+	local actualNature = baseNature
+	if mon.hiddenNatureModifier ~= nil then
+		actualNature = baseNature ~ mon.hiddenNatureModifier
 	end
-	return nature[mon.hiddenNature+1]
+	return nature[(actualNature % 25)+1]
 end
 
 function getPartyPrint(mon)
 	str = ""
-	str = str .. mons[mon.species]
+	str = str .. getSpeciesName(mon.species)
 	str = str .. string.format("\n")
 	str = str .. "Ability: " .. string.format("%s", getAbility(mon)) .. string.format("\n")
 	str = str .. string.format("Level: %d\n", mon.level)
 	str = str .. string.format("%s", getNature(mon)) .. " Nature" .. string.format("\n")
 	str = str .. string.format("IVs: %d HP / %d Atk / %d Def / %d SpA / %d SpD / %d Spe", mon.hpIV, mon.attackIV, mon.defenseIV, mon.spAttackIV, mon.spDefenseIV, mon.speedIV) .. string.format("\n")
 	for i=1,4 do
-		local mv = move[mon.moves[i] + 1]
+		local mv = getMoveName(mon.moves[i])
 		if(mv == "Hidden Power") then
 			str = str .. string.format("- Hidden Power %s\n", getHP(mon))
 			else
-			if(mv ~= "") then
+				if(mv ~= "") then
 				str = str .. string.format("- %s\n", mv)
 			end
 		end
@@ -2939,7 +3038,7 @@ end
 
 function getPCPrint(mon)
 	str = ""
-	str = str ..  mons[mon.species]
+	str = str .. getSpeciesName(mon.species)
 	str = str .. string.format("\n")
 	str = str .. "Ability: " .. string.format("%s", getAbility(mon)) .. string.format("\n")
 	-- str = str .. string.format("Level: %d\n", levelCap)
@@ -2947,11 +3046,11 @@ function getPCPrint(mon)
 	str = str .. string.format("%s", getNature(mon)) .. " Nature" .. string.format("\n")
 	str = str .. string.format("IVs: %d HP / %d Atk / %d Def / %d SpA / %d SpD / %d Spe", mon.hpIV, mon.attackIV, mon.defenseIV, mon.spAttackIV, mon.spDefenseIV, mon.speedIV) .. string.format("\n")
 	for i=1,4 do
-		local mv = move[mon.moves[i] + 1]
+		local mv = getMoveName(mon.moves[i])
 		if(mv == "Hidden Power") then
 			str = str .. string.format("- Hidden Power %s\n", getHP(mon))
 			else
-			if(mv ~= "") then
+				if(mv ~= "") then
 				str = str .. string.format("- %s\n", mv)
 			end
 		end
@@ -2961,6 +3060,11 @@ function getPCPrint(mon)
 end
 
 function printPartyStatus(buffer)
+    refreshRuntimeAddresses()
+    if storageLoc == nil or storageLoc == 0 then
+		buffer:clear()
+		return
+	end
     address = storageLoc + 4
     i = 0
 	buffer:clear()
@@ -2971,7 +3075,10 @@ function printPartyStatus(buffer)
 	end
     while i<120 do
 		if (emu:read32(address) ~=0) then
-			buffer:print(getPCPrint(readBoxMon(address)))
+			local mon = readBoxMon(address)
+			if mon.hasSpecies ~= 0 and mon.species ~= 0 then
+				buffer:print(getPCPrint(mon))
+			end
 		end
 		i = i+1
 		address = address + 80

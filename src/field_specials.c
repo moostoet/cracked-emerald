@@ -5058,6 +5058,7 @@ void Special_GetRouteThievableItems(void)
 
     // Reset buffer
     sThievableItemsCount = 0;
+    gSpecialVar_0x8006 = THIEVABLE_ITEMS_STATUS_NO_ENCOUNTERS_SEEN;
 
     // Get current map's wild encounter header
     headerId = GetCurrentMapWildMonHeaderId();
@@ -5104,6 +5105,11 @@ void Special_GetRouteThievableItems(void)
         AddAllItemsFromEncounterInfo(encounterTypes->rockSmashMonsInfo, ROCK_WILD_COUNT);
         AddAllItemsFromEncounterInfo(encounterTypes->hiddenMonsInfo, HIDDEN_WILD_COUNT);
     }
+
+    if (sThievableItemsCount == 0)
+        gSpecialVar_0x8006 = THIEVABLE_ITEMS_STATUS_NO_ITEMS;
+    else
+        gSpecialVar_0x8006 = THIEVABLE_ITEMS_STATUS_HAS_ITEMS;
 
     gSpecialVar_Result = sThievableItemsCount;
 }

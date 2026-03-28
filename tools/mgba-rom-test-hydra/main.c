@@ -602,8 +602,8 @@ int main(int argc, char *argv[])
             else if (patchelfpid == 0)
             {
                 char n_arg[5], i_arg[5];
-                snprintf(n_arg, sizeof(n_arg), "\\x%02x", nrunners);
-                snprintf(i_arg, sizeof(i_arg), "\\x%02x", i);
+                snprintf(n_arg, sizeof(n_arg), "\\x%02hhx", (unsigned char)nrunners);
+                snprintf(i_arg, sizeof(i_arg), "\\x%02hhx", (unsigned char)i);
                 if (execlp("tools/patchelf/patchelf", "tools/patchelf/patchelf", rom_path, "gTestRunnerN", n_arg, "gTestRunnerI", i_arg, NULL) == -1)
                 {
                     perror("execlp patchelf failed");

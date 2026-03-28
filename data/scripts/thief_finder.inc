@@ -6,7 +6,10 @@ EventScript_UseThiefFinder::
 	special Special_CheckPartyHasCoveOrThief
 	goto_if_eq VAR_RESULT, FALSE, EventScript_ThiefFinder_NoMove
 	special Special_GetRouteThievableItems
-	goto_if_eq VAR_RESULT, 0, EventScript_ThiefFinder_NoItems
+	goto_if_ne VAR_RESULT, 0, EventScript_ThiefFinder_SelectItem
+	goto_if_eq VAR_0x8006, 1, EventScript_ThiefFinder_NoHeldItems
+	goto EventScript_ThiefFinder_NoItems
+EventScript_ThiefFinder_SelectItem::
 	msgbox Text_ThiefFinder_SelectItem, MSGBOX_DEFAULT
 	special Special_ShowThievableItemsMenu
 	dynmultistack 0, 0, FALSE, 8, FALSE, 0, DYN_MULTICHOICE_CB_NONE
@@ -31,6 +34,11 @@ EventScript_ThiefFinder_NoItems::
 	releaseall
 	end
 
+EventScript_ThiefFinder_NoHeldItems::
+	msgbox Text_ThiefFinder_NoHeldItems, MSGBOX_DEFAULT
+	releaseall
+	end
+
 EventScript_ThiefFinder_Cancel::
 	releaseall
 	end
@@ -49,6 +57,10 @@ Text_ThiefFinder_NeedMove:
 Text_ThiefFinder_NoItems:
 	.string "No wild Pokémon have been\n"
 	.string "encountered in this area yet.$"
+
+Text_ThiefFinder_NoHeldItems:
+	.string "The wild Pokémon in this area\n"
+	.string "aren't carrying any items.$"
 
 Text_ThiefFinder_SelectItem:
 	.string "The THIEF FINDER detected these\n"

@@ -14,56 +14,50 @@ SINGLE_BATTLE_TEST("Leaf Guard blocks the first status attempt, but a later stat
         PLAYER(SPECIES_LEAFEON) { Ability(ABILITY_LEAF_GUARD); }
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
-        TURN { MOVE(opponent, MOVE_THUNDER_WAVE); MOVE(player, MOVE_CELEBRATE); }
-        TURN { MOVE(opponent, MOVE_WILL_O_WISP); }
+        TURN { MOVE(opponent, move); MOVE(player, MOVE_CELEBRATE); }
+        TURN { MOVE(opponent, move); }
     } SCENE {
         // First attempt blocked
         ABILITY_POPUP(player, ABILITY_LEAF_GUARD);
         MESSAGE("It doesn't affect Leafeon…");
-        NOT STATUS_ICON(player, paralysis: TRUE);
+        NOT STATUS_ICON(player, status);
         // Second attempt succeeds after Leaf Guard is consumed
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_WILL_O_WISP, opponent);
-        STATUS_ICON(player, burn: TRUE);
+        ANIMATION(ANIM_TYPE_MOVE, move, opponent);
+        STATUS_ICON(player, status);
     }
 }
 
 SINGLE_BATTLE_TEST("Leaf Guard refreshes on switch out")
 {
     enum Move move;
-    u32 species;
-    enum Ability ability;
     u16 status;
-    PARAMETRIZE { move = MOVE_WILL_O_WISP;  status = STATUS1_BURN;         species = SPECIES_GOLDUCK;  ability = ABILITY_CLOUD_NINE; }
-    PARAMETRIZE { move = MOVE_HYPNOSIS;     status = STATUS1_SLEEP;        species = SPECIES_GOLDUCK;  ability = ABILITY_CLOUD_NINE; }
-    PARAMETRIZE { move = MOVE_THUNDER_WAVE; status = STATUS1_PARALYSIS;    species = SPECIES_GOLDUCK;  ability = ABILITY_CLOUD_NINE; }
-    PARAMETRIZE { move = MOVE_TOXIC;        status = STATUS1_TOXIC_POISON; species = SPECIES_GOLDUCK;  ability = ABILITY_CLOUD_NINE; }
-    PARAMETRIZE { move = MOVE_WILL_O_WISP;  status = STATUS1_BURN;         species = SPECIES_RAYQUAZA; ability = ABILITY_AIR_LOCK; }
-    PARAMETRIZE { move = MOVE_HYPNOSIS;     status = STATUS1_SLEEP;        species = SPECIES_RAYQUAZA; ability = ABILITY_AIR_LOCK; }
-    PARAMETRIZE { move = MOVE_THUNDER_WAVE; status = STATUS1_PARALYSIS;    species = SPECIES_RAYQUAZA; ability = ABILITY_AIR_LOCK; }
-    PARAMETRIZE { move = MOVE_TOXIC;        status = STATUS1_TOXIC_POISON; species = SPECIES_RAYQUAZA; ability = ABILITY_AIR_LOCK; }
+    PARAMETRIZE { move = MOVE_WILL_O_WISP;  status = STATUS1_BURN; }
+    PARAMETRIZE { move = MOVE_HYPNOSIS;     status = STATUS1_SLEEP; }
+    PARAMETRIZE { move = MOVE_THUNDER_WAVE; status = STATUS1_PARALYSIS; }
+    PARAMETRIZE { move = MOVE_TOXIC;        status = STATUS1_TOXIC_POISON; }
     // PARAMETRIZE { move = MOVE_POWDER_SNOW; status = STATUS1_FREEZE; } // Pointless since you can't freeze in sunlight anyway
     GIVEN {
         PLAYER(SPECIES_LEAFEON) { Ability(ABILITY_LEAF_GUARD); }
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
-        TURN { MOVE(opponent, MOVE_TOXIC); }
+        TURN { MOVE(opponent, move); }
         TURN { SWITCH(player, 1); }
         TURN { SWITCH(player, 0); }
-        TURN { MOVE(opponent, MOVE_THUNDER_WAVE); }
-        TURN { MOVE(opponent, MOVE_WILL_O_WISP); }
+        TURN { MOVE(opponent, move); }
+        TURN { MOVE(opponent, move); }
     } SCENE {
-        // First time in: block Toxic
+        // First time in: block the first status attempt
         ABILITY_POPUP(player, ABILITY_LEAF_GUARD);
         MESSAGE("It doesn't affect Leafeon…");
-        NOT STATUS_ICON(player, badPoison: TRUE);
+        NOT STATUS_ICON(player, status);
         // After switching out and back, block again
         ABILITY_POPUP(player, ABILITY_LEAF_GUARD);
         MESSAGE("It doesn't affect Leafeon…");
-        NOT STATUS_ICON(player, paralysis: TRUE);
+        NOT STATUS_ICON(player, status);
         // Next status attempt after the block lands
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_WILL_O_WISP, opponent);
-        STATUS_ICON(player, burn: TRUE);
+        ANIMATION(ANIM_TYPE_MOVE, move, opponent);
+        STATUS_ICON(player, status);
     }
 }
 

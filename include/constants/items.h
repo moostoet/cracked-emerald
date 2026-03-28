@@ -1445,11 +1445,11 @@ enum __attribute__((packed)) Item
 #define ITEM_DRAMPANITE 853
 #define ITEM_FALINKSITE 854
 
-#define ITEM_INFINITE_REPEL 855
-#define ITEM_HEALING_KIT 856
-#define ITEM_THIEF_FINDER 857
+#define ITEM_INFINITE_REPEL 874
+#define ITEM_HEALING_KIT 875
+#define ITEM_THIEF_FINDER 876
 
-#define ITEMS_COUNT 858
+#define ITEMS_COUNT 877
 #define ITEM_FIELD_ARROW ITEMS_COUNT
 
 // A special item id associated with "Cancel"/"Exit" etc. in a list of items or decorations

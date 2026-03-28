@@ -7842,7 +7842,6 @@ BattleScript_TargetAbilityActivateMagmaCore::
 @@@ MAX MOVES @@@
 BattleScript_EffectMaxMove::
 	attackcanceler
-	accuracycheck BattleScript_ButItFailed, NO_ACC_CALC_CHECK_LOCK_ON
 	goto BattleScript_HitFromDamageCalc
 
 BattleScript_EffectRaiseStatAllies::

@@ -25,6 +25,7 @@
 #include "constants/items.h"
 #include "constants/moves.h"
 #include "config/save.h"
+#include "config/savelog.h"
 
 // Prevent cross-jump optimization.
 #define BLOCK_CROSS_JUMP asm("");
@@ -250,6 +251,22 @@ struct NPCFollower
 #include "constants/items.h"
 #define ITEM_FLAGS_COUNT ((ITEMS_COUNT / 8) + ((ITEMS_COUNT % 8) ? 1 : 0))
 
+#if SAVELOG_ENABLE == TRUE
+#define SAVELOG_BUFFER_SIZE 1400
+struct SaveLog {
+    u16 writePos;
+    u16 totalEventsLo;
+    u16 lastTimestampMinutes;
+    u16 runStartTimeHi;
+    u16 runStartTimeLo;
+    u8  version;
+    u8  flags;
+    u8  totalEventsHi;
+    u8  padding[3];
+    u8  buffer[SAVELOG_BUFFER_SIZE];
+};
+#endif
+
 struct SaveBlock3
 {
 #if OW_USE_FAKE_RTC
@@ -267,6 +284,9 @@ struct SaveBlock3
     u8 dexNavChain;
 #if APRICORN_TREE_COUNT > 0
     u8 apricornTrees[NUM_APRICORN_TREE_BYTES];
+#endif
+#if SAVELOG_ENABLE == TRUE
+    struct SaveLog saveLog;
 #endif
 }; /* max size 1624 bytes */
 

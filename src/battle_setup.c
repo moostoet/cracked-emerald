@@ -55,6 +55,7 @@
 #include "constants/trainer_hill.h"
 #include "constants/weather.h"
 #include "fishing.h"
+#include "savelog.h"
 
 enum TransitionType
 {
@@ -366,6 +367,9 @@ static void DoStandardWildBattle(bool32 isDouble)
         gBattleTypeFlags |= BATTLE_TYPE_PYRAMID;
     }
     CreateBattleStartTask(GetWildBattleTransition(), 0);
+#if SAVELOG_TRACK_BATTLES
+    SaveLog_LogEvent(SAVELOG_BATTLE_STARTED_WILD, GetMonData(&gEnemyParty[0], MON_DATA_SPECIES));
+#endif
     IncrementGameStat(GAME_STAT_TOTAL_BATTLES);
     IncrementGameStat(GAME_STAT_WILD_BATTLES);
     IncrementDailyWildBattles();
@@ -487,6 +491,9 @@ void BattleSetup_StartScriptedWildBattle(void)
     gMain.savedCallback = CB2_EndScriptedWildBattle;
     gBattleTypeFlags = 0;
     CreateBattleStartTask(GetWildBattleTransition(), 0);
+#if SAVELOG_TRACK_BATTLES
+    SaveLog_LogEvent(SAVELOG_BATTLE_STARTED_WILD, GetMonData(&gEnemyParty[0], MON_DATA_SPECIES));
+#endif
     IncrementGameStat(GAME_STAT_TOTAL_BATTLES);
     IncrementGameStat(GAME_STAT_WILD_BATTLES);
     IncrementDailyWildBattles();
@@ -499,6 +506,9 @@ void BattleSetup_StartScriptedDoubleWildBattle(void)
     gMain.savedCallback = CB2_EndScriptedWildBattle;
     gBattleTypeFlags = BATTLE_TYPE_DOUBLE;
     CreateBattleStartTask(GetWildBattleTransition(), 0);
+#if SAVELOG_TRACK_BATTLES
+    SaveLog_LogEvent(SAVELOG_BATTLE_STARTED_WILD, GetMonData(&gEnemyParty[0], MON_DATA_SPECIES));
+#endif
     IncrementGameStat(GAME_STAT_TOTAL_BATTLES);
     IncrementGameStat(GAME_STAT_WILD_BATTLES);
     IncrementDailyWildBattles();
@@ -978,6 +988,9 @@ static void CB2_StartFirstBattle(void)
     {
         gBattleTypeFlags = BATTLE_TYPE_FIRST_BATTLE;
         gMain.savedCallback = CB2_EndFirstBattle;
+#if SAVELOG_TRACK_BATTLES
+        SaveLog_LogEvent(SAVELOG_BATTLE_STARTED_WILD, GetMonData(&gEnemyParty[0], MON_DATA_SPECIES));
+#endif
         FreeAllWindowBuffers();
         SetMainCallback2(CB2_InitBattle);
         RestartWildEncounterImmunitySteps();
@@ -1275,6 +1288,9 @@ static void SetBattledTrainersFlags(void)
     if (TRAINER_BATTLE_PARAM.opponentB != 0)
         FlagSet(GetTrainerBFlag());
     FlagSet(GetTrainerAFlag());
+#if SAVELOG_TRACK_BATTLES
+    SaveLog_LogEvent(SAVELOG_TRAINER_DEFEATED, TRAINER_BATTLE_PARAM.opponentA);
+#endif
 }
 
 static void UNUSED SetBattledTrainerFlag(void)
@@ -1371,6 +1387,9 @@ void BattleSetup_StartTrainerBattle(void)
     else
         DoTrainerBattle();
 
+#if SAVELOG_TRACK_BATTLES
+    SaveLog_LogEvent(SAVELOG_BATTLE_STARTED_TRAINER, TRAINER_BATTLE_PARAM.opponentA);
+#endif
     ScriptContext_Stop();
 }
 

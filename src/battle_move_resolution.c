@@ -11,6 +11,7 @@
 #include "battle_controllers.h"
 #include "move.h"
 #include "constants/battle_move_resolution.h"
+#include "savelog.h"
 
 static void ValidateBattlers(void);
 static enum Move GetOriginallyUsedMove(enum Move chosenMove);
@@ -2546,6 +2547,14 @@ static enum MoveEndResult MoveEndFaintBlock(void)
             TryDeactivateSleepClause(GetBattlerSide(gBattlerTarget), gBattlerPartyIndexes[gBattlerTarget]);
             gHitMarker |= HITMARKER_FAINTED(gBattlerTarget);
             gBattleStruct->eventState.faintedAction = 0;
+#if SAVELOG_TRACK_POKEMON
+  #if SAVELOG_DETAILED_FAINTS
+            SaveLog_LogEvent(SAVELOG_POKEMON_FAINTED_DETAIL,
+                ((u32)gBattleMons[gBattlerTarget].species << 6) | (gBattlerAttacker & 0x3F));
+  #else
+            SaveLog_LogEvent(SAVELOG_POKEMON_FAINTED, gBattleMons[gBattlerTarget].species);
+  #endif
+#endif
             if (IsOnPlayerSide(gBattlerTarget))
             {
                 gHitMarker |= HITMARKER_PLAYER_FAINTED;

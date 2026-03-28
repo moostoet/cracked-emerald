@@ -18,6 +18,7 @@
 #include "constants/battle.h"
 #include "constants/items.h"
 #include "constants/moves.h"
+#include "savelog.h"
 #include "constants/item_effects.h"
 #include "constants/hold_effects.h"
 
@@ -352,6 +353,9 @@ bool32 AddBagItem(enum Item itemId, u16 count)
     if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE || FlagGet(FLAG_STORING_ITEMS_IN_PYRAMID_BAG) == TRUE)
         return AddPyramidBagItem(itemId, count);
 
+#if SAVELOG_TRACK_ITEMS
+    SaveLog_LogEvent(SAVELOG_ITEM_PICKED_UP, itemId);
+#endif
     return BagPocket_AddItem(&gBagPockets[GetItemPocket(itemId)], itemId, count);
 }
 

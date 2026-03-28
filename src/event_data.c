@@ -1,6 +1,8 @@
 #include "global.h"
 #include "event_data.h"
 #include "pokedex.h"
+#include "savelog.h"
+#include "constants/flags.h"
 
 #define SPECIAL_FLAGS_SIZE  (NUM_SPECIAL_FLAGS / 8)  // 8 flags per byte
 #define TEMP_FLAGS_SIZE     (NUM_TEMP_FLAGS / 8)
@@ -243,6 +245,20 @@ u8 FlagSet(u16 id)
     u8 *ptr = GetFlagPointer(id);
     if (ptr)
         *ptr |= 1 << (id & 7);
+#if SAVELOG_ENABLE == TRUE
+    // Badge detection
+    if (id >= FLAG_BADGE01_GET && id <= FLAG_BADGE08_GET)
+        SaveLog_LogEvent(SAVELOG_BADGE_OBTAINED, id - FLAG_BADGE01_GET);
+    // Important flag / all flags logging
+  #if SAVELOG_TRACK_FLAGS
+    SaveLog_LogEvent(SAVELOG_FLAG_SET, id);
+  #elif !defined(SAVELOG_IMPORTANT_FLAGS)
+    // no-op
+  #else
+    if (SAVELOG_IMPORTANT_FLAGS(id))
+        SaveLog_LogEvent(SAVELOG_FLAG_SET, id);
+  #endif
+#endif
     return 0;
 }
 

@@ -52,6 +52,7 @@
 #include "tv.h"
 #include "pokemon_summary_screen.h"
 #include "wild_encounter.h"
+#include "savelog.h"
 #include "constants/abilities.h"
 #include "constants/battle_ai.h"
 #include "constants/battle_frontier.h"
@@ -346,6 +347,8 @@ static void DebugAction_Give_MaxMoney(u8 taskId);
 static void DebugAction_Give_MaxCoins(u8 taskId);
 static void DebugAction_Give_MaxBattlePoints(u8 taskId);
 static void DebugAction_Give_DayCareEgg(u8 taskId);
+
+static void DebugAction_SaveLog_Dump(u8 taskId);
 
 static void DebugAction_Sound_SE(u8 taskId);
 static void DebugAction_Sound_SE_SelectId(u8 taskId);
@@ -686,6 +689,9 @@ static const struct DebugMenuOption sDebugMenu_Actions_ROMInfo2[] =
     { COMPOUND_STRING("Save Block space"),  DebugAction_ExecuteScript, Debug_CheckSaveBlock },
     { COMPOUND_STRING("ROM space"),         DebugAction_ExecuteScript, Debug_CheckROMSpace },
     { COMPOUND_STRING("Expansion Version"), DebugAction_ExecuteScript, Debug_ShowExpansionVersion },
+#if SAVELOG_ENABLE == TRUE
+    { COMPOUND_STRING("Dump SaveLog"),      DebugAction_SaveLog_Dump },
+#endif
     { NULL }
 };
 
@@ -4930,3 +4936,15 @@ void CheckEWRAMCounters(struct ScriptContext *ctx)
     ConvertIntToDecimalStringN(gStringVar1, gFollowerSteps, STR_CONV_MODE_LEFT_ALIGN, 5);
     ConvertIntToDecimalStringN(gStringVar2, gChainFishingDexNavStreak, STR_CONV_MODE_LEFT_ALIGN, 5);
 }
+
+// *******************************
+// Actions SaveLog
+#if SAVELOG_ENABLE == TRUE
+static void DebugAction_SaveLog_Dump(u8 taskId)
+{
+    PlaySE(SE_USE_ITEM);
+    SaveLog_DumpToConsole();
+    ScriptContext_Enable();
+    Debug_DestroyMenu_Full(taskId);
+}
+#endif

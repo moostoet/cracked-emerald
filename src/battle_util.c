@@ -39,6 +39,7 @@
 #include "pokedex.h"
 #include "mail.h"
 #include "field_weather.h"
+#include "savelog.h"
 #include "constants/abilities.h"
 #include "constants/battle_anim.h"
 #include "constants/battle_move_effects.h"
@@ -519,6 +520,12 @@ void HandleAction_Switch(void)
 
     if (gBattleResults.playerSwitchesCounter < 255)
         gBattleResults.playerSwitchesCounter++;
+#if SAVELOG_TRACK_BATTLES
+    {
+        u16 switchInSpecies = GetMonData(&gPlayerParty[gBattleStruct->monToSwitchIntoId[gBattlerAttacker]], MON_DATA_SPECIES);
+        SaveLog_LogEvent(SAVELOG_POKEMON_SWITCHED, switchInSpecies);
+    }
+#endif
 
     TryBattleFormChange(gBattlerAttacker, FORM_CHANGE_BATTLE_SWITCH_OUT, GetBattlerAbility(gBattlerAttacker));
 }
@@ -536,6 +543,10 @@ void HandleAction_UseItem(void)
         && !ShouldSkipFriendshipChange())
         UpdateFriendshipFromXItem(gBattlerAttacker);
 
+#if SAVELOG_TRACK_ITEMS
+    if (IsOnPlayerSide(gBattlerAttacker))
+        SaveLog_LogEvent(SAVELOG_ITEM_USED_BATTLE, gLastUsedItem);
+#endif
     gBattlescriptCurrInstr = gBattlescriptsForUsingItem[GetItemBattleUsage(gLastUsedItem) - 1];
     gCurrentActionFuncId = B_ACTION_EXEC_SCRIPT;
 }
@@ -673,6 +684,12 @@ void HandleAction_Run(void)
                 gBattlescriptCurrInstr = BattleScript_PrintFailedToRunString;
                 gCurrentActionFuncId = B_ACTION_EXEC_SCRIPT;
             }
+#if SAVELOG_TRACK_BATTLES
+            else
+            {
+                SaveLog_LogEvent(SAVELOG_BATTLE_ENDED, SAVELOG_RESULT_FLEE);
+            }
+#endif
         }
         else
         {

@@ -38,6 +38,7 @@
 #include "main.h"
 #include "malloc.h"
 #include "m4a.h"
+#include "savelog.h"
 #include "map_name_popup.h"
 #include "match_call.h"
 #include "menu.h"
@@ -389,6 +390,7 @@ static void (*const sMovementStatusHandler[])(struct LinkPlayerObjectEvent *, st
 // code
 void DoWhiteOut(void)
 {
+    SaveLog_LogEvent(SAVELOG_BLACKOUT, 0);
     RunScriptImmediately(EventScript_WhiteOut);
     HealPlayerParty();
     Overworld_ResetStateAfterWhiteOut();
@@ -882,6 +884,10 @@ void LoadMapFromCameraTransition(u8 mapGroup, u8 mapNum)
 
     ApplyCurrentWarp();
     LoadCurrentMapData();
+#if SAVELOG_TRACK_MAPS
+    SaveLog_LogEvent(SAVELOG_MAP_ENTERED,
+        SaveLog_GetCompactMapId(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum));
+#endif
     LoadObjEventTemplatesFromHeader();
     TrySetMapSaveWarpStatus();
     ClearTempFieldEventData();
@@ -933,6 +939,10 @@ static void LoadMapFromWarp(bool32 a1)
     bool8 isIndoors;
 
     LoadCurrentMapData();
+#if SAVELOG_TRACK_MAPS
+    SaveLog_LogEvent(SAVELOG_MAP_ENTERED,
+        SaveLog_GetCompactMapId(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum));
+#endif
     if (!(sObjectEventLoadFlag & SKIP_OBJECT_EVENT_LOAD))
     {
         if (gMapHeader.mapLayoutId == LAYOUT_BATTLE_FRONTIER_BATTLE_PYRAMID_FLOOR)

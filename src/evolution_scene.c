@@ -35,6 +35,7 @@
 #include "constants/party_menu.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "savelog.h"
 
 struct EvoInfo
 {
@@ -834,7 +835,12 @@ static void Task_EvolutionScene(u8 taskId)
             }
 
             if (!gTasks[taskId].tEvoWasStopped)
+            {
+#if SAVELOG_TRACK_POKEMON
+                SaveLog_LogEvent(SAVELOG_POKEMON_EVOLVED, gTasks[taskId].tPostEvoSpecies);
+#endif
                 CreateShedinja(gTasks[taskId].tPreEvoSpecies, gTasks[taskId].tPostEvoSpecies, mon);
+            }
 
             DestroyTask(taskId);
             FreeMonSpritesGfx();

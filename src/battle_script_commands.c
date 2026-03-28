@@ -67,6 +67,7 @@
 #include "constants/trainers.h"
 #include "test/battle.h"
 #include "battle_util.h"
+#include "savelog.h"
 #include "constants/pokemon.h"
 #include "config/battle.h"
 #include "data/battle_move_effects.h"
@@ -10525,6 +10526,16 @@ static void FinalizeCapture(void)
 {
     u32 ballId = ItemIdToBallId(gLastThrownBall);
     enum NationalDexOrder natDexNo = SpeciesToNationalPokedexNum(gBattleMons[gBattlerTarget].species);
+#if SAVELOG_TRACK_BATTLES
+    SaveLog_LogEvent(SAVELOG_BATTLE_ENDED, SAVELOG_RESULT_CATCH);
+#endif
+#if SAVELOG_TRACK_POKEMON
+  #if SAVELOG_DETAILED_CATCHES
+    SaveLog_LogEvent(SAVELOG_POKEMON_CAUGHT_DETAIL, ((u32)gBattleMons[gBattlerTarget].species << 6) | (ballId & 0x1F) << 1);
+  #else
+    SaveLog_LogEvent(SAVELOG_POKEMON_CAUGHT, gBattleMons[gBattlerTarget].species);
+  #endif
+#endif
     if ((GetConfig(B_CRITICAL_CAPTURE_IF_OWNED) >= GEN_9 && GetSetPokedexFlag(natDexNo, FLAG_GET_CAUGHT))
         || IsCriticalCapture())
     {

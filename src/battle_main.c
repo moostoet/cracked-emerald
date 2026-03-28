@@ -64,6 +64,7 @@
 #include "util.h"
 #include "wild_encounter.h"
 #include "window.h"
+#include "savelog.h"
 #include "constants/abilities.h"
 #include "constants/battle_ai.h"
 #include "constants/battle_move_effects.h"
@@ -5397,6 +5398,9 @@ static void RunTurnActionsFunctions(void)
 static void HandleEndTurn_BattleWon(void)
 {
     gCurrentActionFuncId = 0;
+#if SAVELOG_TRACK_BATTLES
+    SaveLog_LogEvent(SAVELOG_BATTLE_ENDED, SAVELOG_RESULT_WIN);
+#endif
 
     if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
     {
@@ -5455,6 +5459,9 @@ static void HandleEndTurn_BattleWon(void)
 static void HandleEndTurn_BattleLost(void)
 {
     gCurrentActionFuncId = 0;
+#if SAVELOG_TRACK_BATTLES
+    SaveLog_LogEvent(SAVELOG_BATTLE_ENDED, SAVELOG_RESULT_LOSS);
+#endif
 
     if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
     {

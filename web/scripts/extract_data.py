@@ -255,18 +255,171 @@ def parse_species_info(repo_root, species_ids, natdex_ids, move_names, ability_n
     return pokemon_list, learnset_map
 
 
+def parse_species_macros(content):
+    """Find all #define macros that look like species info macros (contain .speciesName
+    or reference other _MISC_INFO/_SPECIES_INFO macros that do).
+    Returns dict of macro_name -> (param_names_list, body_text)."""
+    # First pass: collect ALL macros with _SPECIES_INFO or _MISC_INFO in the name
+    all_macros = {}
+    # Match macros WITH parameters
+    define_pattern = re.compile(
+        r'#define\s+(\w+_(?:SPECIES_INFO|MISC_INFO))\s*\(([^)]*)\)\s*\\?\s*\n((?:.*\\\s*\n)*.*\n?)'
+    )
+    for m in define_pattern.finditer(content):
+        macro_name = m.group(1)
+        params_str = m.group(2).strip()
+        body_raw = m.group(3)
+
+        param_names = [p.strip() for p in params_str.split(',') if p.strip()]
+
+        body_lines = []
+        for line in body_raw.split('\n'):
+            cleaned = line.rstrip()
+            if cleaned.endswith('\\'):
+                cleaned = cleaned[:-1].rstrip()
+            body_lines.append(cleaned)
+        body = '\n'.join(body_lines)
+
+        all_macros[macro_name] = (param_names, body)
+
+    # Match macros WITHOUT parameters (e.g., #define MOTHIM_SPECIES_INFO \)
+    define_noparams_pattern = re.compile(
+        r'#define\s+(\w+_(?:SPECIES_INFO|MISC_INFO))\s+\\\s*\n((?:.*\\\s*\n)*.*\n?)'
+    )
+    for m in define_noparams_pattern.finditer(content):
+        macro_name = m.group(1)
+        if macro_name in all_macros:
+            continue  # Already matched with params
+        body_raw = m.group(2)
+
+        body_lines = []
+        for line in body_raw.split('\n'):
+            cleaned = line.rstrip()
+            if cleaned.endswith('\\'):
+                cleaned = cleaned[:-1].rstrip()
+            body_lines.append(cleaned)
+        body = '\n'.join(body_lines)
+
+        all_macros[macro_name] = ([], body)  # Empty param list
+
+    # Second pass: determine which macros ultimately contain .speciesName
+    # (either directly or via nested macro calls)
+    def has_species_name(macro_name, visited=None):
+        if visited is None:
+            visited = set()
+        if macro_name in visited:
+            return False
+        visited.add(macro_name)
+        if macro_name not in all_macros:
+            return False
+        _, body = all_macros[macro_name]
+        if '.speciesName' in body:
+            return True
+        # Check if body calls another macro that has .speciesName
+        for other_name in all_macros:
+            if other_name != macro_name and re.search(r'\b' + re.escape(other_name) + r'\s*\(', body):
+                if has_species_name(other_name, visited):
+                    return True
+        return False
+
+    macros = {}
+    for macro_name in all_macros:
+        if has_species_name(macro_name):
+            macros[macro_name] = all_macros[macro_name]
+
+    # Also include all utility macros (non-species-level) for nested expansion
+    macros['_all'] = all_macros
+    return macros
+
+
+def _expand_macro_body(body, param_names, macro_args):
+    """Substitute macro parameters into a body text."""
+    expanded = body
+    # Sort params by length descending to avoid partial replacements
+    # e.g., replace 'typeName' before 'type'
+    substitutions = sorted(zip(param_names, macro_args), key=lambda x: -len(x[0]))
+    for param, arg in substitutions:
+        # Handle ## token pasting (e.g., Arceus ##typeName -> ArceusNormal)
+        expanded = expanded.replace('##' + param, arg)
+        expanded = expanded.replace('## ' + param, arg)
+        # Replace standalone word occurrences
+        expanded = re.sub(r'\b' + re.escape(param) + r'\b', arg, expanded)
+    return expanded
+
+
+def expand_species_macro(macro_name, macro_args, macros_dict):
+    """Expand a macro invocation by substituting args into the body.
+    Also expands nested macro calls. Returns the expanded text."""
+    if macro_name not in macros_dict:
+        return None
+
+    param_names, body = macros_dict[macro_name]
+
+    if len(macro_args) != len(param_names):
+        return None
+
+    expanded = _expand_macro_body(body, param_names, macro_args)
+
+    # Use all macros (including utility macros) for nested expansion
+    all_macros = macros_dict.get('_all', macros_dict)
+
+    # Expand nested macro calls iteratively (may need multiple passes)
+    for _pass in range(3):
+        found_nested = False
+        for nested_name, (nested_params, nested_body) in all_macros.items():
+            if nested_name == macro_name or nested_name == '_all':
+                continue
+            nested_pattern = re.compile(r'\b' + re.escape(nested_name) + r'\s*\(([^)]*)\)')
+            nm = nested_pattern.search(expanded)
+            if nm:
+                nested_args = [a.strip() for a in nm.group(1).split(',')]
+                if len(nested_args) == len(nested_params):
+                    nested_expanded = _expand_macro_body(nested_body, nested_params, nested_args)
+                    expanded = expanded[:nm.start()] + nested_expanded + expanded[nm.end():]
+                    found_nested = True
+        if not found_nested:
+            break
+
+    return expanded
+
+
 def parse_species_entries(content, gen_num, species_ids, natdex_ids,
                           move_names, ability_names, item_names_map,
                           learnset_map, shared_dex_texts):
     """Parse individual species entries from a gen file."""
     entries = []
 
-    # Split on species entry markers
-    # Pattern: [SPECIES_XXX] = {
-    entry_pattern = re.compile(r'\[(SPECIES_\w+)\]\s*=\s*\{')
-    positions = [(m.start(), m.group(1)) for m in entry_pattern.finditer(content)]
+    # Pre-expand simple #define macros that resolve to { TYPE_X, TYPE_Y } patterns
+    # (e.g., ROTOM_FAMILY_TYPES, PIKACHU_FAMILY_TYPES)
+    simple_defines = re.findall(
+        r'#define\s+(\w+)\s+(\{[^}]+\})', content
+    )
+    for def_name, def_body in simple_defines:
+        content = re.sub(r'\b' + re.escape(def_name) + r'\b', def_body, content)
 
-    for i, (pos, species_const) in enumerate(positions):
+    # Pre-parse macros that define species info
+    macros = parse_species_macros(content)
+    if macros:
+        print(f"    Found species macros: {', '.join(macros.keys())}")
+
+    # Build a set of known parameterless macro names for matching
+    noparams_macros = {name for name, val in macros.items() if name != '_all' and isinstance(val, tuple) and len(val[0]) == 0}
+
+    # Split on species entry markers
+    # Pattern: [SPECIES_XXX] = { (inline struct) OR [SPECIES_XXX] = MACRO_NAME(args) OR [SPECIES_XXX] = MACRO_NAME,
+    entry_pattern = re.compile(r'\[(SPECIES_\w+)\]\s*=\s*(\{|(\w+?)(?:\(|[,\s]))')
+    positions = []
+    for m in entry_pattern.finditer(content):
+        species_const = m.group(1)
+        is_macro = m.group(3) is not None  # group 3 captures a potential macro name
+        macro_name = m.group(3) if is_macro else None
+        # Only treat as macro if the name is in our known macros dict
+        if is_macro and macro_name not in macros:
+            is_macro = False
+            macro_name = None
+        positions.append((m.start(), species_const, is_macro, macro_name))
+
+    for i, (pos, species_const, is_macro, macro_name) in enumerate(positions):
         if species_const == 'SPECIES_NONE' or species_const == 'SPECIES_EGG':
             continue
 
@@ -278,21 +431,73 @@ def parse_species_entries(content, gen_num, species_ids, natdex_ids,
         end_pos = positions[i + 1][0] if i + 1 < len(positions) else len(content)
         block = content[pos:end_pos]
 
-        # Find the balanced closing brace for this entry
-        brace_depth = 0
-        entry_end = 0
-        started = False
-        for j, ch in enumerate(block):
-            if ch == '{':
-                brace_depth += 1
-                started = True
-            elif ch == '}':
-                brace_depth -= 1
-                if started and brace_depth == 0:
-                    entry_end = j + 1
+        if is_macro and macro_name in macros:
+            m_params, _ = macros[macro_name]
+            if len(m_params) == 0:
+                # Parameterless macro (e.g., MOTHIM_SPECIES_INFO)
+                macro_args = []
+            else:
+                # Extract the macro arguments from the invocation line
+                # Pattern: [SPECIES_XXX] = MACRO_NAME(arg1, arg2, ...)
+                invocation_match = re.match(
+                    r'\[' + re.escape(species_const) + r'\]\s*=\s*' + re.escape(macro_name) + r'\((.+?)\)',
+                    block.split('\n')[0]
+                )
+                if not invocation_match:
+                    # Try multi-line match
+                    invocation_match = re.match(
+                        r'\[' + re.escape(species_const) + r'\]\s*=\s*' + re.escape(macro_name) + r'\((.+?)\)',
+                        block, re.DOTALL
+                    )
+                if not invocation_match:
+                    continue
+
+                args_str = invocation_match.group(1)
+                macro_args = [a.strip() for a in args_str.split(',')]
+
+            expanded = expand_species_macro(macro_name, macro_args, macros)
+            if not expanded:
+                continue
+
+            # Build a synthetic block that looks like [SPECIES_XXX] = { ... }
+            block = f'[{species_const}] = {expanded}'
+        else:
+            # Normal inline struct: find the balanced closing brace
+            brace_depth = 0
+            entry_end = 0
+            started = False
+            for j, ch in enumerate(block):
+                if ch == '{':
+                    brace_depth += 1
+                    started = True
+                elif ch == '}':
+                    brace_depth -= 1
+                    if started and brace_depth == 0:
+                        entry_end = j + 1
+                        break
+            if entry_end > 0:
+                block = block[:entry_end]
+
+            # Expand any inline macro calls within the struct body
+            # (e.g., Vivillon entries use VIVILLON_MISC_INFO(...) inside { })
+            all_macros = macros.get('_all', macros)
+            expand_pool = {**macros, **all_macros}
+            for _pass in range(3):
+                found = False
+                for m_name, val in expand_pool.items():
+                    if m_name == '_all' or not isinstance(val, tuple):
+                        continue
+                    m_params, m_body = val
+                    inline_pat = re.compile(r'\b' + re.escape(m_name) + r'\s*\(([^)]*)\)')
+                    inline_m = inline_pat.search(block)
+                    if inline_m:
+                        inline_args = [a.strip() for a in inline_m.group(1).split(',')]
+                        if len(inline_args) == len(m_params):
+                            inline_expanded = _expand_macro_body(m_body, m_params, inline_args)
+                            block = block[:inline_m.start()] + inline_expanded + block[inline_m.end():]
+                            found = True
+                if not found:
                     break
-        if entry_end > 0:
-            block = block[:entry_end]
 
         try:
             entry = parse_single_species(block, species_const, species_id, gen_num,
@@ -395,10 +600,25 @@ def parse_single_species(block, species_const, species_id, gen_num,
         if type2_name != type1_name:
             types.append(type2_name)
     else:
-        # Try single type assignment
-        type_match = re.search(r'\.types\s*=\s*MON_TYPES\((\w+)\)', block)
-        if type_match:
-            types.append(format_constant('TYPE_', type_match.group(1)))
+        # Try { TYPE_X, TYPE_Y } style (used by macros like ROTOM_FAMILY_TYPES)
+        brace_match = re.search(r'\.types\s*=\s*\{\s*(TYPE_\w+)\s*,\s*(TYPE_\w+)\s*\}', block)
+        if brace_match:
+            t1 = format_constant('TYPE_', brace_match.group(1))
+            t2 = format_constant('TYPE_', brace_match.group(2))
+            types.append(t1)
+            if t2 != t1:
+                types.append(t2)
+        else:
+            # Try resolving a macro reference: .types = SOME_MACRO,
+            macro_type_match = re.search(r'\.types\s*=\s*(\w+)', block)
+            if macro_type_match:
+                macro_ref = macro_type_match.group(1)
+                # Look for a #define for this macro in the same block context
+                # This is handled by pre-expanding macros in the block, but as fallback
+                # try to find TYPE_ constants in the value
+                type_consts = re.findall(r'TYPE_(\w+)', macro_ref)
+                for tc in type_consts:
+                    types.append(format_constant('TYPE_', 'TYPE_' + tc))
 
     # Base stats
     base_stats = {
@@ -1160,6 +1380,95 @@ def parse_encounters(repo_root, species_ids):
 
 
 # ---------------------------------------------------------------------------
+# Form Deduplication
+# ---------------------------------------------------------------------------
+
+def deduplicate_forms(pokemon_list):
+    """Deduplicate alternate forms: keep distinct forms (different types or abilities),
+    remove cosmetic-only forms (same types and abilities as base)."""
+    from collections import defaultdict
+
+    print("Deduplicating forms...")
+    count_before = len(pokemon_list)
+
+    # Group by natDexNum
+    groups = defaultdict(list)
+    for pkmn in pokemon_list:
+        ndex = pkmn.get('natDexNum', 0)
+        if ndex > 0:
+            groups[ndex].append(pkmn)
+
+    # Set of IDs to remove (cosmetic forms)
+    ids_to_remove = set()
+
+    for ndex, group in groups.items():
+        if len(group) <= 1:
+            continue
+
+        # Sort by id so the lowest id is the base form
+        group.sort(key=lambda p: p['id'])
+        base = group[0]
+        base_types = tuple(base.get('types', []))
+        base_abilities = tuple(base.get('abilities', []))
+        base_stats = tuple(sorted(base.get('baseStats', {}).items()))
+
+        has_alternate_forms = False
+
+        for form in group[1:]:
+            form_types = tuple(form.get('types', []))
+            form_abilities = tuple(form.get('abilities', []))
+            form_stats = tuple(sorted(form.get('baseStats', {}).items()))
+
+            if form_types != base_types or form_abilities != base_abilities or form_stats != base_stats:
+                # Distinct form - keep it but add form suffix to name
+                has_alternate_forms = True
+                form_suffix = _get_form_suffix(form['spriteId'], base['spriteId'])
+                if form_suffix and form_suffix.lower() != base['name'].lower():
+                    form['name'] = f"{base['name']}-{form_suffix}"
+            else:
+                # Cosmetic form - remove it
+                ids_to_remove.add(form['id'])
+
+        # For base forms in groups with multiple entries, clean up spriteId
+        # Strip the default form suffix for Showdown compatibility
+        # e.g., "giratina-altered" -> "giratina", "shaymin-land" -> "shaymin",
+        #        "furfrou-natural" -> "furfrou", "burmy-plant" -> "burmy"
+        base_sprite = base['spriteId']
+        if '-' in base_sprite:
+            base['spriteId'] = base_sprite.split('-')[0]
+
+    # Filter out removed forms
+    filtered = [p for p in pokemon_list if p['id'] not in ids_to_remove]
+
+    count_after = len(filtered)
+    print(f"  Before: {count_before}, After: {count_after} (removed {count_before - count_after} cosmetic forms)")
+
+    return filtered
+
+
+def _get_form_suffix(form_sprite_id, base_sprite_id):
+    """Derive a display-friendly form suffix from the sprite ID.
+    E.g., form_sprite_id='wormadam-sandy', base_sprite_id='wormadam-plant' -> 'Sandy'
+    E.g., form_sprite_id='rotom-heat', base_sprite_id='rotom' -> 'Heat'
+    """
+    if '-' not in form_sprite_id:
+        return None
+
+    # Get the part after the base name
+    # The base name is the part of the spriteId before the first hyphen
+    # (or the entire base spriteId if it has no hyphen)
+    base_root = base_sprite_id.split('-')[0]
+    form_root = form_sprite_id.split('-')[0]
+
+    if base_root == form_root and '-' in form_sprite_id:
+        suffix = form_sprite_id[len(base_root) + 1:]  # everything after "basename-"
+        # Title-case each part separated by hyphens
+        return '-'.join(part.title() for part in suffix.split('-'))
+
+    return None
+
+
+# ---------------------------------------------------------------------------
 # Main orchestration
 # ---------------------------------------------------------------------------
 
@@ -1258,6 +1567,10 @@ def main():
     # Attach encounters to Pokemon
     for pkmn in pokemon_list:
         pkmn['encounters'] = species_encounters.get(pkmn['id'], [])
+
+    # Step 9.5: Deduplicate forms
+    print()
+    pokemon_list = deduplicate_forms(pokemon_list)
 
     # Step 10: Parse types
     print()

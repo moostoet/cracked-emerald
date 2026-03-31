@@ -7,8 +7,7 @@ const props = defineProps<{
   size?: 'sm' | 'md' | 'lg'
 }>()
 
-const showdownFailed = ref(false)
-const localFailed = ref(false)
+const fallbackStage = ref(0) // 0=animated, 1=static, 2=local, 3=placeholder
 
 const sizeClass = {
   sm: 'w-10 h-10',
@@ -16,26 +15,35 @@ const sizeClass = {
   lg: 'w-32 h-32',
 }
 
-const showdownUrl = `https://play.pokemonshowdown.com/sprites/gen5ani/${props.spriteId}.gif`
+const showdownAnimatedUrl = `https://play.pokemonshowdown.com/sprites/gen5ani/${props.spriteId}.gif`
+const showdownStaticUrl = `https://play.pokemonshowdown.com/sprites/gen5/${props.spriteId}.png`
 const localUrl = `${import.meta.env.BASE_URL}sprites/${props.spriteId}.png`
 </script>
 
 <template>
   <img
-    v-if="!showdownFailed"
-    :src="showdownUrl"
+    v-if="fallbackStage === 0"
+    :src="showdownAnimatedUrl"
     :alt="name"
     :class="[sizeClass[size ?? 'md'], 'object-contain image-rendering-pixelated']"
     loading="lazy"
-    @error="showdownFailed = true"
+    @error="fallbackStage = 1"
   />
   <img
-    v-else-if="!localFailed"
+    v-else-if="fallbackStage === 1"
+    :src="showdownStaticUrl"
+    :alt="name"
+    :class="[sizeClass[size ?? 'md'], 'object-contain image-rendering-pixelated']"
+    loading="lazy"
+    @error="fallbackStage = 2"
+  />
+  <img
+    v-else-if="fallbackStage === 2"
     :src="localUrl"
     :alt="name"
     :class="[sizeClass[size ?? 'md'], 'object-contain image-rendering-pixelated']"
     loading="lazy"
-    @error="localFailed = true"
+    @error="fallbackStage = 3"
   />
   <div
     v-else

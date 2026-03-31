@@ -1,0 +1,89 @@
+name: Pokedex
+
+on:
+  push:
+    branches:
+      - master
+      - new-branch-updated-v2
+    paths:
+      - 'src/data/**'
+      - 'include/constants/**'
+      - 'graphics/pokemon/**'
+      - 'web/**'
+      - '.github/workflows/pokedex.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Build mdbook docs (same as docs.yml, so both outputs deploy together)
+      - name: Install mdbook
+        run: |
+          tag="v0.5.1"
+          url="https://github.com/rust-lang/mdbook/releases/download/${tag}/mdbook-${tag}-x86_64-unknown-linux-gnu.tar.gz"
+          mkdir mdbook
+          curl -sSL $url | tar -xz --directory=./mdbook
+          echo `pwd`/mdbook >> $GITHUB_PATH
+
+      - name: Build docs
+        run: cd docs && mdbook build
+
+      # Build Pokedex web app
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Extract game data
+        run: python3 web/scripts/extract_data.py
+
+      - name: Copy sprites
+        run: python3 web/scripts/copy_sprites.py
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: cd web && npm ci
+
+      - name: Build Pokedex
+        run: cd web && npx vite build
+
+      # Combine docs + pokedex into one Pages artifact
+      - name: Combine outputs
+        run: |
+          mkdir -p _site
+          cp -r docs/book/* _site/
+          mkdir -p _site/pokedex
+          cp -r web/dist/* _site/pokedex/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import type { Pokemon } from '@/types/pokemon'
 import { usePokedex } from '@/composables/usePokedex'
-import SpriteImage from './SpriteImage.vue'
+import EvolutionNode from './EvolutionNode.vue'
 
 const props = defineProps<{
   pokemon: Pokemon
@@ -20,11 +20,14 @@ interface ChainNode {
 const chain = computed<ChainNode | null>(() => {
   if (!allPokemon.value.length) return null
 
-  // Find the base form (the Pokemon that nothing evolves into, or this Pokemon's earliest ancestor)
+  // Find the base form by walking backwards through evolutions
   let baseId = props.pokemon.id
   let found = true
+  const visited = new Set<number>()
   while (found) {
     found = false
+    if (visited.has(baseId)) break
+    visited.add(baseId)
     for (const p of allPokemon.value) {
       for (const evo of p.evolutions) {
         if (evo.targetId === baseId) {
@@ -37,7 +40,10 @@ const chain = computed<ChainNode | null>(() => {
     }
   }
 
+  const builtIds = new Set<number>()
   function buildNode(id: number): ChainNode | null {
+    if (builtIds.has(id)) return null
+    builtIds.add(id)
     const p = getById(id)
     if (!p) return null
     return {
@@ -69,57 +75,10 @@ function formatMethod(method: string, param: string): string {
 </script>
 
 <template>
-  <div v-if="chain" class="flex flex-wrap items-center gap-2">
-    <!-- Render the chain recursively -->
-    <template v-for="node in [chain]" :key="node.id">
-      <div class="flex flex-wrap items-center gap-2">
-        <RouterLink
-          :to="`/pokemon/${node.id}`"
-          class="flex flex-col items-center gap-1 rounded-lg p-2 hover:bg-accent transition-colors"
-          :class="{ 'ring-2 ring-primary': node.id === pokemon.id }"
-        >
-          <SpriteImage :sprite-id="node.spriteId" :name="node.name" size="sm" />
-          <span class="text-xs font-medium">{{ node.name }}</span>
-        </RouterLink>
-
-        <template v-if="node.evolutions.length">
-          <div v-for="evo in node.evolutions" :key="evo.node.id" class="flex flex-wrap items-center gap-2">
-            <div class="flex flex-col items-center text-muted-foreground">
-              <span class="text-lg">→</span>
-              <span class="text-[10px] max-w-20 text-center leading-tight">{{ formatMethod(evo.method, evo.param) }}</span>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-2">
-              <RouterLink
-                :to="`/pokemon/${evo.node.id}`"
-                class="flex flex-col items-center gap-1 rounded-lg p-2 hover:bg-accent transition-colors"
-                :class="{ 'ring-2 ring-primary': evo.node.id === pokemon.id }"
-              >
-                <SpriteImage :sprite-id="evo.node.spriteId" :name="evo.node.name" size="sm" />
-                <span class="text-xs font-medium">{{ evo.node.name }}</span>
-              </RouterLink>
-
-              <!-- Second evolution -->
-              <template v-if="evo.node.evolutions.length">
-                <div v-for="evo2 in evo.node.evolutions" :key="evo2.node.id" class="flex flex-wrap items-center gap-2">
-                  <div class="flex flex-col items-center text-muted-foreground">
-                    <span class="text-lg">→</span>
-                    <span class="text-[10px] max-w-20 text-center leading-tight">{{ formatMethod(evo2.method, evo2.param) }}</span>
-                  </div>
-                  <RouterLink
-                    :to="`/pokemon/${evo2.node.id}`"
-                    class="flex flex-col items-center gap-1 rounded-lg p-2 hover:bg-accent transition-colors"
-                    :class="{ 'ring-2 ring-primary': evo2.node.id === pokemon.id }"
-                  >
-                    <SpriteImage :sprite-id="evo2.node.spriteId" :name="evo2.node.name" size="sm" />
-                    <span class="text-xs font-medium">{{ evo2.node.name }}</span>
-                  </RouterLink>
-                </div>
-              </template>
-            </div>
-          </div>
-        </template>
-      </div>
-    </template>
-  </div>
+  <EvolutionNode
+    v-if="chain"
+    :node="chain"
+    :current-id="pokemon.id"
+    :format-method="formatMethod"
+  />
 </template>

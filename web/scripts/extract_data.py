@@ -893,7 +893,9 @@ def format_evo_param(method_const, param_raw, item_names_map):
 
 
 def species_const_to_sprite_id(species_const):
-    """Convert SPECIES_XXX to a Showdown-compatible sprite ID."""
+    """Convert SPECIES_XXX to a Showdown-compatible sprite ID.
+    Showdown sprite IDs strip all non-alphanumeric from base names,
+    but use hyphens for form suffixes."""
     name = species_const.replace('SPECIES_', '').lower()
 
     # Special cases for Nidoran
@@ -905,6 +907,13 @@ def species_const_to_sprite_id(species_const):
     # Replace underscores with hyphens
     name = name.replace('_', '-')
     return name
+
+
+def name_to_showdown_id(display_name):
+    """Convert a Pokemon display name to Showdown's sprite ID format.
+    Showdown strips all non-alphanumeric characters and lowercases.
+    E.g., 'Ho-Oh' -> 'hooh', 'Mr. Mime' -> 'mrmime', 'Porygon-Z' -> 'porygonz'"""
+    return re.sub(r'[^a-z0-9]', '', display_name.lower())
 
 
 # ---------------------------------------------------------------------------
@@ -1431,8 +1440,6 @@ def deduplicate_forms(pokemon_list):
         base_abilities = tuple(base.get('abilities', []))
         base_stats = tuple(sorted(base.get('baseStats', {}).items()))
 
-        has_alternate_forms = False
-
         for form in group[1:]:
             form_types = tuple(form.get('types', []))
             form_abilities = tuple(form.get('abilities', []))
@@ -1440,24 +1447,33 @@ def deduplicate_forms(pokemon_list):
 
             if form_types != base_types or form_abilities != base_abilities or form_stats != base_stats:
                 # Distinct form - keep it but add form suffix to name
-                has_alternate_forms = True
                 form_suffix = _get_form_suffix(form['spriteId'], base['spriteId'])
                 if form_suffix and form_suffix.lower() != base['name'].lower():
                     form['name'] = f"{base['name']}-{form_suffix}"
+                # Generate Showdown sprite ID: base name (stripped) + hyphen + form suffix (stripped)
+                base_showdown = name_to_showdown_id(base['name'])
+                form_suffix_id = name_to_showdown_id(form_suffix) if form_suffix else ''
+                form['spriteId'] = f"{base_showdown}-{form_suffix_id}" if form_suffix_id else base_showdown
             else:
                 # Cosmetic form - remove it
                 ids_to_remove.add(form['id'])
 
-        # For base forms in groups with multiple entries, clean up spriteId
-        # Strip the default form suffix for Showdown compatibility
-        # e.g., "giratina-altered" -> "giratina", "shaymin-land" -> "shaymin",
-        #        "furfrou-natural" -> "furfrou", "burmy-plant" -> "burmy"
-        base_sprite = base['spriteId']
-        if '-' in base_sprite:
-            base['spriteId'] = base_sprite.split('-')[0]
+        # For base forms, generate sprite ID from the display name
+        # This correctly handles names like Ho-Oh -> "hooh", Mr. Mime -> "mrmime"
+        base['spriteId'] = name_to_showdown_id(base['name'])
 
     # Filter out removed forms
     filtered = [p for p in pokemon_list if p['id'] not in ids_to_remove]
+
+    # Regenerate sprite IDs for single-entry Pokemon (not handled above)
+    multi_entry_ids = set()
+    for ndex, group in groups.items():
+        if len(group) > 1:
+            for p in group:
+                multi_entry_ids.add(p['id'])
+    for p in filtered:
+        if p['id'] not in multi_entry_ids:
+            p['spriteId'] = name_to_showdown_id(p['name'])
 
     count_after = len(filtered)
     print(f"  Before: {count_before}, After: {count_after} (removed {count_before - count_after} cosmetic forms)")

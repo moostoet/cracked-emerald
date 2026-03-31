@@ -24,31 +24,30 @@ def find_repo_root(hint=None):
 
 def normalize_sprite_name(rel_parts):
     """Convert directory path parts to a Showdown-compatible sprite ID.
+    Showdown strips all non-alphanumeric from base names, uses hyphens for forms.
 
     Examples:
         ['bulbasaur'] -> 'bulbasaur'
         ['charizard', 'mega_x'] -> 'charizard-megax'
         ['vulpix', 'alola'] -> 'vulpix-alola'
-        ['mr_mime'] -> 'mr-mime'
+        ['mr_mime'] -> 'mrmime'
+        ['ho_oh'] -> 'hooh'
+        ['porygon_z'] -> 'porygonz'
+        ['mr_mime', 'galar'] -> 'mrmime-galar'
     """
     if not rel_parts:
         return None
 
     base = rel_parts[0]
 
-    # Special cases for nidoran
-    if base == 'nidoran_f':
-        name = 'nidoranf'
-    elif base == 'nidoran_m':
-        name = 'nidoranm'
-    else:
-        name = base.replace('_', '-')
+    # Base name: strip all non-alphanumeric (Showdown convention)
+    name = base.replace('_', '').lower()
 
     # Add form suffix if present
     if len(rel_parts) > 1:
         form = rel_parts[1]
-        # Remove underscores within the form name (mega_x -> megax)
-        form_normalized = form.replace('_', '')
+        # Form suffix: strip underscores, keep as hyphen-separated
+        form_normalized = form.replace('_', '').lower()
         name = f"{name}-{form_normalized}"
 
     return name

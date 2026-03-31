@@ -825,40 +825,176 @@ def parse_evolutions(block, species_ids, item_names_map):
 
     evo_content = block[start:end]
 
-    # Parse individual evolution entries: {EVO_XXX, param, SPECIES_XXX, ...}
-    evo_entries = re.findall(r'\{([^}]+)\}', evo_content)
-    for entry_str in evo_entries:
-        parts = [p.strip() for p in entry_str.split(',')]
-        if len(parts) < 3:
+    # Parse individual evolution entries, handling nested braces from CONDITIONS()
+    # Each top-level { } is one evolution entry
+    entries = []
+    depth = 0
+    current = []
+    for ch in evo_content:
+        if ch == '{':
+            depth += 1
+            if depth == 1:
+                current = []
+                continue
+            current.append(ch)
+        elif ch == '}':
+            depth -= 1
+            if depth == 0:
+                entries.append(''.join(current))
+            else:
+                current.append(ch)
+        else:
+            if depth >= 1:
+                current.append(ch)
+
+    for entry_str in entries:
+        # Split only the top-level commas (not inside CONDITIONS parentheses)
+        # Extract: EVO_METHOD, param, SPECIES_XXX[, CONDITIONS(...)]
+        top_parts = []
+        paren_depth = 0
+        brace_depth = 0
+        part = []
+        for ch in entry_str:
+            if ch == '(':
+                paren_depth += 1
+                part.append(ch)
+            elif ch == ')':
+                paren_depth -= 1
+                part.append(ch)
+            elif ch == '{':
+                brace_depth += 1
+                part.append(ch)
+            elif ch == '}':
+                brace_depth -= 1
+                part.append(ch)
+            elif ch == ',' and paren_depth == 0 and brace_depth == 0:
+                top_parts.append(''.join(part).strip())
+                part = []
+            else:
+                part.append(ch)
+        if part:
+            top_parts.append(''.join(part).strip())
+
+        if len(top_parts) < 3:
             continue
 
-        method_const = parts[0].strip()
-        param_raw = parts[1].strip()
-        target_const = parts[2].strip()
+        method_const = top_parts[0].strip()
+        param_raw = top_parts[1].strip()
+        target_const = top_parts[2].strip()
+        conditions_str = top_parts[3].strip() if len(top_parts) > 3 else ''
 
-        # Skip CONDITIONS entries
+        # Skip non-evolution entries
         if method_const.startswith('IF_') or method_const == 'CONDITIONS_END':
             continue
 
-        # Method name
+        # Method name — enhanced with CONDITIONS info
         method = format_evo_method(method_const)
         if method is None:
             continue
 
-        # Parameter
+        # Parameter — enhanced with conditions
         param = format_evo_param(method_const, param_raw, item_names_map)
+
+        # Parse CONDITIONS to improve method/param descriptions
+        if conditions_str:
+            cond_desc = parse_conditions(conditions_str)
+            if cond_desc:
+                if method == 'Level' and param == '0':
+                    # Replace generic "Level 0" with the condition description
+                    method = cond_desc
+                    param = ''
+                else:
+                    param = f"{param} ({cond_desc})" if param else cond_desc
 
         # Target
         target_id = species_ids.get(target_const, 0)
-        # We'll fill in target name later once all species are parsed
         evolutions.append({
             'method': method,
             'param': param,
             'targetId': target_id,
-            'targetName': target_const,  # Placeholder, filled in later
+            'targetName': target_const,
         })
 
-    return evolutions
+    # Deduplicate: if same target appears multiple times, keep the most useful entry
+    # (prefer Item methods over location-based, skip region-variant duplicates)
+    seen_targets = {}
+    deduped = []
+    for evo in evolutions:
+        tid = evo['targetId']
+        if tid not in seen_targets:
+            seen_targets[tid] = len(deduped)
+            deduped.append(evo)
+        else:
+            # Keep the entry with the more useful method (prefer Item over location)
+            existing = deduped[seen_targets[tid]]
+            if evo['method'] == 'Item' and existing['method'] != 'Item':
+                deduped[seen_targets[tid]] = evo
+            # Otherwise keep the first one
+
+    return deduped
+
+
+def parse_conditions(conditions_str):
+    """Parse a CONDITIONS(...) string into a human-readable description."""
+    # Extract conditions: {IF_XXX, VALUE} or {IF_XXX} (no value)
+    conds_with_value = re.findall(r'\{(\w+)\s*,\s*([^}]+)\}', conditions_str)
+    conds_no_value = re.findall(r'\{(\w+)\}', conditions_str)
+
+    # Combine: conditions with values as (type, value), without values as (type, None)
+    all_conds = [(t, v.strip()) for t, v in conds_with_value]
+    # Only add no-value conditions if they weren't already captured with a value
+    seen_types = {t for t, _ in all_conds}
+    for t in conds_no_value:
+        if t not in seen_types:
+            all_conds.append((t, None))
+
+    parts = []
+    for cond_type, cond_value in all_conds:
+        if cond_type == 'IF_MIN_FRIENDSHIP':
+            parts.append('Friendship')
+        elif cond_type == 'IF_TIME':
+            time_name = cond_value.replace('TIME_', '').title() if cond_value else ''
+            parts.append(time_name)
+        elif cond_type == 'IF_NOT_TIME':
+            time_name = cond_value.replace('TIME_', '').title() if cond_value else ''
+            if time_name == 'Night':
+                parts.append('Day')
+            else:
+                parts.append(f'Not {time_name}')
+        elif cond_type == 'IF_KNOWS_MOVE_TYPE':
+            type_name = cond_value.replace('TYPE_', '').title() if cond_value else ''
+            parts.append(f'Knows {type_name} move')
+        elif cond_type == 'IF_KNOWS_MOVE' or cond_type == 'IF_HAS_MOVE':
+            move_name = format_constant('MOVE_', cond_value) if cond_value else ''
+            parts.append(f'Knows {move_name}')
+        elif cond_type == 'IF_IN_MAP':
+            map_name = cond_value.replace('MAP_', '').replace('_', ' ').title() if cond_value else ''
+            parts.append(f'At {map_name}')
+        elif cond_type == 'IF_GENDER':
+            gender = 'Female' if cond_value and cond_value.strip() == 'MON_FEMALE' else 'Male'
+            parts.append(gender)
+        elif cond_type == 'IF_HOLDS_ITEM':
+            item_name = format_item_name(cond_value) if cond_value else ''
+            parts.append(f'Holding {item_name}')
+        elif cond_type == 'IF_ATK_GT_DEF':
+            parts.append('Atk > Def')
+        elif cond_type == 'IF_ATK_LT_DEF':
+            parts.append('Atk < Def')
+        elif cond_type == 'IF_DEF_GT_ATK':
+            parts.append('Def > Atk')
+        elif cond_type == 'IF_ATK_EQ_DEF':
+            parts.append('Atk = Def')
+        elif cond_type == 'IF_NOT_REGION':
+            parts.append('')  # Skip, not useful to display
+        elif cond_type == 'IF_REGION':
+            parts.append('')  # Skip
+        else:
+            desc = format_constant('IF_', cond_type)
+            parts.append(desc)
+
+    # Filter empty parts
+    parts = [p for p in parts if p]
+    return ', '.join(parts) if parts else None
 
 
 def format_evo_method(method_const):
@@ -1612,6 +1748,14 @@ def main():
     # Step 9.5: Deduplicate forms
     print()
     pokemon_list = deduplicate_forms(pokemon_list)
+
+    # Step 9.6: Re-resolve evolution target names after form dedup (names may have changed)
+    pokemon_by_id = {p['id']: p for p in pokemon_list}
+    for pkmn in pokemon_list:
+        for evo in pkmn.get('evolutions', []):
+            target_id = evo.get('targetId', 0)
+            if target_id in pokemon_by_id:
+                evo['targetName'] = pokemon_by_id[target_id]['name']
 
     # Step 10: Parse types
     print()

@@ -64,12 +64,10 @@ const chain = computed<ChainNode | null>(() => {
 })
 
 function formatMethod(method: string, param: string): string {
-  if (method === 'Level') return `Lv ${param}`
-  if (method === 'Item') return param
+  if (method === 'Level' && param && param !== '0') return `Lv ${param}`
+  if (method === 'Item') return param || 'Item'
   if (method === 'Trade') return param ? `Trade (${param})` : 'Trade'
-  if (method === 'Friendship') return 'Friendship'
-  if (method === 'Level Friendship Day') return 'Friendship (Day)'
-  if (method === 'Level Friendship Night') return 'Friendship (Night)'
+  // Conditions-based methods come through as descriptive strings already
   return param ? `${method} (${param})` : method
 }
 </script>

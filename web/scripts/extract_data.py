@@ -389,13 +389,24 @@ def parse_species_entries(content, gen_num, species_ids, natdex_ids,
     """Parse individual species entries from a gen file."""
     entries = []
 
-    # Pre-expand simple #define macros that resolve to { TYPE_X, TYPE_Y } patterns
-    # (e.g., ROTOM_FAMILY_TYPES, PIKACHU_FAMILY_TYPES)
+    # Pre-expand simple (non-function-like) #define macros in the file content.
+    # Only expand macros whose values are simple (braced type lists or numeric values),
+    # NOT ternary expressions (those are handled by the parsers directly).
     simple_defines = re.findall(
-        r'#define\s+(\w+)\s+(\{[^}]+\})', content
+        r'^\s*#define\s+(\w+)\s+(\{[^}]+\})$', content, re.MULTILINE
     )
     for def_name, def_body in simple_defines:
-        content = re.sub(r'\b' + re.escape(def_name) + r'\b', def_body, content)
+        content = re.sub(r'\b' + re.escape(def_name) + r'\b(?!\s*\()', def_body, content)
+
+    # Build a lookup for object-like macros with ternary expressions or other values.
+    # These are used to resolve macro references in type and stat fields.
+    object_macros = {}
+    for m in re.finditer(r'^\s*#define\s+(\w+)\s+(.+?)$', content, re.MULTILINE):
+        name, value = m.group(1), m.group(2).rstrip().rstrip('\\').strip()
+        if name.startswith(('P_', 'GUARD_', 'B_', 'GEN_')) or '(' not in value:
+            continue
+        # Skip function-like macros (detected in parse_species_macros)
+        object_macros[name] = value
 
     # Pre-parse macros that define species info
     macros = parse_species_macros(content)
@@ -498,6 +509,14 @@ def parse_species_entries(content, gen_num, species_ids, natdex_ids,
                             found = True
                 if not found:
                     break
+
+        # Expand object-like macro references in the block (e.g., MAGNEMITE_FAMILY_TYPE2)
+        # Resolve them to their values so the field parsers can handle them.
+        for obj_name, obj_value in object_macros.items():
+            if obj_name in block:
+                # Resolve ternary to the modern (first) value
+                resolved = take_first_ternary(obj_value)
+                block = re.sub(r'\b' + re.escape(obj_name) + r'\b', resolved, block)
 
         try:
             entry = parse_single_species(block, species_const, species_id, gen_num,

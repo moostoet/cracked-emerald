@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps<{
   spriteId: string
@@ -9,15 +9,19 @@ const props = defineProps<{
 
 const fallbackStage = ref(0) // 0=animated, 1=static, 2=local, 3=placeholder
 
+watch(() => props.spriteId, () => {
+  fallbackStage.value = 0
+})
+
 const sizeClass = {
   sm: 'w-10 h-10',
   md: 'w-20 h-20',
   lg: 'w-32 h-32',
 }
 
-const showdownAnimatedUrl = `https://play.pokemonshowdown.com/sprites/gen5ani/${props.spriteId}.gif`
-const showdownStaticUrl = `https://play.pokemonshowdown.com/sprites/gen5/${props.spriteId}.png`
-const localUrl = `${import.meta.env.BASE_URL}sprites/${props.spriteId}.png`
+const showdownAnimatedUrl = computed(() => `https://play.pokemonshowdown.com/sprites/gen5ani/${props.spriteId}.gif`)
+const showdownStaticUrl = computed(() => `https://play.pokemonshowdown.com/sprites/gen5/${props.spriteId}.png`)
+const localUrl = computed(() => `${import.meta.env.BASE_URL}sprites/${props.spriteId}.png`)
 </script>
 
 <template>

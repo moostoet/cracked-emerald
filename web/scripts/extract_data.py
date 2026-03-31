@@ -913,7 +913,9 @@ def name_to_showdown_id(display_name):
     """Convert a Pokemon display name to Showdown's sprite ID format.
     Showdown strips all non-alphanumeric characters and lowercases.
     E.g., 'Ho-Oh' -> 'hooh', 'Mr. Mime' -> 'mrmime', 'Porygon-Z' -> 'porygonz'"""
-    return re.sub(r'[^a-z0-9]', '', display_name.lower())
+    # Handle gender symbols before stripping
+    name = display_name.replace('♀', 'f').replace('♂', 'm')
+    return re.sub(r'[^a-z0-9]', '', name.lower())
 
 
 # ---------------------------------------------------------------------------

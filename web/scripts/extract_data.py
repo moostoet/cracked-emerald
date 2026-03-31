@@ -912,9 +912,13 @@ def species_const_to_sprite_id(species_const):
 def name_to_showdown_id(display_name):
     """Convert a Pokemon display name to Showdown's sprite ID format.
     Showdown strips all non-alphanumeric characters and lowercases.
-    E.g., 'Ho-Oh' -> 'hooh', 'Mr. Mime' -> 'mrmime', 'Porygon-Z' -> 'porygonz'"""
-    # Handle gender symbols before stripping
-    name = display_name.replace('♀', 'f').replace('♂', 'm')
+    E.g., 'Ho-Oh' -> 'hooh', 'Mr. Mime' -> 'mrmime', 'Flabébé' -> 'flabebe'"""
+    import unicodedata
+    # Normalize accented characters (é -> e, etc.)
+    name = unicodedata.normalize('NFKD', display_name)
+    name = ''.join(c for c in name if not unicodedata.combining(c))
+    # Handle gender symbols
+    name = name.replace('♀', 'f').replace('♂', 'm')
     return re.sub(r'[^a-z0-9]', '', name.lower())
 
 

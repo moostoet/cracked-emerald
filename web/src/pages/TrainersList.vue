@@ -97,28 +97,74 @@ const locationFiltered = computed(() => {
   return filtered.value.filter(t => t.location === locationFilter.value)
 })
 
-// Group display entries by location
+interface SubAreaGroup {
+  subArea: string
+  entries: DisplayEntry[]
+}
+
+interface LocationGroup {
+  location: string
+  subAreas: SubAreaGroup[]
+  totalEntries: number
+  hasMultipleSubAreas: boolean
+}
+
+// Group display entries by location, then by sub-area
 const groupedByLocation = computed(() => {
-  const groups: { location: string; entries: DisplayEntry[] }[] = []
-  const map = new Map<string, DisplayEntry[]>()
+  const groups: LocationGroup[] = []
+  const locMap = new Map<string, { subMap: Map<string, DisplayEntry[]>; order: string[] }>()
 
   for (const entry of displayEntries.value) {
     const loc = entry.trainers[0].location || 'Unknown'
-    if (!map.has(loc)) {
-      const arr: DisplayEntry[] = []
-      map.set(loc, arr)
-      groups.push({ location: loc, entries: arr })
+    const sub = entry.trainers[0].subArea || ''
+
+    if (!locMap.has(loc)) {
+      locMap.set(loc, { subMap: new Map(), order: [] })
     }
-    map.get(loc)!.push(entry)
+    const locData = locMap.get(loc)!
+    if (!locData.subMap.has(sub)) {
+      locData.subMap.set(sub, [])
+      locData.order.push(sub)
+    }
+    locData.subMap.get(sub)!.push(entry)
+  }
+
+  for (const [loc, locData] of locMap) {
+    const subAreas: SubAreaGroup[] = locData.order.map(sub => ({
+      subArea: sub,
+      entries: locData.subMap.get(sub)!,
+    }))
+    const totalEntries = subAreas.reduce((sum, sa) => sum + sa.entries.length, 0)
+    groups.push({
+      location: loc,
+      subAreas,
+      totalEntries,
+      hasMultipleSubAreas: subAreas.length > 1 || (subAreas.length === 1 && subAreas[0].subArea !== ''),
+    })
   }
   return groups
 })
+
+const collapsedSubAreas = ref<Set<string>>(new Set())
 
 function toggleLocation(loc: string) {
   if (collapsedLocations.value.has(loc)) {
     collapsedLocations.value.delete(loc)
   } else {
     collapsedLocations.value.add(loc)
+  }
+}
+
+function subAreaKey(loc: string, sub: string) {
+  return `${loc}::${sub}`
+}
+
+function toggleSubArea(loc: string, sub: string) {
+  const key = subAreaKey(loc, sub)
+  if (collapsedSubAreas.value.has(key)) {
+    collapsedSubAreas.value.delete(key)
+  } else {
+    collapsedSubAreas.value.add(key)
   }
 }
 
@@ -220,12 +266,24 @@ onMounted(async () => {
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground shrink-0 transition-transform" :class="{ '-rotate-90': collapsedLocations.has(group.location) }"><path d="m6 9 6 6 6-6"/></svg>
           <h2 class="text-lg font-semibold group-hover:text-primary transition-colors">{{ group.location }}</h2>
-          <span class="text-xs text-muted-foreground">({{ group.entries.length }})</span>
+          <span class="text-xs text-muted-foreground">({{ group.totalEntries }})</span>
         </button>
 
-        <div v-if="!collapsedLocations.has(group.location)" class="space-y-2 pl-1">
+        <div v-if="!collapsedLocations.has(group.location)" class="pl-1">
+          <!-- Sub-area groups (when multiple sub-areas exist) -->
+          <template v-if="group.hasMultipleSubAreas">
+            <div v-for="subGroup in group.subAreas" :key="subGroup.subArea" class="space-y-2 mb-3">
+              <button
+                class="flex items-center gap-2 w-full text-left group"
+                @click="toggleSubArea(group.location, subGroup.subArea)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground/60 shrink-0 transition-transform" :class="{ '-rotate-90': collapsedSubAreas.has(subAreaKey(group.location, subGroup.subArea)) }"><path d="m6 9 6 6 6-6"/></svg>
+                <h3 class="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">{{ subGroup.subArea || group.location }}</h3>
+                <span class="text-xs text-muted-foreground/60">({{ subGroup.entries.length }})</span>
+              </button>
+              <div v-if="!collapsedSubAreas.has(subAreaKey(group.location, subGroup.subArea))" class="space-y-2 pl-4">
           <Card
-            v-for="entry in group.entries"
+            v-for="entry in subGroup.entries"
             :key="entry.key"
             class="transition-colors hover:border-primary/30 cursor-pointer"
             :class="{ 'border-amber-500/40': entry.isForcedDouble }"
@@ -344,6 +402,82 @@ onMounted(async () => {
               </div>
             </CardContent>
           </Card>
+              </div>
+            </div>
+          </template>
+
+          <!-- No sub-areas: flat list -->
+          <template v-else>
+            <div class="space-y-2">
+              <Card
+                v-for="entry in group.subAreas[0].entries"
+                :key="entry.key"
+                class="transition-colors hover:border-primary/30 cursor-pointer"
+                :class="{ 'border-amber-500/40': entry.isForcedDouble }"
+                @click="toggleExpand(entry.key)"
+              >
+                <CardContent class="p-3">
+                  <div class="flex items-center gap-3">
+                    <div class="flex shrink-0" :class="entry.isForcedDouble ? '-space-x-2' : ''">
+                      <template v-for="trainer in entry.trainers" :key="trainer.id">
+                        <img v-if="trainer.sprite" :src="trainer.sprite" :alt="displayName(trainer)" class="w-16 h-16 object-contain image-rendering-pixelated" loading="lazy" />
+                        <div v-else class="w-16 h-16 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">?</div>
+                      </template>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-baseline gap-2 flex-wrap">
+                        <span v-if="entry.isForcedDouble" class="font-semibold text-sm">{{ displayName(entry.trainers[0]) }} &amp; {{ displayName(entry.trainers[1]) }}</span>
+                        <span v-else class="font-semibold text-sm">{{ displayName(entry.trainers[0]) }}</span>
+                        <Badge v-if="entry.isForcedDouble" variant="outline" class="text-[10px] border-amber-500/60 text-amber-500">Forced Double</Badge>
+                        <Badge v-else-if="entry.trainers[0].isDouble" variant="outline" class="text-[10px]">Double</Badge>
+                      </div>
+                      <div class="text-xs text-muted-foreground mt-0.5">
+                        <span class="font-mono">Lv{{ entryMaxLevel(entry) }}</span>
+                        <span v-if="entry.possibleDoubleWith" class="ml-2">· Can double with {{ entry.possibleDoubleWith }}</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-0.5 shrink-0">
+                      <RouterLink v-for="mon in entryParty(entry)" :key="mon.speciesId + mon.species" :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }" @click.stop>
+                        <SpriteImage :sprite-id="getSpriteId(mon.speciesId)" :name="mon.species" size="sm" />
+                      </RouterLink>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground shrink-0 transition-transform" :class="{ 'rotate-180': expandedIds.has(entry.key) }"><path d="m6 9 6 6 6-6"/></svg>
+                  </div>
+                  <div v-if="expandedIds.has(entry.key)" class="mt-4" @click.stop>
+                    <template v-for="trainer in entry.trainers" :key="trainer.id">
+                      <div v-if="entry.isForcedDouble" class="text-xs font-semibold text-muted-foreground mb-2 mt-3 first:mt-0">{{ displayName(trainer) }}</div>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
+                        <div v-for="(mon, idx) in trainer.party" :key="idx" class="rounded-lg border bg-muted/30 p-3 space-y-2">
+                          <div class="flex items-center gap-2">
+                            <RouterLink :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }"><SpriteImage :sprite-id="getSpriteId(mon.speciesId)" :name="mon.species" size="sm" /></RouterLink>
+                            <div class="min-w-0">
+                              <RouterLink :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }" class="font-semibold text-sm hover:underline hover:text-primary transition-colors block truncate">{{ mon.species }}</RouterLink>
+                              <span class="text-xs font-mono text-muted-foreground">Lv{{ mon.level }}</span>
+                            </div>
+                          </div>
+                          <div class="text-xs space-y-0.5 text-muted-foreground">
+                            <div v-if="mon.ability"><span class="text-foreground">Ability:</span> {{ mon.ability }}</div>
+                            <div><span class="text-foreground">Item:</span> {{ mon.item || '\u2014' }}</div>
+                            <div v-if="mon.nature"><span class="text-foreground">Nature:</span> {{ mon.nature }}</div>
+                            <div v-if="mon.teraType"><span class="text-foreground">Tera:</span> {{ mon.teraType }}</div>
+                          </div>
+                          <div v-if="mon.moves.length > 0" class="grid grid-cols-2 gap-1.5">
+                            <div v-for="move in mon.moves" :key="move" class="rounded-md border bg-background px-2 py-1.5">
+                              <div class="text-xs font-medium truncate"><MovePopover :move-name="move" /></div>
+                              <div class="flex items-center gap-1.5 mt-1">
+                                <TypeBadge v-if="getMoveType(move)" :type="getMoveType(move)" size="sm" />
+                                <img v-if="getMoveCategory(move)" :src="categoryIconUrl(getMoveCategory(move))" :alt="getMoveCategory(move)" class="h-3.5" loading="lazy" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </template>
         </div>
       </div>
     </div>

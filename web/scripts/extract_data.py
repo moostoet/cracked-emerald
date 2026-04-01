@@ -2395,12 +2395,50 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
         for script_label, tid in script_to_trainer.items():
             tid_to_script.setdefault(tid, script_label)
 
+    def _derive_sub_area(dirname, location):
+        """Derive sub-area name from map directory name and parent location.
+        E.g. dirname='RustboroCity_Gym', location='Rustboro City' -> 'Gym'
+             dirname='Route110_TrickHousePuzzle1', location='Route 110' -> 'Trick House Puzzle 1'
+             dirname='MtPyre_2F', location='Mt. Pyre' -> '2F'
+             dirname='Route102', location='Route 102' -> '' (main map)
+        """
+        # Build the parent prefix pattern from dirname
+        # Location "Rustboro City" corresponds to dirname prefix "RustboroCity"
+        # Try to find the split point by matching the location words to the dirname
+        loc_collapsed = location.replace(' ', '').replace('.', '').replace("'", '')
+        if dirname.startswith(loc_collapsed):
+            remainder = dirname[len(loc_collapsed):]
+        else:
+            # Try case-insensitive prefix match
+            dn_lower = dirname.lower()
+            lc_lower = loc_collapsed.lower()
+            if dn_lower.startswith(lc_lower):
+                remainder = dirname[len(loc_collapsed):]
+            else:
+                # Fallback: find longest matching prefix
+                remainder = dirname
+
+        # Strip leading underscore
+        remainder = remainder.lstrip('_')
+
+        if not remainder:
+            return ''
+
+        # Prettify: insert spaces before capitals and numbers
+        name = re.sub(r'([a-z])([A-Z])', r'\1 \2', remainder)
+        name = re.sub(r'([A-Za-z])(\d)', r'\1 \2', name)
+        name = name.replace('_', ' ').strip()
+
+        return name
+
     trainer_list = []
     for tid, trainer in trainers.items():
         loc_info = trainer_locations.get(tid)
         if not loc_info:
             continue  # Skip trainers without a map location
         location = loc_info[0]
+        dirname = loc_info[1]
+        sub_area = _derive_sub_area(dirname, location)
 
         # Resolve species names from pokemon_by_id where possible
         for mon in trainer['party']:
@@ -2431,6 +2469,7 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
             'isDouble': trainer['isDouble'],
             'sprite': trainer['sprite'],
             'location': location,
+            'subArea': sub_area,
             'party': trainer['party'],
             'doubleWith': double_with,
             'order': location_order.get(location, 9999),

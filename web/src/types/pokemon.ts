@@ -119,6 +119,7 @@ export interface Trainer {
   isDouble: boolean
   sprite: string
   location: string
+  subArea: string
   party: TrainerMon[]
   doubleWith: TrainerDoubleWith | null
 }

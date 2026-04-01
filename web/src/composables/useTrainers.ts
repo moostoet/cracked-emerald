@@ -25,11 +25,16 @@ export function useTrainers() {
     )
   })
 
+  function getTrainerById(id: string): Trainer | undefined {
+    return trainers.value.find(t => t.id === id)
+  }
+
   return {
     trainers,
     loaded,
     search,
     filtered,
     load,
+    getTrainerById,
   }
 }

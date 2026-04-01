@@ -18,19 +18,68 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { Trainer } from '@/types/pokemon'
+import type { Trainer, TrainerMon } from '@/types/pokemon'
 
-const { loaded: trainersLoaded, search, filtered, load: loadTrainers } = useTrainers()
+const { loaded: trainersLoaded, search, filtered, load: loadTrainers, getTrainerById } = useTrainers()
 const { loaded: dexLoaded, load: loadDex, getById } = usePokedex()
 const { loaded: movesLoaded, load: loadMoves, getMove } = useMoves()
 
 const loading = computed(() => !trainersLoaded.value || !dexLoaded.value || !movesLoaded.value)
 
 const locationFilter = ref('')
-
 const expandedIds = ref<Set<string>>(new Set())
+const collapsedLocations = ref<Set<string>>(new Set())
 
-// All unique locations in BFS order (preserved from the sorted trainer list)
+// A display entry: either a single trainer or a merged forced double
+interface DisplayEntry {
+  key: string
+  trainers: Trainer[]       // 1 for single/possible, 2 for forced double
+  isForcedDouble: boolean
+  possibleDoubleWith: string | null  // partner name for annotation
+}
+
+// Build display entries: merge forced doubles, annotate possible doubles
+const displayEntries = computed(() => {
+  const entries: DisplayEntry[] = []
+  const merged = new Set<string>()  // trainer IDs already merged into a forced double
+
+  for (const t of locationFiltered.value) {
+    if (merged.has(t.id)) continue
+
+    if (t.doubleWith?.forced) {
+      const partner = getTrainerById(t.doubleWith.trainerId)
+      if (partner && !merged.has(partner.id)) {
+        merged.add(t.id)
+        merged.add(partner.id)
+        entries.push({
+          key: `double-${t.id}-${partner.id}`,
+          trainers: [t, partner],
+          isForcedDouble: true,
+          possibleDoubleWith: null,
+        })
+        continue
+      }
+    }
+
+    let possiblePartnerName: string | null = null
+    if (t.doubleWith && !t.doubleWith.forced) {
+      const partner = getTrainerById(t.doubleWith.trainerId)
+      if (partner) {
+        possiblePartnerName = displayName(partner)
+      }
+    }
+
+    entries.push({
+      key: t.id,
+      trainers: [t],
+      isForcedDouble: false,
+      possibleDoubleWith: possiblePartnerName,
+    })
+  }
+  return entries
+})
+
+// All unique locations in BFS order
 const allLocations = computed(() => {
   const seen = new Set<string>()
   const locs: string[] = []
@@ -43,30 +92,27 @@ const allLocations = computed(() => {
   return locs
 })
 
-// Trainers filtered by location
 const locationFiltered = computed(() => {
   if (!locationFilter.value) return filtered.value
   return filtered.value.filter(t => t.location === locationFilter.value)
 })
 
-// Group trainers by location (preserving order)
+// Group display entries by location
 const groupedByLocation = computed(() => {
-  const groups: { location: string; trainers: Trainer[] }[] = []
-  const map = new Map<string, Trainer[]>()
+  const groups: { location: string; entries: DisplayEntry[] }[] = []
+  const map = new Map<string, DisplayEntry[]>()
 
-  for (const t of locationFiltered.value) {
-    const loc = t.location || 'Unknown'
+  for (const entry of displayEntries.value) {
+    const loc = entry.trainers[0].location || 'Unknown'
     if (!map.has(loc)) {
-      const arr: Trainer[] = []
+      const arr: DisplayEntry[] = []
       map.set(loc, arr)
-      groups.push({ location: loc, trainers: arr })
+      groups.push({ location: loc, entries: arr })
     }
-    map.get(loc)!.push(t)
+    map.get(loc)!.push(entry)
   }
   return groups
 })
-
-const collapsedLocations = ref<Set<string>>(new Set())
 
 function toggleLocation(loc: string) {
   if (collapsedLocations.value.has(loc)) {
@@ -76,11 +122,11 @@ function toggleLocation(loc: string) {
   }
 }
 
-function toggleExpand(trainerId: string) {
-  if (expandedIds.value.has(trainerId)) {
-    expandedIds.value.delete(trainerId)
+function toggleExpand(key: string) {
+  if (expandedIds.value.has(key)) {
+    expandedIds.value.delete(key)
   } else {
-    expandedIds.value.add(trainerId)
+    expandedIds.value.add(key)
   }
 }
 
@@ -106,8 +152,12 @@ function displayName(trainer: Trainer): string {
   return trainer.name
 }
 
-function maxLevel(trainer: Trainer): number {
-  return Math.max(...trainer.party.map(m => m.level))
+function entryMaxLevel(entry: DisplayEntry): number {
+  return Math.max(...entry.trainers.flatMap(t => t.party.map(m => m.level)))
+}
+
+function entryParty(entry: DisplayEntry): TrainerMon[] {
+  return entry.trainers.flatMap(t => t.party)
 }
 
 function onLocationChange(value: string) {
@@ -150,7 +200,7 @@ onMounted(async () => {
     <Separator />
 
     <p v-if="!loading" class="text-sm text-muted-foreground">
-      Showing {{ locationFiltered.length }} trainers across {{ groupedByLocation.length }} locations
+      Showing {{ displayEntries.length }} battles across {{ groupedByLocation.length }} locations
     </p>
 
     <div v-if="loading" class="flex items-center justify-center py-20">
@@ -164,64 +214,62 @@ onMounted(async () => {
 
       <!-- Location groups -->
       <div v-for="group in groupedByLocation" :key="group.location" class="space-y-2">
-        <!-- Location header -->
         <button
           class="flex items-center gap-2 w-full text-left group"
           @click="toggleLocation(group.location)"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="text-muted-foreground shrink-0 transition-transform"
-            :class="{ '-rotate-90': collapsedLocations.has(group.location) }"
-          >
-            <path d="m6 9 6 6 6-6"/>
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground shrink-0 transition-transform" :class="{ '-rotate-90': collapsedLocations.has(group.location) }"><path d="m6 9 6 6 6-6"/></svg>
           <h2 class="text-lg font-semibold group-hover:text-primary transition-colors">{{ group.location }}</h2>
-          <span class="text-xs text-muted-foreground">({{ group.trainers.length }})</span>
+          <span class="text-xs text-muted-foreground">({{ group.entries.length }})</span>
         </button>
 
-        <!-- Trainer cards -->
         <div v-if="!collapsedLocations.has(group.location)" class="space-y-2 pl-1">
           <Card
-            v-for="trainer in group.trainers"
-            :key="trainer.id"
+            v-for="entry in group.entries"
+            :key="entry.key"
             class="transition-colors hover:border-primary/30 cursor-pointer"
-            @click="toggleExpand(trainer.id)"
+            :class="{ 'border-amber-500/40': entry.isForcedDouble }"
+            @click="toggleExpand(entry.key)"
           >
             <CardContent class="p-3">
               <!-- Summary row -->
               <div class="flex items-center gap-3">
-                <!-- Trainer sprite -->
-                <img
-                  v-if="trainer.sprite"
-                  :src="trainer.sprite"
-                  :alt="displayName(trainer)"
-                  class="w-16 h-16 object-contain image-rendering-pixelated shrink-0"
-                  loading="lazy"
-                />
-                <div v-else class="w-16 h-16 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs shrink-0">?</div>
+                <!-- Trainer sprite(s) -->
+                <div class="flex shrink-0" :class="entry.isForcedDouble ? '-space-x-2' : ''">
+                  <template v-for="trainer in entry.trainers" :key="trainer.id">
+                    <img
+                      v-if="trainer.sprite"
+                      :src="trainer.sprite"
+                      :alt="displayName(trainer)"
+                      class="w-16 h-16 object-contain image-rendering-pixelated"
+                      loading="lazy"
+                    />
+                    <div v-else class="w-16 h-16 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">?</div>
+                  </template>
+                </div>
 
                 <!-- Name + details -->
                 <div class="flex-1 min-w-0">
                   <div class="flex items-baseline gap-2 flex-wrap">
-                    <span class="font-semibold text-sm">{{ displayName(trainer) }}</span>
-                    <Badge v-if="trainer.isDouble" variant="outline" class="text-[10px]">Double</Badge>
+                    <span v-if="entry.isForcedDouble" class="font-semibold text-sm">
+                      {{ displayName(entry.trainers[0]) }} &amp; {{ displayName(entry.trainers[1]) }}
+                    </span>
+                    <span v-else class="font-semibold text-sm">{{ displayName(entry.trainers[0]) }}</span>
+                    <Badge v-if="entry.isForcedDouble" variant="outline" class="text-[10px] border-amber-500/60 text-amber-500">Forced Double</Badge>
+                    <Badge v-else-if="entry.trainers[0].isDouble" variant="outline" class="text-[10px]">Double</Badge>
                   </div>
-                  <span class="text-xs text-muted-foreground font-mono">Lv{{ maxLevel(trainer) }}</span>
+                  <div class="text-xs text-muted-foreground mt-0.5">
+                    <span class="font-mono">Lv{{ entryMaxLevel(entry) }}</span>
+                    <span v-if="entry.possibleDoubleWith" class="ml-2">
+                      · Can double with {{ entry.possibleDoubleWith }}
+                    </span>
+                  </div>
                 </div>
 
                 <!-- Pokemon lineup -->
                 <div class="flex items-center gap-0.5 shrink-0">
                   <RouterLink
-                    v-for="mon in trainer.party"
+                    v-for="mon in entryParty(entry)"
                     :key="mon.speciesId + mon.species"
                     :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }"
                     @click.stop
@@ -231,77 +279,68 @@ onMounted(async () => {
                 </div>
 
                 <!-- Expand chevron -->
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="text-muted-foreground shrink-0 transition-transform"
-                  :class="{ 'rotate-180': expandedIds.has(trainer.id) }"
-                >
-                  <path d="m6 9 6 6 6-6"/>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground shrink-0 transition-transform" :class="{ 'rotate-180': expandedIds.has(entry.key) }"><path d="m6 9 6 6 6-6"/></svg>
               </div>
 
               <!-- Expanded party details -->
-              <div v-if="expandedIds.has(trainer.id)" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" @click.stop>
-                <div
-                  v-for="(mon, idx) in trainer.party"
-                  :key="idx"
-                  class="rounded-lg border bg-muted/30 p-3 space-y-2"
-                >
-                  <!-- Species header -->
-                  <div class="flex items-center gap-2">
-                    <RouterLink :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }">
-                      <SpriteImage :sprite-id="getSpriteId(mon.speciesId)" :name="mon.species" size="sm" />
-                    </RouterLink>
-                    <div class="min-w-0">
-                      <RouterLink
-                        :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }"
-                        class="font-semibold text-sm hover:underline hover:text-primary transition-colors block truncate"
-                      >
-                        {{ mon.species }}
-                      </RouterLink>
-                      <span class="text-xs font-mono text-muted-foreground">Lv{{ mon.level }}</span>
-                    </div>
+              <div v-if="expandedIds.has(entry.key)" class="mt-4" @click.stop>
+                <!-- Show trainer name headers for forced doubles -->
+                <template v-for="trainer in entry.trainers" :key="trainer.id">
+                  <div v-if="entry.isForcedDouble" class="text-xs font-semibold text-muted-foreground mb-2 mt-3 first:mt-0">
+                    {{ displayName(trainer) }}
                   </div>
-
-                  <!-- Details -->
-                  <div class="text-xs space-y-0.5 text-muted-foreground">
-                    <div v-if="mon.ability"><span class="text-foreground">Ability:</span> {{ mon.ability }}</div>
-                    <div><span class="text-foreground">Item:</span> {{ mon.item || '\u2014' }}</div>
-                    <div v-if="mon.nature"><span class="text-foreground">Nature:</span> {{ mon.nature }}</div>
-                    <div v-if="mon.teraType"><span class="text-foreground">Tera:</span> {{ mon.teraType }}</div>
-                  </div>
-
-                  <!-- 2x2 Move grid -->
-                  <div v-if="mon.moves.length > 0" class="grid grid-cols-2 gap-1.5">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
                     <div
-                      v-for="move in mon.moves"
-                      :key="move"
-                      class="rounded-md border bg-background px-2 py-1.5"
+                      v-for="(mon, idx) in trainer.party"
+                      :key="idx"
+                      class="rounded-lg border bg-muted/30 p-3 space-y-2"
                     >
-                      <div class="text-xs font-medium truncate">
-                        <MovePopover :move-name="move" />
+                      <div class="flex items-center gap-2">
+                        <RouterLink :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }">
+                          <SpriteImage :sprite-id="getSpriteId(mon.speciesId)" :name="mon.species" size="sm" />
+                        </RouterLink>
+                        <div class="min-w-0">
+                          <RouterLink
+                            :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }"
+                            class="font-semibold text-sm hover:underline hover:text-primary transition-colors block truncate"
+                          >
+                            {{ mon.species }}
+                          </RouterLink>
+                          <span class="text-xs font-mono text-muted-foreground">Lv{{ mon.level }}</span>
+                        </div>
                       </div>
-                      <div class="flex items-center gap-1.5 mt-1">
-                        <TypeBadge v-if="getMoveType(move)" :type="getMoveType(move)" size="sm" />
-                        <img
-                          v-if="getMoveCategory(move)"
-                          :src="categoryIconUrl(getMoveCategory(move))"
-                          :alt="getMoveCategory(move)"
-                          class="h-3.5"
-                          loading="lazy"
-                        />
+
+                      <div class="text-xs space-y-0.5 text-muted-foreground">
+                        <div v-if="mon.ability"><span class="text-foreground">Ability:</span> {{ mon.ability }}</div>
+                        <div><span class="text-foreground">Item:</span> {{ mon.item || '\u2014' }}</div>
+                        <div v-if="mon.nature"><span class="text-foreground">Nature:</span> {{ mon.nature }}</div>
+                        <div v-if="mon.teraType"><span class="text-foreground">Tera:</span> {{ mon.teraType }}</div>
+                      </div>
+
+                      <div v-if="mon.moves.length > 0" class="grid grid-cols-2 gap-1.5">
+                        <div
+                          v-for="move in mon.moves"
+                          :key="move"
+                          class="rounded-md border bg-background px-2 py-1.5"
+                        >
+                          <div class="text-xs font-medium truncate">
+                            <MovePopover :move-name="move" />
+                          </div>
+                          <div class="flex items-center gap-1.5 mt-1">
+                            <TypeBadge v-if="getMoveType(move)" :type="getMoveType(move)" size="sm" />
+                            <img
+                              v-if="getMoveCategory(move)"
+                              :src="categoryIconUrl(getMoveCategory(move))"
+                              :alt="getMoveCategory(move)"
+                              class="h-3.5"
+                              loading="lazy"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </template>
               </div>
             </CardContent>
           </Card>

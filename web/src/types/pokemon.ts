@@ -107,6 +107,11 @@ export interface TrainerMon {
   teraType: string
 }
 
+export interface TrainerDoubleWith {
+  trainerId: string
+  forced: boolean
+}
+
 export interface Trainer {
   id: string
   name: string
@@ -115,6 +120,7 @@ export interface Trainer {
   sprite: string
   location: string
   party: TrainerMon[]
+  doubleWith: TrainerDoubleWith | null
 }
 
 export interface MapConnections {

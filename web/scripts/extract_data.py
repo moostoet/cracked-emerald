@@ -9,8 +9,9 @@ Usage: python3 extract_data.py [repo_root]
 import json
 import os
 import re
+import struct
 import sys
-from collections import defaultdict
+from collections import defaultdict, deque
 
 
 def find_repo_root(hint=None):
@@ -1810,7 +1811,6 @@ def parse_trainer_locations(repo_root):
 
 def build_trainer_order(connections):
     """BFS from Littleroot Town through map connections to derive progression order."""
-    from collections import deque
 
     start = 'Littleroot Town'
     order = []
@@ -1834,9 +1834,500 @@ def build_trainer_order(connections):
     return {loc: idx for idx, loc in enumerate(order)}
 
 
-def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id):
+# ---------------------------------------------------------------------------
+# Double Battle Detection
+# ---------------------------------------------------------------------------
+
+# Directional blocking behavior constants
+MB_IMPASSABLE_EAST  = 0x30
+MB_IMPASSABLE_WEST  = 0x31
+MB_IMPASSABLE_NORTH = 0x32
+MB_IMPASSABLE_SOUTH = 0x33
+MB_IMPASSABLE_NORTHEAST = 0x34
+MB_IMPASSABLE_NORTHWEST = 0x35
+MB_IMPASSABLE_SOUTHEAST = 0x36
+MB_IMPASSABLE_SOUTHWEST = 0x37
+MB_IMPASSABLE_SOUTH_AND_NORTH = 0xC0
+MB_IMPASSABLE_WEST_AND_EAST = 0xC1
+
+# Movement type -> set of possible facing directions
+MOVEMENT_DIRECTIONS = {
+    'MOVEMENT_TYPE_FACE_UP': {'up'},
+    'MOVEMENT_TYPE_FACE_DOWN': {'down'},
+    'MOVEMENT_TYPE_FACE_LEFT': {'left'},
+    'MOVEMENT_TYPE_FACE_RIGHT': {'right'},
+    'MOVEMENT_TYPE_LOOK_AROUND': {'up', 'down', 'left', 'right'},
+    'MOVEMENT_TYPE_ROTATE_COUNTERCLOCKWISE': {'up', 'down', 'left', 'right'},
+    'MOVEMENT_TYPE_ROTATE_CLOCKWISE': {'up', 'down', 'left', 'right'},
+    'MOVEMENT_TYPE_FACE_DOWN_AND_UP': {'down', 'up'},
+    'MOVEMENT_TYPE_FACE_LEFT_AND_RIGHT': {'left', 'right'},
+    'MOVEMENT_TYPE_FACE_UP_AND_LEFT': {'up', 'left'},
+    'MOVEMENT_TYPE_FACE_UP_AND_RIGHT': {'up', 'right'},
+    'MOVEMENT_TYPE_FACE_DOWN_AND_LEFT': {'down', 'left'},
+    'MOVEMENT_TYPE_FACE_DOWN_AND_RIGHT': {'down', 'right'},
+    'MOVEMENT_TYPE_FACE_DOWN_UP_AND_LEFT': {'down', 'up', 'left'},
+    'MOVEMENT_TYPE_FACE_DOWN_UP_AND_RIGHT': {'down', 'up', 'right'},
+    'MOVEMENT_TYPE_FACE_UP_LEFT_AND_RIGHT': {'up', 'left', 'right'},
+    'MOVEMENT_TYPE_FACE_DOWN_LEFT_AND_RIGHT': {'down', 'left', 'right'},
+    'MOVEMENT_TYPE_WANDER_AROUND': {'up', 'down', 'left', 'right'},
+    'MOVEMENT_TYPE_WANDER_AROUND_SLOWER': {'up', 'down', 'left', 'right'},
+    'MOVEMENT_TYPE_WANDER_UP_AND_DOWN': {'up', 'down'},
+    'MOVEMENT_TYPE_WANDER_DOWN_AND_UP': {'up', 'down'},
+    'MOVEMENT_TYPE_WANDER_LEFT_AND_RIGHT': {'left', 'right'},
+    'MOVEMENT_TYPE_WANDER_RIGHT_AND_LEFT': {'left', 'right'},
+}
+
+# Direction deltas: (dx, dy)
+DIR_DELTA = {
+    'up': (0, -1),
+    'down': (0, 1),
+    'left': (-1, 0),
+    'right': (1, 0),
+}
+
+DIR_OPPOSITE = {'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left'}
+
+
+def _build_tileset_path_map(repo_root):
+    """Parse headers.h and metatiles.h to build gTileset_XXX -> metatile_attributes.bin path."""
+    headers_path = os.path.join(repo_root, 'src', 'data', 'tilesets', 'headers.h')
+    metatiles_path = os.path.join(repo_root, 'src', 'data', 'tilesets', 'metatiles.h')
+
+    with open(headers_path, 'r', encoding='utf-8', errors='replace') as f:
+        headers = f.read()
+    with open(metatiles_path, 'r', encoding='utf-8', errors='replace') as f:
+        metatiles = f.read()
+
+    # tileset name -> attributes variable name
+    ts_to_attr = {}
+    blocks = re.split(r'const struct Tileset\s+', headers)
+    for block in blocks[1:]:
+        name_m = re.match(r'(gTileset_\w+)', block)
+        attr_m = re.search(r'\.metatileAttributes\s*=\s*(gMetatileAttributes_\w+)', block)
+        if name_m and attr_m:
+            ts_to_attr[name_m.group(1)] = attr_m.group(1)
+
+    # attributes variable name -> file path
+    attr_to_path = {}
+    for m in re.finditer(r'(gMetatileAttributes_\w+)\[\]\s*=\s*INCBIN_U16\("([^"]+)"\)', metatiles):
+        attr_to_path[m.group(1)] = m.group(2)
+
+    # Final: tileset name -> file path
+    result = {}
+    for ts_name, attr_name in ts_to_attr.items():
+        if attr_name in attr_to_path:
+            result[ts_name] = attr_to_path[attr_name]
+
+    return result
+
+
+def _load_metatile_behaviors(repo_root, primary_tileset, secondary_tileset, tileset_paths):
+    """Load metatile behavior arrays for primary and secondary tilesets."""
+    st = struct
+
+    primary_behaviors = []
+    secondary_behaviors = []
+
+    path = tileset_paths.get(primary_tileset)
+    if path:
+        fullpath = os.path.join(repo_root, path)
+        if os.path.isfile(fullpath):
+            with open(fullpath, 'rb') as f:
+                data = f.read()
+            primary_behaviors = [st.unpack_from('<H', data, i * 2)[0] & 0xFF
+                                 for i in range(len(data) // 2)]
+
+    path = tileset_paths.get(secondary_tileset)
+    if path:
+        fullpath = os.path.join(repo_root, path)
+        if os.path.isfile(fullpath):
+            with open(fullpath, 'rb') as f:
+                data = f.read()
+            secondary_behaviors = [st.unpack_from('<H', data, i * 2)[0] & 0xFF
+                                   for i in range(len(data) // 2)]
+
+    return primary_behaviors, secondary_behaviors
+
+
+def _build_collision_grid(repo_root, layout, tileset_paths):
+    """Build a collision grid for a map layout.
+    Returns (width, height, grid) where grid[y][x] = {
+        'passable': bool,  # basic passability
+        'behavior': int,   # metatile behavior byte
+        'elevation': int,
+    }
+    """
+    st = struct
+
+    w = layout['width']
+    h = layout['height']
+    blockdata_path = os.path.join(repo_root, layout['blockdata_filepath'])
+
+    if not os.path.isfile(blockdata_path):
+        return w, h, None
+
+    with open(blockdata_path, 'rb') as f:
+        map_data = f.read()
+
+    primary_behaviors, secondary_behaviors = _load_metatile_behaviors(
+        repo_root, layout['primary_tileset'], layout['secondary_tileset'], tileset_paths
+    )
+
+    grid = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            offset = (y * w + x) * 2
+            if offset + 1 >= len(map_data):
+                row.append({'passable': False, 'behavior': 0xFF, 'elevation': 0})
+                continue
+
+            val = st.unpack_from('<H', map_data, offset)[0]
+            metatile_id = val & 0x03FF
+            collision = (val >> 10) & 0x3
+            elevation = (val >> 12) & 0xF
+
+            # Look up behavior
+            behavior = 0
+            if metatile_id < 512:
+                if metatile_id < len(primary_behaviors):
+                    behavior = primary_behaviors[metatile_id]
+            else:
+                idx = metatile_id - 512
+                if idx < len(secondary_behaviors):
+                    behavior = secondary_behaviors[idx]
+
+            passable = (collision == 0)
+            row.append({'passable': passable, 'behavior': behavior, 'elevation': elevation})
+        grid.append(row)
+
+    return w, h, grid
+
+
+def _is_directionally_blocked(behavior, direction):
+    """Check if a metatile behavior blocks movement in a given direction."""
+    blocks = {
+        MB_IMPASSABLE_EAST: {'right'},
+        MB_IMPASSABLE_WEST: {'left'},
+        MB_IMPASSABLE_NORTH: {'up'},
+        MB_IMPASSABLE_SOUTH: {'down'},
+        MB_IMPASSABLE_NORTHEAST: {'up', 'right'},
+        MB_IMPASSABLE_NORTHWEST: {'up', 'left'},
+        MB_IMPASSABLE_SOUTHEAST: {'down', 'right'},
+        MB_IMPASSABLE_SOUTHWEST: {'down', 'left'},
+        MB_IMPASSABLE_SOUTH_AND_NORTH: {'down', 'up'},
+        MB_IMPASSABLE_WEST_AND_EAST: {'left', 'right'},
+    }
+    blocked_dirs = blocks.get(behavior, set())
+    return direction in blocked_dirs
+
+
+def _can_move(grid, w, h, fx, fy, direction):
+    """Check if movement from (fx, fy) in direction is possible, considering
+    both the source tile's outgoing blocks and the destination tile's incoming blocks."""
+    dx, dy = DIR_DELTA[direction]
+    tx, ty = fx + dx, fy + dy
+
+    if tx < 0 or tx >= w or ty < 0 or ty >= h:
+        return False
+
+    dest = grid[ty][tx]
+    if not dest['passable']:
+        return False
+
+    # Check outgoing directional block from source
+    src = grid[fy][fx]
+    if _is_directionally_blocked(src['behavior'], direction):
+        return False
+
+    # Check incoming directional block on destination
+    opposite = DIR_OPPOSITE[direction]
+    if _is_directionally_blocked(dest['behavior'], opposite):
+        return False
+
+    return True
+
+
+def _compute_sight_tiles(x, y, movement_type, trainer_type, sight_range, grid, w, h):
+    """Compute all tiles a trainer can see, accounting for direction and obstacles.
+    Returns dict mapping direction -> set of (tx, ty) tiles visible in that direction."""
+    if trainer_type == 'TRAINER_TYPE_SEE_ALL_DIRECTIONS':
+        directions = {'up', 'down', 'left', 'right'}
+    else:
+        directions = MOVEMENT_DIRECTIONS.get(movement_type, {'down'})
+
+    try:
+        sight_range = int(sight_range)
+    except (ValueError, TypeError):
+        sight_range = 0
+
+    sight_by_dir = {}
+    for d in directions:
+        tiles = set()
+        dx, dy = DIR_DELTA[d]
+        for dist in range(1, sight_range + 1):
+            tx, ty = x + dx * dist, y + dy * dist
+            if tx < 0 or tx >= w or ty < 0 or ty >= h:
+                break
+            tile = grid[ty][tx]
+            if not tile['passable']:
+                break
+            tiles.add((tx, ty))
+        sight_by_dir[d] = tiles
+
+    return sight_by_dir
+
+
+def _get_entry_points(map_data, w, h):
+    """Get map entry points from connections and warp_events."""
+    entries = set()
+
+    # Connections: edges of the map
+    for conn in (map_data.get('connections') or []):
+        direction = conn.get('direction', '')
+        offset = conn.get('offset', 0)
+        if direction == 'up':
+            for x in range(w):
+                entries.add((x, 0))
+        elif direction == 'down':
+            for x in range(w):
+                entries.add((x, h - 1))
+        elif direction == 'left':
+            for y in range(h):
+                entries.add((0, y))
+        elif direction == 'right':
+            for y in range(h):
+                entries.add((w - 1, y))
+
+    # Warp events
+    for warp in map_data.get('warp_events', []):
+        x, y = warp.get('x', 0), warp.get('y', 0)
+        if 0 <= x < w and 0 <= y < h:
+            entries.add((x, y))
+
+    return entries
+
+
+def _bfs_reachable(grid, w, h, starts, avoid_tiles=None):
+    """BFS from start tiles, returning set of reachable tiles.
+    Optionally avoids a set of tiles (sight zones)."""
+    if avoid_tiles is None:
+        avoid_tiles = set()
+
+    visited = set()
+    queue = deque()
+    for s in starts:
+        if s not in avoid_tiles and 0 <= s[0] < w and 0 <= s[1] < h:
+            tile = grid[s[1]][s[0]]
+            if tile['passable']:
+                queue.append(s)
+                visited.add(s)
+
+    while queue:
+        cx, cy = queue.popleft()
+        for d in ('up', 'down', 'left', 'right'):
+            dx, dy = DIR_DELTA[d]
+            nx, ny = cx + dx, cy + dy
+            if (nx, ny) in visited or (nx, ny) in avoid_tiles:
+                continue
+            if not _can_move(grid, w, h, cx, cy, d):
+                continue
+            visited.add((nx, ny))
+            queue.append((nx, ny))
+
+    return visited
+
+
+def detect_double_battles(repo_root, tileset_paths):
+    """Detect potential double battles by analyzing trainer sight line overlaps."""
+    maps_dir = os.path.join(repo_root, 'data', 'maps')
+    layouts_data = json.load(open(os.path.join(repo_root, 'data', 'layouts', 'layouts.json')))
+    layout_lookup = {l['id']: l for l in layouts_data['layouts']}
+
+    print("Detecting double battles...")
+
+    # trainer_id -> {partner_id, forced}
+    doubles = {}
+
+    map_count = 0
+    for dirpath, dirnames, filenames in os.walk(maps_dir):
+        if 'map.json' not in filenames:
+            continue
+        dirname = os.path.basename(dirpath)
+        if 'Frlg' in dirname:
+            continue
+
+        with open(os.path.join(dirpath, 'map.json'), 'r', encoding='utf-8') as f:
+            map_data = json.load(f)
+
+        # Get trainers on this map
+        trainers_on_map = []
+        for obj in map_data.get('object_events', []):
+            if obj.get('trainer_type') not in ('TRAINER_TYPE_NORMAL', 'TRAINER_TYPE_SEE_ALL_DIRECTIONS'):
+                continue
+            script = obj.get('script', '')
+            # Extract trainer ID from script name (e.g. Route102_EventScript_Calvin -> look up in trainerbattle)
+            trainers_on_map.append(obj)
+
+        if len(trainers_on_map) < 2:
+            continue
+
+        # Build collision grid
+        layout_id = map_data.get('layout', '')
+        layout = layout_lookup.get(layout_id)
+        if not layout:
+            continue
+
+        w, h, grid = _build_collision_grid(repo_root, layout, tileset_paths)
+        if grid is None:
+            continue
+
+        map_count += 1
+
+        # Get entry points
+        entries = _get_entry_points(map_data, w, h)
+        if not entries:
+            # Fallback: use all passable edge tiles
+            for x in range(w):
+                if grid[0][x]['passable']:
+                    entries.add((x, 0))
+                if grid[h-1][x]['passable']:
+                    entries.add((x, h-1))
+            for y in range(h):
+                if grid[y][0]['passable']:
+                    entries.add((0, y))
+                if grid[y][w-1]['passable']:
+                    entries.add((w-1, y))
+
+        # Compute sight tiles for each trainer
+        trainer_sights = []
+        for obj in trainers_on_map:
+            x, y = obj.get('x', 0), obj.get('y', 0)
+            mt = obj.get('movement_type', '')
+            tt = obj.get('trainer_type', '')
+            sr = obj.get('trainer_sight_or_berry_tree_id', '0')
+            script = obj.get('script', '')
+
+            sight_by_dir = _compute_sight_tiles(x, y, mt, tt, sr, grid, w, h)
+            all_sight = set()
+            for tiles in sight_by_dir.values():
+                all_sight |= tiles
+
+            # Determine if all directions are fixed (single direction only)
+            if tt == 'TRAINER_TYPE_SEE_ALL_DIRECTIONS':
+                is_fixed = False
+            else:
+                dirs = MOVEMENT_DIRECTIONS.get(mt, {'down'})
+                is_fixed = len(dirs) == 1
+
+            trainer_sights.append({
+                'obj': obj,
+                'x': x, 'y': y,
+                'script': script,
+                'sight_by_dir': sight_by_dir,
+                'all_sight': all_sight,
+                'is_fixed': is_fixed,
+                'directions': MOVEMENT_DIRECTIONS.get(mt, {'down'}) if tt != 'TRAINER_TYPE_SEE_ALL_DIRECTIONS' else {'up','down','left','right'},
+            })
+
+        # Find pairs with overlapping sight
+        for i in range(len(trainer_sights)):
+            for j in range(i + 1, len(trainer_sights)):
+                t1 = trainer_sights[i]
+                t2 = trainer_sights[j]
+
+                overlap = t1['all_sight'] & t2['all_sight']
+                if not overlap:
+                    continue
+
+                # We have an overlap. Now classify as forced or possible.
+                # Forced: player cannot reach either trainer's adjacent tiles
+                # without crossing the other's sight zone.
+
+                # Get tiles adjacent to each trainer (where player stands to battle)
+                def adjacent_passable(tx, ty):
+                    adj = set()
+                    for d in ('up', 'down', 'left', 'right'):
+                        dx, dy = DIR_DELTA[d]
+                        nx, ny = tx + dx, ty + dy
+                        if 0 <= nx < w and 0 <= ny < h and grid[ny][nx]['passable']:
+                            adj.add((nx, ny))
+                    return adj
+
+                t1_adj = adjacent_passable(t1['x'], t1['y'])
+                t2_adj = adjacent_passable(t2['x'], t2['y'])
+
+                # BFS: can we reach t1's adjacent tiles while avoiding t2's sight?
+                reachable_avoiding_t2 = _bfs_reachable(grid, w, h, entries, avoid_tiles=t2['all_sight'])
+                can_single_t1 = bool(t1_adj & reachable_avoiding_t2)
+
+                # BFS: can we reach t2's adjacent tiles while avoiding t1's sight?
+                reachable_avoiding_t1 = _bfs_reachable(grid, w, h, entries, avoid_tiles=t1['all_sight'])
+                can_single_t2 = bool(t2_adj & reachable_avoiding_t1)
+
+                forced = not can_single_t1 and not can_single_t2
+
+                # Extract trainer IDs from scripts
+                script1 = t1['script']
+                script2 = t2['script']
+
+                doubles[script1] = doubles.get(script1, [])
+                doubles[script1].append({'partner_script': script2, 'forced': forced})
+                doubles[script2] = doubles.get(script2, [])
+                doubles[script2].append({'partner_script': script1, 'forced': forced})
+
+    print(f"  Analyzed {map_count} maps with 2+ trainers")
+    print(f"  Found {sum(len(v) for v in doubles.values()) // 2} potential double battle pairs")
+    return doubles
+
+
+def _build_script_to_trainer_map(repo_root):
+    """Parse map scripts to build a mapping from script label -> TRAINER_ID."""
+    maps_dir = os.path.join(repo_root, 'data', 'maps')
+    script_to_trainer = {}
+
+    trainer_re = re.compile(r'trainerbattle\w*\s+(TRAINER_\w+)')
+
+    for dirpath, dirnames, filenames in os.walk(maps_dir):
+        if 'scripts.inc' not in filenames:
+            continue
+        script_path = os.path.join(dirpath, 'scripts.inc')
+        with open(script_path, 'r', encoding='utf-8', errors='replace') as f:
+            content = f.read()
+
+        # Find each script label and the trainer it references
+        current_label = None
+        for line in content.split('\n'):
+            stripped = line.strip()
+            # Script label: "LabelName::" or "LabelName:"
+            label_m = re.match(r'^(\w+EventScript_\w+)::', stripped)
+            if label_m:
+                current_label = label_m.group(1)
+            # Also match simple labels
+            if not label_m:
+                label_m = re.match(r'^(\w+)::', stripped)
+                if label_m:
+                    current_label = label_m.group(1)
+
+            tm = trainer_re.search(stripped)
+            if tm and current_label:
+                tid = tm.group(1)
+                script_to_trainer[current_label] = tid
+
+    return script_to_trainer
+
+
+def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
+                        doubles_data=None, script_to_trainer=None):
     """Build final trainers list sorted by BFS map order, excluding locationless trainers."""
     location_order = build_trainer_order(connections)
+
+    # Build reverse map: script_label -> trainer_id (from doubles detection)
+    # and trainer_id -> script_label
+    tid_to_script = {}
+    if script_to_trainer:
+        for script_label, tid in script_to_trainer.items():
+            tid_to_script.setdefault(tid, script_label)
 
     trainer_list = []
     for tid, trainer in trainers.items():
@@ -1851,6 +2342,22 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id)
             if sp_id and sp_id in pokemon_by_id:
                 mon['species'] = pokemon_by_id[sp_id]['name']
 
+        # Look up double battle info
+        double_with = None
+        if doubles_data and script_to_trainer:
+            script_label = tid_to_script.get(tid, '')
+            if script_label in doubles_data:
+                for dbl in doubles_data[script_label]:
+                    partner_script = dbl['partner_script']
+                    partner_tid = script_to_trainer.get(partner_script, '')
+                    if partner_tid and partner_tid in trainers:
+                        # Pick the strongest match (forced > possible)
+                        if double_with is None or dbl['forced']:
+                            double_with = {
+                                'trainerId': partner_tid,
+                                'forced': dbl['forced'],
+                            }
+
         trainer_list.append({
             'id': tid,
             'name': trainer['name'],
@@ -1859,6 +2366,7 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id)
             'sprite': trainer['sprite'],
             'location': location,
             'party': trainer['party'],
+            'doubleWith': double_with,
             'order': location_order.get(location, 9999),
         })
 
@@ -2374,7 +2882,17 @@ def main():
     print()
     trainers = parse_trainers_party(repo_root, species_ids)
     trainer_locations = parse_trainer_locations(repo_root)
-    trainer_list = build_trainers_json(trainers, trainer_locations, map_connections, pokemon_by_id)
+
+    # Step 9.8: Detect double battles
+    print()
+    tileset_paths = _build_tileset_path_map(repo_root)
+    doubles_data = detect_double_battles(repo_root, tileset_paths)
+    script_to_trainer = _build_script_to_trainer_map(repo_root)
+
+    trainer_list = build_trainers_json(
+        trainers, trainer_locations, map_connections, pokemon_by_id,
+        doubles_data, script_to_trainer
+    )
     print(f"  Built {len(trainer_list)} trainer entries")
 
     # Step 10: Parse types

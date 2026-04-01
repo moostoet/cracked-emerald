@@ -34,6 +34,7 @@ export interface Pokemon {
   levelUpMoves: LevelUpMove[]
   teachableMoves: string[]
   eggMoves: string[]
+  heldItems: string[]
   spriteId: string
   encounters: Encounter[]
 }

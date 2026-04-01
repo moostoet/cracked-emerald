@@ -768,6 +768,21 @@ def parse_single_species(block, species_const, species_id, gen_num,
     if em_match:
         learnset_map[em_match.group(1)].append(('egg', species_id))
 
+    # Held items
+    held_items = []
+    item_common_match = re.search(r'\.itemCommon\s*=\s*(\w+)', block)
+    item_rare_match = re.search(r'\.itemRare\s*=\s*(\w+)', block)
+    if item_common_match:
+        ic = item_common_match.group(1)
+        if ic != 'ITEM_NONE':
+            held_items.append(item_names_map.get(ic, format_item_name(ic)))
+    if item_rare_match:
+        ir = item_rare_match.group(1)
+        if ir != 'ITEM_NONE':
+            item_name = item_names_map.get(ir, format_item_name(ir))
+            if item_name not in held_items:
+                held_items.append(item_name)
+
     # Sprite ID
     sprite_id = species_const_to_sprite_id(species_const)
 
@@ -794,6 +809,7 @@ def parse_single_species(block, species_const, species_id, gen_num,
         'levelUpMoves': [],
         'teachableMoves': [],
         'eggMoves': [],
+        'heldItems': held_items,
         'spriteId': sprite_id,
         'encounters': [],
     }

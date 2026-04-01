@@ -142,6 +142,12 @@ def parse_enum_constants(filepath, prefix):
             constants[name] = current_val
             current_val += 1
 
+    # Resolve aliases: e.g. SPECIES_SPEWPA = SPECIES_SPEWPA_ICY_SNOW -> same ID
+    for alias_name, target_name in aliases.items():
+        target_name = target_name.strip()
+        if target_name in constants:
+            constants[alias_name] = constants[target_name]
+
     return constants
 
 
@@ -1706,9 +1712,9 @@ def parse_trainers_party(repo_root, species_ids):
                         species_name = format_constant('SPECIES_', sp_const)
                     else:
                         # Find by name match
-                        target = species_name.lower().replace(' ', '').replace('-', '')
+                        target = species_name.lower().replace(' ', '').replace('-', '').replace("'", '').replace('\u2019', '')
                         for const, sid in species_ids.items():
-                            formatted = format_constant('SPECIES_', const).lower().replace(' ', '').replace('-', '')
+                            formatted = format_constant('SPECIES_', const).lower().replace(' ', '').replace('-', '').replace("'", '').replace('\u2019', '')
                             if formatted == target:
                                 sp_id = sid
                                 species_name = format_constant('SPECIES_', const)

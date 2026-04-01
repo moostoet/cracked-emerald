@@ -2273,6 +2273,28 @@ def detect_double_battles(repo_root, tileset_paths):
 
                 forced = not can_single_t1 and not can_single_t2
 
+                # Also classify as forced if trainers face each other on the
+                # same axis with overlapping sight — this is the classic forced
+                # double pattern. BFS may find obscure detour paths, but in
+                # practice the player walks through the overlap.
+                if not forced and overlap:
+                    t1_fixed = t1['is_fixed']
+                    t2_fixed = t2['is_fixed']
+                    t1_dirs = t1['directions']
+                    t2_dirs = t2['directions']
+                    same_x = t1['x'] == t2['x']
+                    same_y = t1['y'] == t2['y']
+                    if same_x and t1_fixed and t2_fixed:
+                        if ('down' in t1_dirs and 'up' in t2_dirs and t1['y'] < t2['y']):
+                            forced = True
+                        elif ('up' in t1_dirs and 'down' in t2_dirs and t1['y'] > t2['y']):
+                            forced = True
+                    if same_y and t1_fixed and t2_fixed:
+                        if ('right' in t1_dirs and 'left' in t2_dirs and t1['x'] < t2['x']):
+                            forced = True
+                        elif ('left' in t1_dirs and 'right' in t2_dirs and t1['x'] > t2['x']):
+                            forced = True
+
                 # Extract trainer IDs from scripts
                 script1 = t1['script']
                 script2 = t2['script']

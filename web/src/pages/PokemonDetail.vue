@@ -419,7 +419,14 @@ onMounted(async () => {
                   </TableHeader>
                   <TableBody>
                     <TableRow v-for="(enc, idx) in mon.encounters" :key="idx">
-                      <TableCell>{{ enc.location }}</TableCell>
+                      <TableCell>
+                        <RouterLink
+                          :to="{ name: 'encounter-route', params: { location: enc.location.toLowerCase().replace(/ /g, '-') } }"
+                          class="hover:underline hover:text-primary transition-colors"
+                        >
+                          {{ enc.location }}
+                        </RouterLink>
+                      </TableCell>
                       <TableCell class="text-sm">{{ enc.method }}</TableCell>
                       <TableCell class="font-mono text-sm">{{ enc.minLevel }}-{{ enc.maxLevel }}</TableCell>
                     </TableRow>

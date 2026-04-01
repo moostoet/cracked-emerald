@@ -1566,6 +1566,63 @@ def parse_encounters(repo_root, species_ids):
 
 
 # ---------------------------------------------------------------------------
+# Map Connections Parser
+# ---------------------------------------------------------------------------
+
+def parse_map_connections(repo_root):
+    """Parse map.json files to build a connection graph between locations."""
+    maps_dir = os.path.join(repo_root, 'data', 'maps')
+    print("Parsing map connections...")
+
+    connections = {}  # pretty_name -> { up: [], down: [], left: [], right: [], warps: [] }
+
+    for dirpath, dirnames, filenames in os.walk(maps_dir):
+        if 'map.json' not in filenames:
+            continue
+        filepath = os.path.join(dirpath, 'map.json')
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        map_id = data.get('id', '')
+        if not map_id:
+            continue
+
+        pretty = prettify_map_name(map_id)
+        entry = connections.setdefault(pretty, {
+            'up': [], 'down': [], 'left': [], 'right': [], 'warps': [],
+        })
+
+        # Directional connections (overworld)
+        for conn in (data.get('connections') or []):
+            direction = conn.get('direction', '')
+            target = prettify_map_name(conn.get('map', ''))
+            if not target:
+                continue
+            if direction in ('up', 'down', 'left', 'right'):
+                if target not in entry[direction]:
+                    entry[direction].append(target)
+            else:
+                # dive, emerge, etc. -> treat as warps
+                if target not in entry['warps']:
+                    entry['warps'].append(target)
+
+        # Warp connections (dungeons, caves, buildings)
+        seen_warps = set()
+        for warp in data.get('warp_events', []):
+            dest = warp.get('dest_map', '')
+            if not dest:
+                continue
+            target = prettify_map_name(dest)
+            if target != pretty and target not in seen_warps:
+                seen_warps.add(target)
+                if target not in entry['warps']:
+                    entry['warps'].append(target)
+
+    print(f"  Found connections for {len(connections)} maps")
+    return connections
+
+
+# ---------------------------------------------------------------------------
 # Form Deduplication
 # ---------------------------------------------------------------------------
 
@@ -1761,6 +1818,9 @@ def main():
     for pkmn in pokemon_list:
         pkmn['encounters'] = species_encounters.get(pkmn['id'], [])
 
+    # Step 9.1: Parse map connections
+    map_connections = parse_map_connections(repo_root)
+
     # Step 9.5: Deduplicate forms
     print()
     pokemon_list = deduplicate_forms(pokemon_list)
@@ -1823,6 +1883,12 @@ def main():
     with open(encounters_path, 'w', encoding='utf-8') as f:
         json.dump(location_encounters, f, indent=2, ensure_ascii=False)
     print(f"  Wrote {encounters_path} ({len(location_encounters)} locations)")
+
+    # Write connections.json
+    connections_path = os.path.join(output_dir, 'connections.json')
+    with open(connections_path, 'w', encoding='utf-8') as f:
+        json.dump(map_connections, f, indent=2, ensure_ascii=False)
+    print(f"  Wrote {connections_path} ({len(map_connections)} maps)")
 
     print()
     print("Done!")

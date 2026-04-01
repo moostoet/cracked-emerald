@@ -92,3 +92,11 @@ export interface EncounterLocation {
     maxLevel: number
   }[]
 }
+
+export interface MapConnections {
+  up: string[]
+  down: string[]
+  left: string[]
+  right: string[]
+  warps: string[]
+}

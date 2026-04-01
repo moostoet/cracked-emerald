@@ -44,6 +44,13 @@ function toggleTheme() {
               Abilities
             </RouterLink>
             <RouterLink
+              to="/encounters"
+              class="transition-colors hover:text-primary"
+              active-class="text-primary"
+            >
+              Encounters
+            </RouterLink>
+            <RouterLink
               to="/types"
               class="transition-colors hover:text-primary"
               active-class="text-primary"

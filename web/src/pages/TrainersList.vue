@@ -274,7 +274,7 @@ onMounted(async () => {
                   <!-- Details -->
                   <div class="text-xs space-y-0.5 text-muted-foreground">
                     <div v-if="mon.ability"><span class="text-foreground">Ability:</span> {{ mon.ability }}</div>
-                    <div v-if="mon.item"><span class="text-foreground">Item:</span> {{ mon.item }}</div>
+                    <div><span class="text-foreground">Item:</span> {{ mon.item || '\u2014' }}</div>
                     <div v-if="mon.nature"><span class="text-foreground">Nature:</span> {{ mon.nature }}</div>
                     <div v-if="mon.teraType"><span class="text-foreground">Tera:</span> {{ mon.teraType }}</div>
                   </div>

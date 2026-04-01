@@ -31,6 +31,7 @@ const methodIcons: Record<string, string> = {
   fishing: '\uD83C\uDFA3',
   'rock smash': '\uD83E\uDEA8',
   hidden: '\uD83D\uDC41',
+  gift: '\uD83C\uDF81',
 }
 
 onMounted(() => { load() })

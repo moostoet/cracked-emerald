@@ -58,7 +58,7 @@ const methods = computed(() => {
     grouped.get(p.method)!.push(p)
   }
   // Sort methods in a logical order
-  const order = ['grass', 'surfing', 'fishing', 'rock smash', 'hidden']
+  const order = ['grass', 'surfing', 'fishing', 'rock smash', 'hidden', 'gift']
   return order
     .filter(m => grouped.has(m))
     .map(m => ({ method: m, pokemon: grouped.get(m)! }))
@@ -70,6 +70,7 @@ const methodLabels: Record<string, string> = {
   fishing: 'Fishing',
   'rock smash': 'Rock Smash',
   hidden: 'Hidden',
+  gift: 'Gift',
 }
 
 function getSpriteId(speciesId: number): string {
@@ -193,7 +194,7 @@ onMounted(async () => {
                           </div>
                         </TableCell>
                         <TableCell class="text-right font-mono text-sm">
-                          {{ p.minLevel }}–{{ p.maxLevel }}
+                          {{ p.minLevel === 0 && p.maxLevel === 0 ? 'Egg' : p.minLevel === p.maxLevel ? p.minLevel : `${p.minLevel}\u2013${p.maxLevel}` }}
                         </TableCell>
                       </TableRow>
                     </TableBody>

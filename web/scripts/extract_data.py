@@ -1488,6 +1488,75 @@ def prettify_map_name(map_name):
     return name
 
 
+def parse_gift_pokemon(repo_root, species_ids):
+    """Parse givemon/giveegg calls from map scripts to find gift Pokemon."""
+    maps_dir = os.path.join(repo_root, 'data', 'maps')
+    print("Parsing gift Pokemon from scripts...")
+
+    # Build region_map_section -> display name mapping
+    rms_path = os.path.join(repo_root, 'src', 'data', 'region_map', 'region_map_sections.json')
+    with open(rms_path, 'r', encoding='utf-8') as f:
+        rms = json.load(f)
+    section_display = {}
+    for s in rms['map_sections']:
+        name = s.get('name', '')
+        if name:
+            # "ROUTE 119" -> "Route 119", "RUSTBORO CITY" -> "Rustboro City"
+            section_display[s['id']] = re.sub(
+                r'(\d+)', lambda m: m.group(0),
+                name.title()
+            )
+
+    # Build map dir name -> region_map_section lookup
+    map_to_section = {}
+    for dirpath, dirnames, filenames in os.walk(maps_dir):
+        if 'map.json' not in filenames:
+            continue
+        with open(os.path.join(dirpath, 'map.json'), 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        dirname = os.path.basename(dirpath)
+        sec = data.get('region_map_section', '')
+        map_to_section[dirname] = sec
+
+    givemon_re = re.compile(r'^\s*givemon\s+(\w+)\s*,\s*(\d+)', re.MULTILINE)
+    giveegg_re = re.compile(r'^\s*giveegg\s+(\w+)', re.MULTILINE)
+
+    gifts = []  # list of (location, species_const, level)
+
+    for dirpath, dirnames, filenames in os.walk(maps_dir):
+        if 'scripts.inc' not in filenames:
+            continue
+        dirname = os.path.basename(dirpath)
+
+        # Skip FRLG maps
+        if dirname.endswith('_Frlg') or '_Frlg_' in dirname or 'Frlg' in dirname:
+            continue
+
+        script_path = os.path.join(dirpath, 'scripts.inc')
+        with open(script_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # Resolve parent location via region_map_section
+        sec = map_to_section.get(dirname, '')
+        location = section_display.get(sec, '')
+        if not location:
+            location = prettify_map_name('MAP_' + dirname)
+
+        for m in givemon_re.finditer(content):
+            species_const = m.group(1)
+            level = int(m.group(2))
+            if species_const.startswith('SPECIES_'):
+                gifts.append((location, species_const, level))
+
+        for m in giveegg_re.finditer(content):
+            species_const = m.group(1)
+            if species_const.startswith('SPECIES_'):
+                gifts.append((location, species_const, 0))  # 0 = egg
+
+    print(f"  Found {len(gifts)} gift Pokemon across {len(set(g[0] for g in gifts))} locations")
+    return gifts
+
+
 def parse_encounters(repo_root, species_ids):
     """Parse wild_encounters.json and build per-species and per-location encounter lists."""
     filepath = os.path.join(repo_root, 'src', 'data', 'wild_encounters.json')
@@ -1813,6 +1882,42 @@ def main():
 
     # Step 9: Parse encounters
     species_encounters, location_encounters = parse_encounters(repo_root, species_ids)
+
+    # Step 9a: Parse gift Pokemon and merge into encounters
+    gifts = parse_gift_pokemon(repo_root, species_ids)
+    # Build a lookup from location_encounters list for merging
+    loc_enc_map = {le['location']: le for le in location_encounters}
+    for location, species_const, level in gifts:
+        sp_id = species_ids.get(species_const, 0)
+        if sp_id == 0:
+            continue
+        # Use the actual Pokemon name if available, fall back to formatting the constant
+        sp_name = pokemon_by_id[sp_id]['name'] if sp_id in pokemon_by_id else format_constant('SPECIES_', species_const)
+
+        enc_entry = {
+            'location': location,
+            'method': 'gift',
+            'minLevel': level,
+            'maxLevel': level,
+        }
+        species_encounters[sp_id].append(enc_entry)
+
+        loc_entry = {
+            'species': sp_name,
+            'speciesId': sp_id,
+            'method': 'gift',
+            'minLevel': level,
+            'maxLevel': level,
+        }
+        if location in loc_enc_map:
+            loc_enc_map[location]['pokemon'].append(loc_entry)
+        else:
+            new_loc = {'location': location, 'pokemon': [loc_entry]}
+            location_encounters.append(new_loc)
+            loc_enc_map[location] = new_loc
+
+    # Re-sort location_encounters after adding gifts
+    location_encounters.sort(key=lambda le: le['location'])
 
     # Attach encounters to Pokemon
     for pkmn in pokemon_list:

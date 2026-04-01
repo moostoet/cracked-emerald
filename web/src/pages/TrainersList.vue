@@ -92,6 +92,15 @@ function getMoveType(moveName: string): string {
   return getMove(moveName)?.type ?? ''
 }
 
+function getMoveCategory(moveName: string): string {
+  return getMove(moveName)?.category ?? ''
+}
+
+function categoryIconUrl(category: string): string {
+  if (!category) return ''
+  return `https://play.pokemonshowdown.com/sprites/categories/${category}.png`
+}
+
 function displayName(trainer: Trainer): string {
   if (trainer.trainerClass) return `${trainer.trainerClass} ${trainer.name}`
   return trainer.name
@@ -271,10 +280,25 @@ onMounted(async () => {
                   </div>
 
                   <!-- 2x2 Move grid -->
-                  <div v-if="mon.moves.length > 0" class="grid grid-cols-2 gap-1">
-                    <div v-for="move in mon.moves" :key="move" class="flex items-center gap-1 min-w-0">
-                      <TypeBadge v-if="getMoveType(move)" :type="getMoveType(move)" size="sm" />
-                      <MovePopover :move-name="move" />
+                  <div v-if="mon.moves.length > 0" class="grid grid-cols-2 gap-1.5">
+                    <div
+                      v-for="move in mon.moves"
+                      :key="move"
+                      class="rounded-md border bg-background px-2 py-1.5"
+                    >
+                      <div class="text-xs font-medium truncate">
+                        <MovePopover :move-name="move" />
+                      </div>
+                      <div class="flex items-center gap-1.5 mt-1">
+                        <TypeBadge v-if="getMoveType(move)" :type="getMoveType(move)" size="sm" />
+                        <img
+                          v-if="getMoveCategory(move)"
+                          :src="categoryIconUrl(getMoveCategory(move))"
+                          :alt="getMoveCategory(move)"
+                          class="h-3.5"
+                          loading="lazy"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

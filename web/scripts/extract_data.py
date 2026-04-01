@@ -2236,6 +2236,13 @@ def detect_double_battles(repo_root, tileset_paths):
                 'directions': MOVEMENT_DIRECTIONS.get(mt, {'down'}) if tt != 'TRAINER_TYPE_SEE_ALL_DIRECTIONS' else {'up','down','left','right'},
             })
 
+        # Collect all NPC positions on this map (trainers block movement)
+        all_npc_tiles = set()
+        for obj in map_data.get('object_events', []):
+            ox, oy = obj.get('x', 0), obj.get('y', 0)
+            if 0 <= ox < w and 0 <= oy < h:
+                all_npc_tiles.add((ox, oy))
+
         # Find pairs with overlapping sight
         for i in range(len(trainer_sights)):
             for j in range(i + 1, len(trainer_sights)):
@@ -2251,24 +2258,29 @@ def detect_double_battles(repo_root, tileset_paths):
                 # without crossing the other's sight zone.
 
                 # Get tiles adjacent to each trainer (where player stands to battle)
+                # Exclude NPC-occupied tiles (can't stand on another NPC)
                 def adjacent_passable(tx, ty):
                     adj = set()
                     for d in ('up', 'down', 'left', 'right'):
                         dx, dy = DIR_DELTA[d]
                         nx, ny = tx + dx, ty + dy
                         if 0 <= nx < w and 0 <= ny < h and grid[ny][nx]['passable']:
-                            adj.add((nx, ny))
+                            if (nx, ny) not in all_npc_tiles:
+                                adj.add((nx, ny))
                     return adj
 
                 t1_adj = adjacent_passable(t1['x'], t1['y'])
                 t2_adj = adjacent_passable(t2['x'], t2['y'])
 
                 # BFS: can we reach t1's adjacent tiles while avoiding t2's sight?
-                reachable_avoiding_t2 = _bfs_reachable(grid, w, h, entries, avoid_tiles=t2['all_sight'])
+                # Also avoid NPC tiles (player can't walk through NPCs)
+                avoid_for_t1 = t2['all_sight'] | all_npc_tiles
+                reachable_avoiding_t2 = _bfs_reachable(grid, w, h, entries, avoid_tiles=avoid_for_t1)
                 can_single_t1 = bool(t1_adj & reachable_avoiding_t2)
 
                 # BFS: can we reach t2's adjacent tiles while avoiding t1's sight?
-                reachable_avoiding_t1 = _bfs_reachable(grid, w, h, entries, avoid_tiles=t1['all_sight'])
+                avoid_for_t2 = t1['all_sight'] | all_npc_tiles
+                reachable_avoiding_t1 = _bfs_reachable(grid, w, h, entries, avoid_tiles=avoid_for_t2)
                 can_single_t2 = bool(t2_adj & reachable_avoiding_t1)
 
                 forced = not can_single_t1 and not can_single_t2

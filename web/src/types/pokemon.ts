@@ -95,6 +95,27 @@ export interface EncounterLocation {
   }[]
 }
 
+export interface TrainerMon {
+  species: string
+  speciesId: number
+  level: number
+  item: string
+  ability: string
+  nature: string
+  moves: string[]
+  shiny: boolean
+  teraType: string
+}
+
+export interface Trainer {
+  id: string
+  name: string
+  trainerClass: string
+  isDouble: boolean
+  location: string
+  party: TrainerMon[]
+}
+
 export interface MapConnections {
   up: string[]
   down: string[]

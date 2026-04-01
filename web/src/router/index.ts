@@ -6,6 +6,7 @@ import AbilitiesList from '@/pages/AbilitiesList.vue'
 import TypeChart from '@/pages/TypeChart.vue'
 import EncountersList from '@/pages/EncountersList.vue'
 import EncounterRoute from '@/pages/EncounterRoute.vue'
+import TrainersList from '@/pages/TrainersList.vue'
 
 const router = createRouter({
   history: createWebHashHistory('/cracked-emerald/pokedex/'),
@@ -49,6 +50,11 @@ const router = createRouter({
       path: '/encounters/:location',
       name: 'encounter-route',
       component: EncounterRoute,
+    },
+    {
+      path: '/trainers',
+      name: 'trainers-list',
+      component: TrainersList,
     },
   ],
 })

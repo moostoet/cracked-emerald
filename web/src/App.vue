@@ -51,6 +51,13 @@ function toggleTheme() {
               Encounters
             </RouterLink>
             <RouterLink
+              to="/trainers"
+              class="transition-colors hover:text-primary"
+              active-class="text-primary"
+            >
+              Trainers
+            </RouterLink>
+            <RouterLink
               to="/types"
               class="transition-colors hover:text-primary"
               active-class="text-primary"

@@ -1472,6 +1472,290 @@ def parse_effectiveness_row(row_str, macro_values):
 
 
 # ---------------------------------------------------------------------------
+# Trainer Parser
+# ---------------------------------------------------------------------------
+
+def parse_trainers_party(repo_root, species_ids):
+    """Parse trainers.party Showdown-format file into trainer dicts."""
+    filepath = os.path.join(repo_root, 'src', 'data', 'trainers.party')
+    print("Parsing trainers.party...")
+
+    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+        content = f.read()
+
+    # Split into trainer blocks by === TRAINER_XXX ===
+    trainer_blocks = re.split(r'^=== (TRAINER_\w+) ===$', content, flags=re.MULTILINE)
+    # Result: ['preamble', 'TRAINER_ID1', 'block1', 'TRAINER_ID2', 'block2', ...]
+
+    trainers = {}
+
+    for i in range(1, len(trainer_blocks), 2):
+        trainer_id = trainer_blocks[i]
+        block = trainer_blocks[i + 1]
+
+        if trainer_id == 'TRAINER_NONE':
+            continue
+
+        # Parse trainer fields
+        name = ''
+        trainer_class = ''
+        is_double = False
+
+        for line in block.split('\n'):
+            line = line.strip()
+            if line.startswith('Name:'):
+                name = line[5:].strip()
+            elif line.startswith('Class:'):
+                trainer_class = line[6:].strip()
+            elif line.startswith('Double Battle:'):
+                is_double = line[14:].strip().lower() == 'yes'
+
+        # Parse Pokemon
+        party = []
+        # Split block into chunks separated by blank lines
+        # Trainer fields come before the first blank-line-separated Pokemon block
+        pokemon_section = False
+        current_mon = None
+
+        for line in block.split('\n'):
+            stripped = line.strip()
+
+            # Skip empty lines — they separate Pokemon
+            if not stripped:
+                if current_mon:
+                    party.append(current_mon)
+                    current_mon = None
+                pokemon_section = True  # After first blank line past header
+                continue
+
+            # Skip trainer header fields
+            if ':' in stripped and not stripped.startswith('-') and current_mon is None:
+                field = stripped.split(':')[0].strip()
+                if field in ('Name', 'Class', 'Pic', 'Gender', 'Music',
+                             'Double Battle', 'AI', 'Mugshot', 'Items',
+                             'Starting Status', 'Battle Type'):
+                    continue
+
+            # Move line
+            if stripped.startswith('- '):
+                if current_mon:
+                    current_mon['moves'].append(stripped[2:].strip())
+                continue
+
+            # Pokemon stat lines
+            if current_mon:
+                if stripped.startswith('Level:'):
+                    try:
+                        current_mon['level'] = int(stripped[6:].strip())
+                    except ValueError:
+                        pass
+                elif stripped.startswith('Ability:'):
+                    current_mon['ability'] = stripped[8:].strip()
+                elif stripped.endswith('Nature'):
+                    current_mon['nature'] = stripped.replace('Nature', '').strip()
+                elif stripped.startswith('IVs:'):
+                    pass  # Skip IVs for display
+                elif stripped.startswith('EVs:'):
+                    pass  # Skip EVs for display
+                elif stripped.startswith('Shiny:'):
+                    current_mon['shiny'] = stripped[6:].strip().lower() == 'yes'
+                elif stripped.startswith('Tera Type:'):
+                    current_mon['teraType'] = stripped[10:].strip()
+                continue
+
+            # Species line: "Nickname (Species) (G) @ Item" or just "Species @ Item" or "Species"
+            if pokemon_section or (not any(stripped.startswith(f) for f in
+                    ('Name:', 'Class:', 'Pic:', 'Gender:', 'Music:',
+                     'Double Battle:', 'AI:', 'Mugshot:', 'Items:',
+                     'Starting Status:', 'Battle Type:'))):
+                # Try to parse as a species line
+                species_line = stripped
+                item = ''
+                species_name = ''
+
+                # Extract held item
+                if ' @ ' in species_line:
+                    species_line, item = species_line.rsplit(' @ ', 1)
+                    item = item.strip()
+
+                # Remove gender indicator
+                species_line = re.sub(r'\s*\([MF]\)\s*', ' ', species_line).strip()
+
+                # Check for "Nickname (Species)" pattern
+                nick_match = re.match(r'^(.+?)\s*\(([^)]+)\)\s*$', species_line)
+                if nick_match:
+                    species_name = nick_match.group(2).strip()
+                else:
+                    species_name = species_line.strip()
+
+                if species_name and not species_name.startswith(('Name:', 'Class:', 'Pic:')):
+                    # Resolve species name to ID
+                    # Try as constant first (SPECIES_XXX), then as display name
+                    sp_const = species_name if species_name.startswith('SPECIES_') else None
+                    sp_id = 0
+                    if sp_const:
+                        sp_id = species_ids.get(sp_const, 0)
+                        species_name = format_constant('SPECIES_', sp_const)
+                    else:
+                        # Find by name match
+                        target = species_name.lower().replace(' ', '').replace('-', '')
+                        for const, sid in species_ids.items():
+                            formatted = format_constant('SPECIES_', const).lower().replace(' ', '').replace('-', '')
+                            if formatted == target:
+                                sp_id = sid
+                                species_name = format_constant('SPECIES_', const)
+                                break
+                        if sp_id == 0:
+                            # Use the name as-is
+                            species_name = species_name.title()
+
+                    current_mon = {
+                        'species': species_name,
+                        'speciesId': sp_id,
+                        'level': 100,
+                        'item': item,
+                        'ability': '',
+                        'nature': '',
+                        'moves': [],
+                        'shiny': False,
+                        'teraType': '',
+                    }
+
+        # Don't forget last Pokemon
+        if current_mon:
+            party.append(current_mon)
+
+        if not name and not party:
+            continue
+
+        trainers[trainer_id] = {
+            'id': trainer_id,
+            'name': name.title() if name.isupper() else name,
+            'trainerClass': trainer_class,
+            'isDouble': is_double,
+            'party': party,
+        }
+
+    print(f"  Parsed {len(trainers)} trainers")
+    return trainers
+
+
+def parse_trainer_locations(repo_root):
+    """Parse map scripts for trainerbattle_* macros to map trainer IDs to locations."""
+    maps_dir = os.path.join(repo_root, 'data', 'maps')
+    print("Parsing trainer locations from scripts...")
+
+    # Build map dir -> region_map_section mapping
+    rms_path = os.path.join(repo_root, 'src', 'data', 'region_map', 'region_map_sections.json')
+    with open(rms_path, 'r', encoding='utf-8') as f:
+        rms = json.load(f)
+    section_display = {}
+    for s in rms['map_sections']:
+        name = s.get('name', '')
+        if name:
+            section_display[s['id']] = re.sub(
+                r'(\d+)', lambda m: m.group(0), name.title()
+            )
+
+    trainer_re = re.compile(r'trainerbattle\w*\s+(TRAINER_\w+)')
+
+    trainer_locations = {}  # trainer_id -> (location, map_dir_name)
+
+    for dirpath, dirnames, filenames in os.walk(maps_dir):
+        if 'scripts.inc' not in filenames:
+            continue
+        dirname = os.path.basename(dirpath)
+
+        # Skip FRLG
+        if 'Frlg' in dirname:
+            continue
+
+        script_path = os.path.join(dirpath, 'scripts.inc')
+        with open(script_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # Get display name from region_map_section
+        map_json_path = os.path.join(dirpath, 'map.json')
+        location = prettify_map_name('MAP_' + dirname)
+        if os.path.isfile(map_json_path):
+            with open(map_json_path, 'r', encoding='utf-8') as f:
+                map_data = json.load(f)
+            sec = map_data.get('region_map_section', '')
+            if sec in section_display:
+                location = section_display[sec]
+
+        for m in trainer_re.finditer(content):
+            tid = m.group(1)
+            if tid not in trainer_locations:
+                trainer_locations[tid] = (location, dirname)
+
+    print(f"  Found locations for {len(trainer_locations)} trainers")
+    return trainer_locations
+
+
+def build_trainer_order(connections):
+    """BFS from Littleroot Town through map connections to derive progression order."""
+    from collections import deque
+
+    start = 'Littleroot Town'
+    order = []
+    queue = deque([start])
+    seen = {start}
+
+    while queue:
+        loc = queue.popleft()
+        order.append(loc)
+        c = connections.get(loc, {})
+        for direction in ['up', 'down', 'left', 'right']:
+            for neighbor in c.get(direction, []):
+                if neighbor not in seen:
+                    seen.add(neighbor)
+                    queue.append(neighbor)
+        for warp in c.get('warps', []):
+            if warp not in seen:
+                seen.add(warp)
+                queue.append(warp)
+
+    return {loc: idx for idx, loc in enumerate(order)}
+
+
+def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id):
+    """Build final trainers list sorted by BFS map order."""
+    location_order = build_trainer_order(connections)
+
+    trainer_list = []
+    for tid, trainer in trainers.items():
+        loc_info = trainer_locations.get(tid)
+        location = loc_info[0] if loc_info else ''
+        map_dir = loc_info[1] if loc_info else ''
+
+        # Resolve species names from pokemon_by_id where possible
+        for mon in trainer['party']:
+            sp_id = mon.get('speciesId', 0)
+            if sp_id and sp_id in pokemon_by_id:
+                mon['species'] = pokemon_by_id[sp_id]['name']
+
+        trainer_list.append({
+            'id': tid,
+            'name': trainer['name'],
+            'trainerClass': trainer['trainerClass'],
+            'isDouble': trainer['isDouble'],
+            'location': location,
+            'party': trainer['party'],
+            'order': location_order.get(location, 9999),
+        })
+
+    # Sort by BFS order, then by trainer ID for same-location trainers
+    trainer_list.sort(key=lambda t: (t['order'], t['id']))
+
+    # Remove order field from output
+    for t in trainer_list:
+        del t['order']
+
+    return trainer_list
+
+
+# ---------------------------------------------------------------------------
 # Encounter Parser
 # ---------------------------------------------------------------------------
 
@@ -1969,6 +2253,13 @@ def main():
             if target_id in pokemon_by_id:
                 evo['targetName'] = pokemon_by_id[target_id]['name']
 
+    # Step 9.7: Parse trainers
+    print()
+    trainers = parse_trainers_party(repo_root, species_ids)
+    trainer_locations = parse_trainer_locations(repo_root)
+    trainer_list = build_trainers_json(trainers, trainer_locations, map_connections, pokemon_by_id)
+    print(f"  Built {len(trainer_list)} trainer entries")
+
     # Step 10: Parse types
     print()
     types_data = parse_types_info(repo_root)
@@ -2025,6 +2316,12 @@ def main():
     with open(connections_path, 'w', encoding='utf-8') as f:
         json.dump(map_connections, f, indent=2, ensure_ascii=False)
     print(f"  Wrote {connections_path} ({len(map_connections)} maps)")
+
+    # Write trainers.json
+    trainers_path = os.path.join(output_dir, 'trainers.json')
+    with open(trainers_path, 'w', encoding='utf-8') as f:
+        json.dump(trainer_list, f, indent=2, ensure_ascii=False)
+    print(f"  Wrote {trainers_path} ({len(trainer_list)} trainers)")
 
     print()
     print("Done!")

@@ -221,7 +221,13 @@ onMounted(async () => {
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 text-sm">
             <div class="flex justify-between sm:flex-col gap-1">
               <span class="text-muted-foreground">Held Items</span>
-              <span class="font-medium">{{ mon.heldItems?.length ? mon.heldItems.join(', ') : '\u2014' }}</span>
+              <span v-if="mon.heldItems?.length" class="font-medium flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span v-for="item in mon.heldItems" :key="item" class="inline-flex items-center gap-1">
+                  <img :src="`https://play.pokemonshowdown.com/sprites/itemicons/${item.toLowerCase().replace(/ /g, '-')}.png`" :alt="item" class="w-6 h-6" />
+                  {{ item }}
+                </span>
+              </span>
+              <span v-else class="font-medium">&mdash;</span>
             </div>
             <div class="flex justify-between sm:flex-col gap-1">
               <span class="text-muted-foreground">Egg Groups</span>

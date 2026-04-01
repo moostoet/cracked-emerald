@@ -1475,6 +1475,114 @@ def parse_effectiveness_row(row_str, macro_values):
 # Trainer Parser
 # ---------------------------------------------------------------------------
 
+TRAINER_SPRITE_MAP = {
+    # Pic field value -> Showdown gen3 sprite ID
+    'Hiker': 'hiker-gen3',
+    'Youngster': 'youngster-gen3',
+    'Lass': 'lass-gen3',
+    'Beauty': 'beauty-gen3',
+    'Fisherman': 'fisherman-gen3',
+    'Lady': 'lady-gen3',
+    'Guitarist': 'guitarist-gen3',
+    'Camper': 'camper-gen3',
+    'Picnicker': 'picnicker-gen3',
+    'Bug Catcher': 'bugcatcher-gen3',
+    'Bug Maniac': 'bugmaniac-gen3',
+    'Hex Maniac': 'hexmaniac-gen3',
+    'Ninja Boy': 'ninjaboy-gen3',
+    'Kindler': 'kindler-gen3',
+    'Collector': 'collector-gen3',
+    'Gentleman': 'gentleman-gen3',
+    'Sailor': 'sailor-gen3',
+    'Rich Boy': 'richboy-gen3',
+    'Aroma Lady': 'aromalady-gen3',
+    'Ruin Maniac': 'ruinmaniac-gen3',
+    'Pokemaniac': 'pokemaniac-gen3',
+    'Bird Keeper': 'birdkeeper-gen3',
+    'Black Belt': 'blackbelt-gen3',
+    'Dragon Tamer': 'dragontamer-gen3',
+    'Battle Girl': 'battlegirl-gen3',
+    'Parasol Lady': 'parasollady-gen3',
+    'Swimmer M': 'swimmerm-gen3',
+    'Swimmer F': 'swimmerf-gen3',
+    'Tuber M': 'tuber-gen3',
+    'Tuber F': 'tuberf-gen3',
+    'Cooltrainer M': 'acetrainer-gen3',
+    'Cooltrainer F': 'acetrainerf-gen3',
+    'School Kid M': 'schoolkid-gen3',
+    'School Kid F': 'schoolkidf-gen3',
+    'Psychic M': 'psychic-gen3',
+    'Psychic F': 'psychicf-gen3',
+    'Pokefan M': 'pokefan-gen3',
+    'Pokefan F': 'pokefanf-gen3',
+    'Expert M': 'expert-gen3',
+    'Expert F': 'expertf-gen3',
+    'Pokemon Breeder M': 'pokemonbreeder-gen3',
+    'Pokemon Breeder F': 'pokemonbreederf-gen3',
+    'Pokemon Ranger M': 'pokemonranger-gen3',
+    'Pokemon Ranger F': 'pokemonrangerf-gen3',
+    'Cycling Triathlete M': 'triathletebikerm-gen3',
+    'Cycling Triathlete F': 'triathletebikerf-gen3',
+    'Running Triathlete M': 'triathleterunnerm-gen3',
+    'Running Triathlete F': 'triathleterunnerf-gen3',
+    'Swimming Triathlete M': 'triathleteswimmerm-gen3',
+    'Swimming Triathlete F': 'triathleteswimmerf-gen3',
+    'Aqua Grunt M': 'teamaquagruntm-gen3',
+    'Aqua Grunt F': 'teamaquagruntf-gen3',
+    'Aqua Admin M': 'matt-gen3',
+    'Aqua Admin F': 'shelly-gen3',
+    'Aqua Leader Archie': 'archie-gen3',
+    'Magma Grunt M': 'teammagmagruntm-gen3',
+    'Magma Grunt F': 'teammagmagruntf-gen3',
+    'Magma Admin': 'tabitha-gen3',
+    'Magma Leader Maxie': 'maxie-gen3',
+    'Leader Roxanne': 'roxanne-gen3',
+    'Leader Brawly': 'brawly-gen3',
+    'Leader Wattson': 'wattson-gen3',
+    'Leader Flannery': 'flannery-gen3',
+    'Leader Norman': 'norman-gen3',
+    'Leader Winona': 'winona-gen3',
+    'Leader Tate And Liza': 'tateandliza-gen3',
+    'Leader Juan': 'juan-gen3',
+    'Elite Four Sidney': 'sidney-gen3',
+    'Elite Four Phoebe': 'phoebe-gen3',
+    'Elite Four Glacia': 'glacia-gen3',
+    'Elite Four Drake': 'drake-gen3',
+    'Champion Wallace': 'wallace-gen3',
+    'Steven': 'steven-gen3',
+    'Wally': 'wally-gen3',
+    'May': 'may-gen3',
+    'Brendan': 'brendan-gen3',
+    'RS May': 'may-gen3rs',
+    'RS Brendan': 'brendan-gen3rs',
+    'Leaf': 'leaf-gen3',
+    'Red': 'red-gen3',
+    'Twins': 'twins-gen3',
+    'Old Couple': 'oldcouple-gen3',
+    'Sis And Bro': 'sisandbro-gen3',
+    'Sr And Jr': 'srandjr-gen3',
+    'Young Couple': 'youngcouple-gen3',
+    'Interviewer': 'interviewers-gen3',
+    'Painter': 'painter-gen3',
+    'Arena Tycoon Greta': 'greta-gen3',
+    'Dome Ace Tucker': 'tucker-gen3',
+    'Factory Head Noland': 'noland-gen3',
+    'Palace Maven Spenser': 'spenser-gen3',
+    'Pike Queen Lucy': 'lucy-gen3',
+    'Pyramid King Brandon': 'brandon-gen3',
+    'Salon Maiden Anabel': 'anabel-gen3',
+}
+
+
+def trainer_pic_to_sprite(pic_name):
+    """Convert trainer Pic field to Showdown sprite URL."""
+    pic_clean = pic_name.strip()
+    sprite_id = TRAINER_SPRITE_MAP.get(pic_clean, '')
+    if sprite_id:
+        return f'https://play.pokemonshowdown.com/sprites/trainers/{sprite_id}.png'
+    return ''
+
+
 def parse_trainers_party(repo_root, species_ids):
     """Parse trainers.party Showdown-format file into trainer dicts."""
     filepath = os.path.join(repo_root, 'src', 'data', 'trainers.party')
@@ -1499,6 +1607,7 @@ def parse_trainers_party(repo_root, species_ids):
         # Parse trainer fields
         name = ''
         trainer_class = ''
+        pic = ''
         is_double = False
 
         for line in block.split('\n'):
@@ -1507,6 +1616,8 @@ def parse_trainers_party(repo_root, species_ids):
                 name = line[5:].strip()
             elif line.startswith('Class:'):
                 trainer_class = line[6:].strip()
+            elif line.startswith('Pic:'):
+                pic = line[4:].strip()
             elif line.startswith('Double Battle:'):
                 is_double = line[14:].strip().lower() == 'yes'
 
@@ -1633,6 +1744,7 @@ def parse_trainers_party(repo_root, species_ids):
             'name': name.title() if name.isupper() else name,
             'trainerClass': trainer_class,
             'isDouble': is_double,
+            'sprite': trainer_pic_to_sprite(pic),
             'party': party,
         }
 
@@ -1720,14 +1832,15 @@ def build_trainer_order(connections):
 
 
 def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id):
-    """Build final trainers list sorted by BFS map order."""
+    """Build final trainers list sorted by BFS map order, excluding locationless trainers."""
     location_order = build_trainer_order(connections)
 
     trainer_list = []
     for tid, trainer in trainers.items():
         loc_info = trainer_locations.get(tid)
-        location = loc_info[0] if loc_info else ''
-        map_dir = loc_info[1] if loc_info else ''
+        if not loc_info:
+            continue  # Skip trainers without a map location
+        location = loc_info[0]
 
         # Resolve species names from pokemon_by_id where possible
         for mon in trainer['party']:
@@ -1740,6 +1853,7 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id)
             'name': trainer['name'],
             'trainerClass': trainer['trainerClass'],
             'isDouble': trainer['isDouble'],
+            'sprite': trainer['sprite'],
             'location': location,
             'party': trainer['party'],
             'order': location_order.get(location, 9999),

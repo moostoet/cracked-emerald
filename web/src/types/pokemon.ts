@@ -112,6 +112,7 @@ export interface Trainer {
   name: string
   trainerClass: string
   isDouble: boolean
+  sprite: string
   location: string
   party: TrainerMon[]
 }

@@ -223,7 +223,7 @@ onMounted(async () => {
               <span class="text-muted-foreground">Held Items</span>
               <span v-if="mon.heldItems?.length" class="font-medium flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span v-for="item in mon.heldItems" :key="item" class="inline-flex items-center gap-1">
-                  <img :src="`https://play.pokemonshowdown.com/sprites/itemicons/${item.toLowerCase().replace(/ /g, '-')}.png`" :alt="item" class="w-6 h-6" />
+                  <img :src="`https://play.pokemonshowdown.com/sprites/itemicons/${item.toLowerCase().replace(/'/g, '').replace(/ /g, '-')}.png`" :alt="item" class="w-6 h-6" />
                   {{ item }}
                 </span>
               </span>

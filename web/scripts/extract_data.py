@@ -2084,14 +2084,24 @@ def _compute_sight_tiles(x, y, movement_type, trainer_type, sight_range, grid, w
     return sight_by_dir
 
 
-def _get_entry_points(map_data, w, h):
-    """Get map entry points from connections and warp_events."""
+def _get_entry_points(map_data, w, h, location_order=None, current_map_order=None):
+    """Get map entry points from connections and warp_events.
+    If location_order is provided, only include entries from maps the player
+    would have visited earlier in game progression (first-visit assumption)."""
     entries = set()
 
     # Connections: edges of the map
     for conn in (map_data.get('connections') or []):
         direction = conn.get('direction', '')
-        offset = conn.get('offset', 0)
+        target_map = conn.get('map', '')
+
+        # Filter by progression order if available
+        if location_order is not None and current_map_order is not None and target_map:
+            target_name = prettify_map_name(target_map)
+            target_order = location_order.get(target_name, 9999)
+            if target_order > current_map_order:
+                continue  # Player hasn't reached this connection yet
+
         if direction == 'up':
             for x in range(w):
                 entries.add((x, 0))
@@ -2107,6 +2117,15 @@ def _get_entry_points(map_data, w, h):
 
     # Warp events
     for warp in map_data.get('warp_events', []):
+        dest_map = warp.get('dest_map', '')
+
+        # Filter by progression order if available
+        if location_order is not None and current_map_order is not None and dest_map:
+            dest_name = prettify_map_name(dest_map)
+            dest_order = location_order.get(dest_name, 9999)
+            if dest_order > current_map_order:
+                continue  # Player hasn't reached this warp destination yet
+
         x, y = warp.get('x', 0), warp.get('y', 0)
         if 0 <= x < w and 0 <= y < h:
             entries.add((x, y))
@@ -2144,13 +2163,16 @@ def _bfs_reachable(grid, w, h, starts, avoid_tiles=None):
     return visited
 
 
-def detect_double_battles(repo_root, tileset_paths):
+def detect_double_battles(repo_root, tileset_paths, map_connections):
     """Detect potential double battles by analyzing trainer sight line overlaps."""
     maps_dir = os.path.join(repo_root, 'data', 'maps')
     layouts_data = json.load(open(os.path.join(repo_root, 'data', 'layouts', 'layouts.json')))
     layout_lookup = {l['id']: l for l in layouts_data['layouts']}
 
     print("Detecting double battles...")
+
+    # Build progression order for first-visit entry point filtering
+    location_order = build_trainer_order(map_connections)
 
     # trainer_id -> {partner_id, forced}
     doubles = {}
@@ -2190,8 +2212,12 @@ def detect_double_battles(repo_root, tileset_paths):
 
         map_count += 1
 
-        # Get entry points
-        entries = _get_entry_points(map_data, w, h)
+        # Determine this map's progression order for first-visit entry filtering
+        current_map_name = prettify_map_name(map_data.get('id', 'MAP_' + dirname))
+        current_map_order = location_order.get(current_map_name, 9999)
+
+        # Get entry points (only from maps earlier in progression)
+        entries = _get_entry_points(map_data, w, h, location_order, current_map_order)
         if not entries:
             # Fallback: use all passable edge tiles
             for x in range(w):
@@ -2926,7 +2952,7 @@ def main():
     # Step 9.8: Detect double battles
     print()
     tileset_paths = _build_tileset_path_map(repo_root)
-    doubles_data = detect_double_battles(repo_root, tileset_paths)
+    doubles_data = detect_double_battles(repo_root, tileset_paths, map_connections)
     script_to_trainer = _build_script_to_trainer_map(repo_root)
 
     trainer_list = build_trainers_json(

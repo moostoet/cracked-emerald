@@ -56,6 +56,7 @@ export interface Encounter {
   method: string
   minLevel: number
   maxLevel: number
+  percentage: number
 }
 
 export interface Move {
@@ -90,6 +91,7 @@ export interface EncounterLocation {
     method: string
     minLevel: number
     maxLevel: number
+    percentage: number
   }[]
 }
 

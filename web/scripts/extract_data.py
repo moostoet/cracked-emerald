@@ -1568,40 +1568,67 @@ def parse_encounters(repo_root, species_ids):
     species_encounters = defaultdict(list)  # species_id -> [encounter]
     location_encounters = defaultdict(list)  # location_name -> [pokemon]
 
-    method_map = {
-        'land_mons': 'grass',
-        'water_mons': 'surfing',
-        'fishing_mons': 'fishing',
-        'rock_smash_mons': 'rock smash',
-        'hidden_mons': 'hidden',
+    # Slot percentages from src/data/wild_encounters.h
+    # Each list index = slot index, value = that slot's individual percentage
+    GRASS_RATES = [20, 20, 10, 10, 10, 10, 5, 5, 4, 4, 1, 1]  # 12 slots, sum=100
+    WATER_RATES = [60, 30, 5, 4, 1]  # 5 slots, sum=100
+    ROCK_SMASH_RATES = [60, 30, 5, 4, 1]  # 5 slots, sum=100
+    # Fishing: 10 slots split by rod. Configure which rod to use here.
+    # Old Rod: slots 0-1 (70, 30), Good Rod: slots 2-3 (60, 40), Super Rod: slots 4-9 (20,20,20,20,15,5)
+    FISHING_ROD = 'super'  # Change to 'old', 'good', or 'super'
+    FISHING_ROD_CONFIG = {
+        'old':   {'slots': (0, 2),  'rates': [70, 30],             'label': 'old rod'},
+        'good':  {'slots': (2, 4),  'rates': [60, 40],             'label': 'good rod'},
+        'super': {'slots': (4, 10), 'rates': [20, 20, 20, 20, 15, 5], 'label': 'fishing'},
+    }
+    rod_cfg = FISHING_ROD_CONFIG[FISHING_ROD]
+
+    method_configs = {
+        'land_mons':      {'label': 'grass',      'rates': GRASS_RATES,      'slot_range': None},
+        'water_mons':     {'label': 'surfing',     'rates': WATER_RATES,      'slot_range': None},
+        'rock_smash_mons':{'label': 'rock smash',  'rates': ROCK_SMASH_RATES, 'slot_range': None},
+        'fishing_mons':   {'label': rod_cfg['label'], 'rates': rod_cfg['rates'], 'slot_range': rod_cfg['slots']},
+        'hidden_mons':    {'label': 'hidden',      'rates': None,             'slot_range': None},
     }
 
     for group in data.get('wild_encounter_groups', []):
         for encounter in group.get('encounters', []):
             map_name = encounter.get('map', '')
             if not map_name:
-                # Skip entries with no map (e.g. Battle Frontier)
                 continue
             location = prettify_map_name(map_name)
 
-            for method_key, method_label in method_map.items():
+            for method_key, cfg in method_configs.items():
                 mons_data = encounter.get(method_key)
                 if not mons_data:
                     continue
 
                 mons = mons_data.get('mons', [])
-                # Deduplicate and merge level ranges per species in this location/method
-                species_level_ranges = defaultdict(lambda: [999, 0])
-                for mon in mons:
+                method_label = cfg['label']
+                rates = cfg['rates']
+                slot_range = cfg['slot_range']
+
+                # Filter to relevant slots if configured (fishing rod)
+                if slot_range:
+                    start, end = slot_range
+                    mons = mons[start:end]
+                elif rates:
+                    mons = mons[:len(rates)]
+
+                # Deduplicate: merge level ranges and sum percentages per species
+                species_data = defaultdict(lambda: [999, 0, 0])  # [minLv, maxLv, pct]
+                for i, mon in enumerate(mons):
                     sp = mon.get('species', '')
                     min_lv = mon.get('min_level', 0)
                     max_lv = mon.get('max_level', 0)
+                    pct = rates[i] if rates and i < len(rates) else 0
                     if sp:
-                        slr = species_level_ranges[sp]
-                        slr[0] = min(slr[0], min_lv)
-                        slr[1] = max(slr[1], max_lv)
+                        sd = species_data[sp]
+                        sd[0] = min(sd[0], min_lv)
+                        sd[1] = max(sd[1], max_lv)
+                        sd[2] += pct
 
-                for sp, (min_lv, max_lv) in species_level_ranges.items():
+                for sp, (min_lv, max_lv, pct) in species_data.items():
                     sp_id = species_ids.get(sp, 0)
                     sp_name = format_constant('SPECIES_', sp)
 
@@ -1610,6 +1637,7 @@ def parse_encounters(repo_root, species_ids):
                         'method': method_label,
                         'minLevel': min_lv,
                         'maxLevel': max_lv,
+                        'percentage': pct,
                     }
                     species_encounters[sp_id].append(enc_entry)
 
@@ -1619,6 +1647,7 @@ def parse_encounters(repo_root, species_ids):
                         'method': method_label,
                         'minLevel': min_lv,
                         'maxLevel': max_lv,
+                        'percentage': pct,
                     }
                     location_encounters[location].append(loc_entry)
 
@@ -1899,6 +1928,7 @@ def main():
             'method': 'gift',
             'minLevel': level,
             'maxLevel': level,
+            'percentage': 0,
         }
         species_encounters[sp_id].append(enc_entry)
 
@@ -1908,6 +1938,7 @@ def main():
             'method': 'gift',
             'minLevel': level,
             'maxLevel': level,
+            'percentage': 0,
         }
         if location in loc_enc_map:
             loc_enc_map[location]['pokemon'].append(loc_entry)

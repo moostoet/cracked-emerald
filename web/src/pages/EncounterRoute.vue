@@ -61,7 +61,10 @@ const methods = computed(() => {
   const order = ['grass', 'surfing', 'fishing', 'rock smash', 'hidden', 'gift']
   return order
     .filter(m => grouped.has(m))
-    .map(m => ({ method: m, pokemon: grouped.get(m)! }))
+    .map(m => ({
+      method: m,
+      pokemon: [...grouped.get(m)!].sort((a, b) => b.percentage - a.percentage),
+    }))
 })
 
 const methodLabels: Record<string, string> = {
@@ -170,7 +173,8 @@ onMounted(async () => {
                         <TableHead class="w-14">Sprite</TableHead>
                         <TableHead>Pokemon</TableHead>
                         <TableHead class="w-32">Types</TableHead>
-                        <TableHead class="w-28 text-right">Level Range</TableHead>
+                        <TableHead class="w-28 text-right">Level</TableHead>
+                        <TableHead v-if="m.method !== 'gift'" class="w-16 text-right">Rate</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -195,6 +199,9 @@ onMounted(async () => {
                         </TableCell>
                         <TableCell class="text-right font-mono text-sm">
                           {{ p.minLevel === 0 && p.maxLevel === 0 ? 'Egg' : p.minLevel === p.maxLevel ? p.minLevel : `${p.minLevel}\u2013${p.maxLevel}` }}
+                        </TableCell>
+                        <TableCell v-if="m.method !== 'gift'" class="text-right font-mono text-sm">
+                          {{ p.percentage }}%
                         </TableCell>
                       </TableRow>
                     </TableBody>

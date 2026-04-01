@@ -5,7 +5,6 @@ import { usePokedex } from '@/composables/usePokedex'
 import SpriteImage from '@/components/SpriteImage.vue'
 import TypeBadge from '@/components/TypeBadge.vue'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -69,12 +68,6 @@ onMounted(() => {
 
     <!-- Filter bar -->
     <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-      <Input
-        v-model="filters.search"
-        placeholder="Search Pokemon..."
-        class="sm:w-64"
-      />
-
       <Select :model-value="filters.type || '__all__'" @update:model-value="onTypeChange">
         <SelectTrigger class="w-full sm:w-44">
           <SelectValue placeholder="All Types" />

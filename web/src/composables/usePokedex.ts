@@ -3,14 +3,14 @@ import type { Pokemon } from '@/types/pokemon'
 
 const pokemon: Ref<Pokemon[]> = ref([])
 const loaded = ref(false)
+const filters = ref({
+  search: '',
+  type: '',
+  generation: 0,
+  ability: '',
+})
 
 export function usePokedex() {
-  const filters = ref({
-    search: '',
-    type: '',
-    generation: 0,
-    ability: '',
-  })
 
   async function load() {
     if (loaded.value) return

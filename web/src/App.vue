@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
+import SearchBar from '@/components/SearchBar.vue'
 
 const isDark = ref(true)
 
@@ -19,6 +20,7 @@ function toggleTheme() {
         </RouterLink>
 
         <div class="flex items-center gap-6">
+          <SearchBar />
           <div class="flex items-center gap-4 text-sm font-medium">
             <RouterLink
               to="/"

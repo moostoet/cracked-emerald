@@ -87,6 +87,7 @@ def parse_enum_constants(filepath, prefix):
     Skips aliases (entries referencing other constants)."""
     constants = {}
     aliases = {}
+    all_values = {}  # Track all enum values for alias resolution
     with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
         content = f.read()
 
@@ -121,33 +122,38 @@ def parse_enum_constants(filepath, prefix):
         if not line or line.startswith('//') or line.startswith('/*') or line.startswith('*'):
             continue
 
-        # Match: SPECIES_BULBASAUR = 1,
-        m = re.match(r'(' + prefix + r'\w+)\s*=\s*(.+?)\s*,?\s*(?://.*)?$', line)
+        # Match any enum entry with explicit value: NAME = VALUE,
+        m = re.match(r'(\w+)\s*=\s*(.+?)\s*,?\s*(?://.*)?$', line)
         if m:
             name = m.group(1)
             val_str = m.group(2).strip()
-            # Check if this is an alias (references another constant with same prefix)
-            if re.match(r'' + prefix + r'\w+', val_str) or re.match(r'MOVE_\w+', val_str):
-                aliases[name] = val_str
-                continue
+            # Try as integer
             try:
                 val = int(val_str)
-                constants[name] = val
+                all_values[name] = val
+                if name.startswith(prefix):
+                    constants[name] = val
                 current_val = val + 1
             except ValueError:
-                # Complex expression, skip
+                # Reference to another constant — save as alias
+                aliases[name] = val_str
                 continue
-        elif re.match(r'(' + prefix + r'\w+)\s*,', line):
-            # Auto-incrementing enum entry
-            name = re.match(r'(' + prefix + r'\w+)', line).group(1)
-            constants[name] = current_val
-            current_val += 1
+        else:
+            # Auto-incrementing: NAME,
+            am = re.match(r'(\w+)\s*,', line)
+            if am:
+                name = am.group(1)
+                all_values[name] = current_val
+                if name.startswith(prefix):
+                    constants[name] = current_val
+                current_val += 1
 
-    # Resolve aliases: e.g. SPECIES_SPEWPA = SPECIES_SPEWPA_ICY_SNOW -> same ID
+    # Resolve aliases using all enum values (not just prefixed ones)
     for alias_name, target_name in aliases.items():
         target_name = target_name.strip()
-        if target_name in constants:
-            constants[alias_name] = constants[target_name]
+        resolved = all_values.get(target_name) or constants.get(target_name)
+        if resolved is not None and alias_name.startswith(prefix):
+            constants[alias_name] = resolved
 
     return constants
 

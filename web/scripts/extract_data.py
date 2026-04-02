@@ -2389,6 +2389,18 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
     """Build final trainers list sorted by BFS map order, excluding locationless trainers."""
     location_order = build_trainer_order(connections)
 
+    # For locations that don't exactly match a BFS node (e.g. "Granite Cave" vs
+    # "Granite Cave 1F"), find the lowest order among nodes that start with the location name
+    def get_location_order(location):
+        if location in location_order:
+            return location_order[location]
+        # Fuzzy match: find BFS nodes that start with this location name
+        best = 9999
+        for node, order in location_order.items():
+            if node.startswith(location) and order < best:
+                best = order
+        return best
+
     # Build natdex lookup for unparsed species (macro-defined forms not in pokemon_by_id)
     # species_id -> natdex_num, and natdex_num -> first pokemon_by_id entry with that natdex
     natdex_by_species_id = {}
@@ -2506,7 +2518,7 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
             'subArea': sub_area,
             'party': trainer['party'],
             'doubleWith': double_with,
-            'order': location_order.get(location, 9999),
+            'order': get_location_order(location),
         })
 
     # Sort by BFS order, then by trainer ID for same-location trainers
@@ -2530,8 +2542,17 @@ def prettify_map_name(map_name):
     # Insert space before numbers that follow letters
     name = re.sub(r'([A-Za-z])(\d)', r'\1 \2', name)
 
+    # Split CamelCase (e.g. SSTidalRooms -> SS Tidal Rooms)
+    name = re.sub(r'([a-z])([A-Z])', r'\1 \2', name)
+    # Handle consecutive capitals followed by lowercase (e.g. SST -> SS T)
+    name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1 \2', name)
+
     # Replace underscores with spaces and title case
     name = name.replace('_', ' ').title()
+
+    # Fix common abbreviations that title() breaks
+    name = re.sub(r'\bSs\b', 'S.S.', name)
+    name = re.sub(r'\bMt\b', 'Mt.', name)
 
     return name
 

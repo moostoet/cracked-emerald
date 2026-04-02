@@ -18401,3 +18401,63 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Dragon Breath
 - Sand Tomb
 - Screech
+
+=== TRAINER_STEVEN_GRANITE_CAVE ===
+Name: STEVEN
+Class: Rival
+Pic: Steven
+Gender: Male
+Music: Male
+Double Battle: No
+AI: Smart Trainer
+Mugshot: Blue
+
+Carbink @ Light Clay
+Ability: Clear Body
+Level: 21
+Bold Nature
+IVs: 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+- Stealth Rock
+- Reflect
+- Clear Smog
+- Light Screen
+
+Glimmet @ Focus Sash
+Ability: Toxic Debris
+Level: 21
+Timid Nature
+IVs: 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+- Venoshock
+- Power Gem
+- Mud-Slap
+- Confuse Ray
+
+Skarmory @ Rocky Helmet
+Ability: Keen Eye
+Level: 22
+Impish Nature
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+- Steel Wing
+- Rock Tomb
+- Roost
+- Whirlwind
+
+Honedge @ Eviolite
+Ability: No Guard
+Level: 22
+Brave Nature
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 0 Spe
+- Swords Dance
+- Iron Tail
+- Rock Slide
+- Shadow Sneak
+
+Metang @ Sitrus Berry
+Ability: Clear Body
+Level: 23
+Adamant Nature
+IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
+- Magnet Bomb
+- Zen Headbutt
+- Pursuit
+- Bullet Punch

@@ -176,7 +176,8 @@ function toggleExpand(key: string) {
   }
 }
 
-function getSpriteId(speciesId: number): string {
+function getSpriteId(speciesId: number, formSpriteId?: string): string {
+  if (formSpriteId) return formSpriteId
   return getById(speciesId)?.spriteId ?? ''
 }
 
@@ -332,7 +333,7 @@ onMounted(async () => {
                     :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }"
                     @click.stop
                   >
-                    <SpriteImage :sprite-id="getSpriteId(mon.speciesId)" :name="mon.species" size="sm" />
+                    <SpriteImage :sprite-id="getSpriteId(mon.speciesId, mon.formSpriteId)" :name="mon.species" size="sm" />
                   </RouterLink>
                 </div>
 
@@ -355,7 +356,7 @@ onMounted(async () => {
                     >
                       <div class="flex items-center gap-2">
                         <RouterLink :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }">
-                          <SpriteImage :sprite-id="getSpriteId(mon.speciesId)" :name="mon.species" size="sm" />
+                          <SpriteImage :sprite-id="getSpriteId(mon.speciesId, mon.formSpriteId)" :name="mon.species" size="sm" />
                         </RouterLink>
                         <div class="min-w-0">
                           <RouterLink
@@ -438,7 +439,7 @@ onMounted(async () => {
                     </div>
                     <div class="flex items-center gap-0.5 shrink-0">
                       <RouterLink v-for="mon in entryParty(entry)" :key="mon.speciesId + mon.species" :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }" @click.stop>
-                        <SpriteImage :sprite-id="getSpriteId(mon.speciesId)" :name="mon.species" size="sm" />
+                        <SpriteImage :sprite-id="getSpriteId(mon.speciesId, mon.formSpriteId)" :name="mon.species" size="sm" />
                       </RouterLink>
                     </div>
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground shrink-0 transition-transform" :class="{ 'rotate-180': expandedIds.has(entry.key) }"><path d="m6 9 6 6 6-6"/></svg>
@@ -449,7 +450,7 @@ onMounted(async () => {
                       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
                         <div v-for="(mon, idx) in trainer.party" :key="idx" class="rounded-lg border bg-muted/30 p-3 space-y-2">
                           <div class="flex items-center gap-2">
-                            <RouterLink :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }"><SpriteImage :sprite-id="getSpriteId(mon.speciesId)" :name="mon.species" size="sm" /></RouterLink>
+                            <RouterLink :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }"><SpriteImage :sprite-id="getSpriteId(mon.speciesId, mon.formSpriteId)" :name="mon.species" size="sm" /></RouterLink>
                             <div class="min-w-0">
                               <RouterLink :to="{ name: 'pokemon-detail', params: { id: mon.speciesId } }" class="font-semibold text-sm hover:underline hover:text-primary transition-colors block truncate">{{ mon.species }}</RouterLink>
                               <span class="text-xs font-mono text-muted-foreground">Lv{{ mon.level }}</span>

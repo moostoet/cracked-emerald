@@ -121,6 +121,7 @@ export interface TrainerMon {
   moves: string[]
   shiny: boolean
   teraType: string
+  formSpriteId?: string
 }
 
 export interface TrainerDoubleWith {

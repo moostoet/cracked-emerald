@@ -2385,7 +2385,7 @@ def _build_script_to_trainer_map(repo_root):
 
 def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
                         doubles_data=None, script_to_trainer=None, form_remap=None,
-                        species_ids=None, natdex_ids=None):
+                        species_ids=None, natdex_ids=None, distinct_form_info=None):
     """Build final trainers list sorted by BFS map order, excluding locationless trainers."""
     location_order = build_trainer_order(connections)
 
@@ -2476,13 +2476,23 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
         sub_area = _derive_sub_area(dirname, location)
 
         # Resolve species names from pokemon_by_id where possible
-        # Remap deduped cosmetic form IDs to their base form
-        # Also handle unparsed forms (macro-defined species not in pokemon data)
+        # Handle three cases:
+        # 1. Cosmetic forms: remap to base (form_remap)
+        # 2. Distinct forms: use form name/sprite but point to base ID (distinct_form_info)
+        # 3. Unparsed forms: natdex fallback
         for mon in trainer['party']:
             sp_id = mon.get('speciesId', 0)
             if form_remap and sp_id in form_remap:
+                # Cosmetic form — remap to base
                 sp_id = form_remap[sp_id]
                 mon['speciesId'] = sp_id
+            elif distinct_form_info and sp_id in distinct_form_info:
+                # Distinct form — use its specific name but point to base for lookup
+                info = distinct_form_info[sp_id]
+                mon['species'] = info['name']
+                mon['speciesId'] = info['baseId']
+                mon['formSpriteId'] = info['spriteId']
+                continue  # Skip further resolution
             if sp_id and sp_id not in pokemon_by_id:
                 # Find any Pokemon with the same natDexNum
                 target_ndex = natdex_by_species_id.get(sp_id)
@@ -2810,8 +2820,10 @@ def deduplicate_forms(pokemon_list):
 
     # IDs to remove from the main list (all non-base forms)
     ids_to_remove = set()
-    # Remap: non-base form ID -> base form ID
+    # Remap: cosmetic form ID -> base form ID (for trainer species resolution)
     form_remap = {}
+    # Distinct form info: form ID -> {name, spriteId} (for trainer display)
+    distinct_form_info = {}
 
     for ndex, group in groups.items():
         if len(group) <= 1:
@@ -2822,8 +2834,18 @@ def deduplicate_forms(pokemon_list):
         base = group[0]
         base['spriteId'] = name_to_showdown_id(base['name'])
 
+        base_types = tuple(base.get('types', []))
+        base_abilities = tuple(base.get('abilities', []))
+        base_stats = tuple(sorted(base.get('baseStats', {}).items()))
+
         forms = []
         for form in group[1:]:
+            form_types = tuple(form.get('types', []))
+            form_abilities = tuple(form.get('abilities', []))
+            form_stats = tuple(sorted(form.get('baseStats', {}).items()))
+            is_cosmetic = (form_types == base_types and form_abilities == base_abilities
+                           and form_stats == base_stats)
+
             # Determine form name and sprite
             form_suffix = _get_form_suffix(form['spriteId'], base['spriteId'])
             if form_suffix and form_suffix.lower() != base['name'].lower():
@@ -2844,7 +2866,17 @@ def deduplicate_forms(pokemon_list):
             })
 
             ids_to_remove.add(form['id'])
-            form_remap[form['id']] = base['id']
+            # Only remap cosmetic forms to base. Distinct forms (different
+            # types/stats/abilities) keep their own ID so trainers referencing
+            # e.g. Growlithe-Hisui show the correct sprite, not base Growlithe.
+            if is_cosmetic:
+                form_remap[form['id']] = base['id']
+            else:
+                distinct_form_info[form['id']] = {
+                    'name': form_name,
+                    'spriteId': form_sprite,
+                    'baseId': base['id'],
+                }
 
         base['forms'] = forms
 
@@ -2867,7 +2899,7 @@ def deduplicate_forms(pokemon_list):
     count_after = len(filtered)
     print(f"  Before: {count_before}, After: {count_after} (collapsed {count_before - count_after} alternate forms)")
 
-    return filtered, form_remap
+    return filtered, form_remap, distinct_form_info
 
 
 def _get_form_suffix(form_sprite_id, base_sprite_id):
@@ -3035,7 +3067,7 @@ def main():
 
     # Step 9.5: Deduplicate forms
     print()
-    pokemon_list, form_remap = deduplicate_forms(pokemon_list)
+    pokemon_list, form_remap, distinct_form_info = deduplicate_forms(pokemon_list)
 
     # Step 9.6: Re-resolve evolution target names after form dedup (names may have changed)
     pokemon_by_id = {p['id']: p for p in pokemon_list}
@@ -3058,7 +3090,8 @@ def main():
 
     trainer_list = build_trainers_json(
         trainers, trainer_locations, map_connections, pokemon_by_id,
-        doubles_data, script_to_trainer, form_remap, species_ids, natdex_ids
+        doubles_data, script_to_trainer, form_remap, species_ids, natdex_ids,
+        distinct_form_info
     )
     print(f"  Built {len(trainer_list)} trainer entries")
 

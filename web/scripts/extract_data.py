@@ -2384,9 +2384,32 @@ def _build_script_to_trainer_map(repo_root):
 
 
 def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
-                        doubles_data=None, script_to_trainer=None):
+                        doubles_data=None, script_to_trainer=None, form_remap=None,
+                        species_ids=None, natdex_ids=None):
     """Build final trainers list sorted by BFS map order, excluding locationless trainers."""
     location_order = build_trainer_order(connections)
+
+    # Build natdex lookup for unparsed species (macro-defined forms not in pokemon_by_id)
+    # species_id -> natdex_num, and natdex_num -> first pokemon_by_id entry with that natdex
+    natdex_by_species_id = {}
+    if species_ids and natdex_ids:
+        # Reverse natdex_ids: NATIONAL_DEX_XXX -> num, and species shares the same name pattern
+        # Map each species_id to its natdex number by matching SPECIES_XXX to NATIONAL_DEX_XXX
+        for sp_const, sp_id in species_ids.items():
+            # SPECIES_FLOETTE_RED -> NATIONAL_DEX_FLOETTE
+            base = sp_const.replace('SPECIES_', '')
+            # Strip form suffix to find base name
+            for ndex_const, ndex_num in natdex_ids.items():
+                ndex_base = ndex_const.replace('NATIONAL_DEX_', '')
+                if base == ndex_base or base.startswith(ndex_base + '_'):
+                    natdex_by_species_id[sp_id] = ndex_num
+                    break
+
+    ndex_to_pokemon_id = {}
+    for p in pokemon_by_id.values():
+        ndex = p.get('natDexNum', 0)
+        if ndex and ndex not in ndex_to_pokemon_id:
+            ndex_to_pokemon_id[ndex] = p['id']
 
     # Build reverse map: script_label -> trainer_id (from doubles detection)
     # and trainer_id -> script_label
@@ -2441,8 +2464,19 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
         sub_area = _derive_sub_area(dirname, location)
 
         # Resolve species names from pokemon_by_id where possible
+        # Remap deduped cosmetic form IDs to their base form
+        # Also handle unparsed forms (macro-defined species not in pokemon data)
         for mon in trainer['party']:
             sp_id = mon.get('speciesId', 0)
+            if form_remap and sp_id in form_remap:
+                sp_id = form_remap[sp_id]
+                mon['speciesId'] = sp_id
+            if sp_id and sp_id not in pokemon_by_id:
+                # Find any Pokemon with the same natDexNum
+                target_ndex = natdex_by_species_id.get(sp_id)
+                if target_ndex and target_ndex in ndex_to_pokemon_id:
+                    sp_id = ndex_to_pokemon_id[target_ndex]
+                    mon['speciesId'] = sp_id
             if sp_id and sp_id in pokemon_by_id:
                 mon['species'] = pokemon_by_id[sp_id]['name']
 
@@ -2802,10 +2836,21 @@ def deduplicate_forms(pokemon_list):
         if p['id'] not in multi_entry_ids:
             p['spriteId'] = name_to_showdown_id(p['name'])
 
+    # Build remap: removed form ID -> base form ID
+    form_remap = {}
+    for ndex, group in groups.items():
+        if len(group) <= 1:
+            continue
+        group.sort(key=lambda p: p['id'])
+        base_id = group[0]['id']
+        for form in group[1:]:
+            if form['id'] in ids_to_remove:
+                form_remap[form['id']] = base_id
+
     count_after = len(filtered)
     print(f"  Before: {count_before}, After: {count_after} (removed {count_before - count_after} cosmetic forms)")
 
-    return filtered
+    return filtered, form_remap
 
 
 def _get_form_suffix(form_sprite_id, base_sprite_id):
@@ -2973,7 +3018,7 @@ def main():
 
     # Step 9.5: Deduplicate forms
     print()
-    pokemon_list = deduplicate_forms(pokemon_list)
+    pokemon_list, form_remap = deduplicate_forms(pokemon_list)
 
     # Step 9.6: Re-resolve evolution target names after form dedup (names may have changed)
     pokemon_by_id = {p['id']: p for p in pokemon_list}
@@ -2996,7 +3041,7 @@ def main():
 
     trainer_list = build_trainers_json(
         trainers, trainer_locations, map_connections, pokemon_by_id,
-        doubles_data, script_to_trainer
+        doubles_data, script_to_trainer, form_remap, species_ids, natdex_ids
     )
     print(f"  Built {len(trainer_list)} trainer entries")
 

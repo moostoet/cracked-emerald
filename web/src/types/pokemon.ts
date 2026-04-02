@@ -1,3 +1,18 @@
+export interface PokemonForm {
+  name: string
+  spriteId: string
+  types: string[]
+  baseStats: {
+    hp: number
+    attack: number
+    defense: number
+    spAttack: number
+    spDefense: number
+    speed: number
+  }
+  abilities: (string | null)[]
+}
+
 export interface Pokemon {
   id: number
   name: string
@@ -36,6 +51,7 @@ export interface Pokemon {
   eggMoves: string[]
   heldItems: string[]
   spriteId: string
+  forms: PokemonForm[]
   encounters: Encounter[]
 }
 

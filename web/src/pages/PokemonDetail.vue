@@ -29,9 +29,29 @@ const mon = computed<Pokemon | undefined>(() => getById(currentId.value))
 
 const loading = computed(() => !pokedexLoaded.value || !movesLoaded.value || !abilitiesLoaded.value)
 
+// Form switcher: -1 = base form, 0+ = index into mon.forms
+const selectedFormIndex = ref(-1)
+
+// Reset form selection when Pokemon changes
+watch(currentId, () => { selectedFormIndex.value = -1 })
+
+const hasForms = computed(() => (mon.value?.forms?.length ?? 0) > 0)
+
+const activeForm = computed(() => {
+  if (!mon.value) return null
+  if (selectedFormIndex.value < 0) return null
+  return mon.value.forms[selectedFormIndex.value] ?? null
+})
+
+// Active display data — form overrides base when selected
+const activeName = computed(() => activeForm.value?.name ?? mon.value?.name ?? '')
+const activeSpriteId = computed(() => activeForm.value?.spriteId ?? mon.value?.spriteId ?? '')
+const activeTypes = computed(() => activeForm.value?.types ?? mon.value?.types ?? [])
+const activeStats = computed(() => activeForm.value?.baseStats ?? mon.value?.baseStats ?? { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 })
+const activeAbilities = computed(() => activeForm.value?.abilities ?? mon.value?.abilities ?? [])
+
 const bst = computed(() => {
-  if (!mon.value) return 0
-  const s = mon.value.baseStats
+  const s = activeStats.value
   return s.hp + s.attack + s.defense + s.spAttack + s.spDefense + s.speed
 })
 
@@ -150,14 +170,37 @@ onMounted(async () => {
       <Card>
         <CardContent class="pt-6">
           <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            <SpriteImage :sprite-id="mon.spriteId" :name="mon.name" size="lg" />
+            <div class="flex flex-col items-center gap-2">
+              <SpriteImage :sprite-id="activeSpriteId" :name="activeName" size="lg" />
+              <!-- Form sprite row -->
+              <div v-if="hasForms" class="flex flex-wrap items-center justify-center gap-1">
+                <button
+                  class="rounded-md p-0.5 transition-all"
+                  :class="selectedFormIndex === -1 ? 'ring-2 ring-primary bg-accent' : 'hover:bg-accent/50'"
+                  :title="mon.name"
+                  @click="selectedFormIndex = -1"
+                >
+                  <SpriteImage :sprite-id="mon.spriteId" :name="mon.name" size="sm" />
+                </button>
+                <button
+                  v-for="(form, idx) in mon.forms"
+                  :key="form.spriteId"
+                  class="rounded-md p-0.5 transition-all"
+                  :class="selectedFormIndex === idx ? 'ring-2 ring-primary bg-accent' : 'hover:bg-accent/50'"
+                  :title="form.name"
+                  @click="selectedFormIndex = idx"
+                >
+                  <SpriteImage :sprite-id="form.spriteId" :name="form.name" size="sm" />
+                </button>
+              </div>
+            </div>
             <div class="flex-1 space-y-2 text-center sm:text-left">
               <div class="flex flex-col sm:flex-row items-center sm:items-baseline gap-2">
-                <h1 class="text-3xl font-bold">{{ mon.name }}</h1>
+                <h1 class="text-3xl font-bold">{{ activeName }}</h1>
                 <span class="text-lg text-muted-foreground font-mono">#{{ String(mon.natDexNum).padStart(4, '0') }}</span>
               </div>
               <div class="flex flex-wrap items-center justify-center sm:justify-start gap-1.5">
-                <TypeBadge v-for="t in mon.types" :key="t" :type="t" size="md" />
+                <TypeBadge v-for="t in activeTypes" :key="t" :type="t" size="md" />
               </div>
             </div>
           </div>
@@ -170,12 +213,12 @@ onMounted(async () => {
           <CardTitle>Base Stats</CardTitle>
         </CardHeader>
         <CardContent class="space-y-2">
-          <StatBar stat="hp" :value="mon.baseStats.hp" />
-          <StatBar stat="attack" :value="mon.baseStats.attack" />
-          <StatBar stat="defense" :value="mon.baseStats.defense" />
-          <StatBar stat="spAttack" :value="mon.baseStats.spAttack" />
-          <StatBar stat="spDefense" :value="mon.baseStats.spDefense" />
-          <StatBar stat="speed" :value="mon.baseStats.speed" />
+          <StatBar stat="hp" :value="activeStats.hp" />
+          <StatBar stat="attack" :value="activeStats.attack" />
+          <StatBar stat="defense" :value="activeStats.defense" />
+          <StatBar stat="spAttack" :value="activeStats.spAttack" />
+          <StatBar stat="spDefense" :value="activeStats.spDefense" />
+          <StatBar stat="speed" :value="activeStats.speed" />
           <Separator />
           <div class="flex items-center gap-2 text-sm">
             <span class="w-8 text-right font-medium text-muted-foreground">BST</span>
@@ -191,7 +234,7 @@ onMounted(async () => {
         </CardHeader>
         <CardContent>
           <div class="flex flex-wrap gap-3">
-            <template v-for="(ability, index) in mon.abilities" :key="index">
+            <template v-for="(ability, index) in activeAbilities" :key="index">
               <AbilityPopover
                 v-if="ability"
                 :ability-name="ability"

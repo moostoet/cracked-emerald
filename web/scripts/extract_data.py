@@ -2773,9 +2773,9 @@ def parse_map_connections(repo_root):
 # ---------------------------------------------------------------------------
 
 def deduplicate_forms(pokemon_list):
-    """Deduplicate alternate forms: keep distinct forms (different types or abilities),
-    remove cosmetic-only forms (same types and abilities as base)."""
-    from collections import defaultdict
+    """Deduplicate alternate forms into a forms array on the base Pokemon.
+    Keeps only the base form (lowest ID per natDexNum) in the main list.
+    All alternate forms (cosmetic and distinct) are stored in base.forms."""
 
     print("Deduplicating forms...")
     count_before = len(pokemon_list)
@@ -2787,8 +2787,10 @@ def deduplicate_forms(pokemon_list):
         if ndex > 0:
             groups[ndex].append(pkmn)
 
-    # Set of IDs to remove (cosmetic forms)
+    # IDs to remove from the main list (all non-base forms)
     ids_to_remove = set()
+    # Remap: non-base form ID -> base form ID
+    form_remap = {}
 
     for ndex, group in groups.items():
         if len(group) <= 1:
@@ -2797,36 +2799,38 @@ def deduplicate_forms(pokemon_list):
         # Sort by id so the lowest id is the base form
         group.sort(key=lambda p: p['id'])
         base = group[0]
-        base_types = tuple(base.get('types', []))
-        base_abilities = tuple(base.get('abilities', []))
-        base_stats = tuple(sorted(base.get('baseStats', {}).items()))
-
-        for form in group[1:]:
-            form_types = tuple(form.get('types', []))
-            form_abilities = tuple(form.get('abilities', []))
-            form_stats = tuple(sorted(form.get('baseStats', {}).items()))
-
-            if form_types != base_types or form_abilities != base_abilities or form_stats != base_stats:
-                # Distinct form - keep it but add form suffix to name
-                form_suffix = _get_form_suffix(form['spriteId'], base['spriteId'])
-                if form_suffix and form_suffix.lower() != base['name'].lower():
-                    form['name'] = f"{base['name']}-{form_suffix}"
-                # Generate Showdown sprite ID: base name (stripped) + hyphen + form suffix (stripped)
-                base_showdown = name_to_showdown_id(base['name'])
-                form_suffix_id = name_to_showdown_id(form_suffix) if form_suffix else ''
-                form['spriteId'] = f"{base_showdown}-{form_suffix_id}" if form_suffix_id else base_showdown
-            else:
-                # Cosmetic form - remove it
-                ids_to_remove.add(form['id'])
-
-        # For base forms, generate sprite ID from the display name
-        # This correctly handles names like Ho-Oh -> "hooh", Mr. Mime -> "mrmime"
         base['spriteId'] = name_to_showdown_id(base['name'])
 
-    # Filter out removed forms
+        forms = []
+        for form in group[1:]:
+            # Determine form name and sprite
+            form_suffix = _get_form_suffix(form['spriteId'], base['spriteId'])
+            if form_suffix and form_suffix.lower() != base['name'].lower():
+                form_name = f"{base['name']}-{form_suffix}"
+            else:
+                form_name = form.get('name', base['name'])
+
+            base_showdown = name_to_showdown_id(base['name'])
+            form_suffix_id = name_to_showdown_id(form_suffix) if form_suffix else ''
+            form_sprite = f"{base_showdown}-{form_suffix_id}" if form_suffix_id else base_showdown
+
+            forms.append({
+                'name': form_name,
+                'spriteId': form_sprite,
+                'types': form.get('types', []),
+                'baseStats': form.get('baseStats', {}),
+                'abilities': form.get('abilities', []),
+            })
+
+            ids_to_remove.add(form['id'])
+            form_remap[form['id']] = base['id']
+
+        base['forms'] = forms
+
+    # Filter to only base forms + Pokemon without alternate forms
     filtered = [p for p in pokemon_list if p['id'] not in ids_to_remove]
 
-    # Regenerate sprite IDs for single-entry Pokemon (not handled above)
+    # Regenerate sprite IDs for single-entry Pokemon (not in any multi-form group)
     multi_entry_ids = set()
     for ndex, group in groups.items():
         if len(group) > 1:
@@ -2835,20 +2839,12 @@ def deduplicate_forms(pokemon_list):
     for p in filtered:
         if p['id'] not in multi_entry_ids:
             p['spriteId'] = name_to_showdown_id(p['name'])
-
-    # Build remap: removed form ID -> base form ID
-    form_remap = {}
-    for ndex, group in groups.items():
-        if len(group) <= 1:
-            continue
-        group.sort(key=lambda p: p['id'])
-        base_id = group[0]['id']
-        for form in group[1:]:
-            if form['id'] in ids_to_remove:
-                form_remap[form['id']] = base_id
+        # Ensure forms array exists (empty for single-form Pokemon)
+        if 'forms' not in p:
+            p['forms'] = []
 
     count_after = len(filtered)
-    print(f"  Before: {count_before}, After: {count_after} (removed {count_before - count_after} cosmetic forms)")
+    print(f"  Before: {count_before}, After: {count_after} (collapsed {count_before - count_after} alternate forms)")
 
     return filtered, form_remap
 

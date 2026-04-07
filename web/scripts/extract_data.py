@@ -2039,14 +2039,15 @@ def parse_trainer_rewards(repo_root, tm_moves, hm_moves, trainers=None):
             # Normalize: "May" -> search for "May" in label names
             # For multi-word names, use first word (e.g. "Tate&Liza" -> "Tate")
             name_parts = re.split(r'[&\s]+', trainer_name)
-            name_candidates = {p for p in name_parts if len(p) >= 3}
-
-            # Skip generic words that the label regex might pick up
-            generic_words = {
+            # Skip names that are too generic and would match unrelated labels
+            generic_names = {
+                'Grunt', 'Admin', 'Boss', 'Leader', 'Elite', 'Champion',
                 'Battle', 'Defeated', 'Post', 'Give', 'Receive', 'Start',
                 'Begin', 'After', 'Before', 'Try', 'Register', 'Encounter',
                 'Arrive', 'Exit', 'Enter', 'Script', 'Event', 'Tips',
             }
+            name_candidates = {p for p in name_parts
+                               if len(p) >= 3 and p not in generic_names}
 
             if not name_candidates:
                 continue

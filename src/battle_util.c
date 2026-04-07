@@ -2994,7 +2994,7 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
                 break;
             case WEATHER_FOG_DIAGONAL:
             case WEATHER_FOG_HORIZONTAL:
-                if (B_OVERWORLD_FOG == GEN_4 && !(gBattleWeather & B_WEATHER_FOG))
+                if ((B_OVERWORLD_FOG == GEN_4 || FlagGet(FLAG_BATTLE_FOG)) && !(gBattleWeather & B_WEATHER_FOG))
                 {
                     gBattleWeather = B_WEATHER_FOG;
                     gBattleScripting.animArg1 = B_ANIM_FOG_CONTINUES;
@@ -10456,7 +10456,7 @@ u32 GetTotalAccuracy(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum 
         calc = (calc * 90) / 100;
 
     if (HasWeatherEffect() && gBattleWeather & B_WEATHER_FOG)
-        calc = (calc * 60) / 100; // modified by 3/5
+        calc = (calc * 75) / 100; // modified by 3/4
 
     return calc;
 }

@@ -2646,11 +2646,11 @@ local speciesNameOffset=0x2c
 local gfRomHeader=0x08000100
 local gfSpeciesInfoOffset=0xbc
 
-local partyCount=0x02031b6d -- gPlayerPartyCount
-local partyloc=0x02031dcc -- gPlayerParty
+local partyCount=0x02031b9d -- gPlayerPartyCount
+local partyloc=0x02031dfc -- gPlayerParty
 local storageLocPtr=0x030051c8 -- gPokemonStoragePtr
 local storageLoc=0
-local speciesInfoFallback=0x086c48ec
+local speciesInfoFallback=0x086de588
 local speciesInfo=speciesInfoFallback
 
 function isRomPointer(address)

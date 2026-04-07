@@ -6028,3 +6028,14 @@ bool8 CheckAddCoins(void)
     else
         return TRUE;
 }
+
+void Special_GiveRandomGems(void)
+{
+    u32 i;
+
+    for (i = 0; i < 5; i++)
+    {
+        u16 gem = ITEM_NORMAL_GEM + (Random() % 18);
+        AddBagItem(gem, 1);
+    }
+}

@@ -10834,7 +10834,7 @@ static u32 ComputeCaptureOdds(u32 wildMonBattler, u32 playerBattler)
     if (gBattleTypeFlags & BATTLE_TYPE_SAFARI)
         catchRate = gBattleStruct->safariCatchFactor * 1275 / 100;
     else
-        catchRate = gSpeciesInfo[battleMon->species].catchRate;
+        catchRate = 255; // Max catch rate for all wild Pokemon
 
     catchRate += ball.flatBonus;
     if (catchRate <= 0)

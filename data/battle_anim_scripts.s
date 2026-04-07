@@ -10940,10 +10940,6 @@ FleurCannonBeam:
 	return
 
 gBattleAnimMove_TidalBore::
-	loadspritegfx ANIM_TAG_SHARP_TEETH @Teeth
-	loadspritegfx ANIM_TAG_IMPACT @Hit
-	loadspritegfx ANIM_TAG_SMALL_BUBBLES @Bubbles
-	loadspritegfx ANIM_TAG_ICE_CRYSTALS
 	setalpha 12, 8
 	playsewithpan SE_M_BITE, SOUND_PAN_TARGET
 	createsprite gSharpTeethSpriteTemplate, ANIM_ATTACKER, 2, 0xffe0, 0xffe0, 0x1, 0x333, 0x333, 0xa

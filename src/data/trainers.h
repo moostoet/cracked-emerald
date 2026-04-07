@@ -49735,3 +49735,149 @@
             },
         },
     },
+#line 18405
+    [DIFFICULTY_NORMAL][TRAINER_STEVEN_GRANITE_CAVE] =
+    {
+#line 18406
+        .trainerName = _("STEVEN"),
+#line 18407
+        .trainerClass = TRAINER_CLASS_RIVAL,
+#line 18408
+        .trainerPic = TRAINER_PIC_FRONT_STEVEN,
+#line 18409
+        .gender = TRAINER_GENDER_MALE,
+#line 18410
+        .encounterMusic = TRAINER_ENCOUNTER_MUSIC_MALE,
+#line 18411
+        .battleType = TRAINER_BATTLE_TYPE_SINGLES,
+#line 18412
+        .aiFlags = AI_FLAG_SMART_TRAINER,
+#line 18413
+        .mugshotColor = MUGSHOT_COLOR_BLUE,
+#line 0
+        .trainerBackPic = TRAINER_PIC_FRONT_STEVEN,
+        .partySize = 5,
+        .party = (const struct TrainerMon[])
+        {
+            {
+#line 18415
+            .species = SPECIES_CARBINK,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 18415
+            .heldItem = ITEM_LIGHT_CLAY,
+#line 18419
+            .iv = TRAINER_PARTY_IVS(31, 0, 31, 31, 31, 31),
+#line 18416
+            .ability = ABILITY_CLEAR_BODY,
+#line 18417
+            .lvl = 21,
+            .ball = POKEBALL_COUNT,
+#line 18418
+            .nature = NATURE_BOLD,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 18420
+                MOVE_STEALTH_ROCK,
+                MOVE_REFLECT,
+                MOVE_CLEAR_SMOG,
+                MOVE_LIGHT_SCREEN,
+            },
+            },
+            {
+#line 18425
+            .species = SPECIES_GLIMMET,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 18425
+            .heldItem = ITEM_FOCUS_SASH,
+#line 18429
+            .iv = TRAINER_PARTY_IVS(31, 0, 31, 31, 31, 31),
+#line 18426
+            .ability = ABILITY_TOXIC_DEBRIS,
+#line 18427
+            .lvl = 21,
+            .ball = POKEBALL_COUNT,
+#line 18428
+            .nature = NATURE_TIMID,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 18430
+                MOVE_VENOSHOCK,
+                MOVE_POWER_GEM,
+                MOVE_MUD_SLAP,
+                MOVE_CONFUSE_RAY,
+            },
+            },
+            {
+#line 18435
+            .species = SPECIES_SKARMORY,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 18435
+            .heldItem = ITEM_ROCKY_HELMET,
+#line 18439
+            .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
+#line 18436
+            .ability = ABILITY_KEEN_EYE,
+#line 18437
+            .lvl = 22,
+            .ball = POKEBALL_COUNT,
+#line 18438
+            .nature = NATURE_IMPISH,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 18440
+                MOVE_STEEL_WING,
+                MOVE_ROCK_TOMB,
+                MOVE_ROOST,
+                MOVE_WHIRLWIND,
+            },
+            },
+            {
+#line 18445
+            .species = SPECIES_HONEDGE,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 18445
+            .heldItem = ITEM_EVIOLITE,
+#line 18449
+            .iv = TRAINER_PARTY_IVS(31, 31, 31, 0, 31, 31),
+#line 18446
+            .ability = ABILITY_NO_GUARD,
+#line 18447
+            .lvl = 22,
+            .ball = POKEBALL_COUNT,
+#line 18448
+            .nature = NATURE_BRAVE,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 18450
+                MOVE_SWORDS_DANCE,
+                MOVE_IRON_TAIL,
+                MOVE_ROCK_SLIDE,
+                MOVE_SHADOW_SNEAK,
+            },
+            },
+            {
+#line 18455
+            .species = SPECIES_METANG,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 18455
+            .heldItem = ITEM_SITRUS_BERRY,
+#line 18459
+            .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
+#line 18456
+            .ability = ABILITY_CLEAR_BODY,
+#line 18457
+            .lvl = 23,
+            .ball = POKEBALL_COUNT,
+#line 18458
+            .nature = NATURE_ADAMANT,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 18460
+                MOVE_MAGNET_BOMB,
+                MOVE_ZEN_HEADBUTT,
+                MOVE_PURSUIT,
+                MOVE_BULLET_PUNCH,
+            },
+            },
+        },
+    },

@@ -70,6 +70,7 @@
 #include "constants/regions.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
+#include "constants/opponents.h"
 #include "constants/union_room.h"
 #include "constants/weather.h"
 
@@ -5708,6 +5709,9 @@ u16 GetBattleBGM(void)
             trainerClass = TRAINER_CLASS_EXPERT;
         else
             trainerClass = GetTrainerClassFromId(TRAINER_BATTLE_PARAM.opponentA);
+
+        if (TRAINER_BATTLE_PARAM.opponentA == TRAINER_STEVEN_GRANITE_CAVE)
+            return MUS_VS_GYM_LEADER;
 
         switch (trainerClass)
         {

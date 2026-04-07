@@ -129,6 +129,11 @@ export interface TrainerDoubleWith {
   forced: boolean
 }
 
+export interface TrainerReward {
+  item: string
+  amount: number
+}
+
 export interface Trainer {
   id: string
   name: string
@@ -139,6 +144,7 @@ export interface Trainer {
   subArea: string
   party: TrainerMon[]
   doubleWith: TrainerDoubleWith | null
+  rewards: TrainerReward[]
 }
 
 export interface MapConnections {

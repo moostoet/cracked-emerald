@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { Trainer, TrainerMon } from '@/types/pokemon'
+import type { Trainer, TrainerMon, TrainerReward } from '@/types/pokemon'
 
 const { loaded: trainersLoaded, search, filtered, load: loadTrainers, getTrainerById } = useTrainers()
 const { loaded: dexLoaded, load: loadDex, getById } = usePokedex()
@@ -207,6 +207,26 @@ function entryParty(entry: DisplayEntry): TrainerMon[] {
   return entry.trainers.flatMap(t => t.party)
 }
 
+function entryRewards(entry: DisplayEntry): TrainerReward[] {
+  // Dedupe rewards across trainers in a forced double
+  const seen = new Set<string>()
+  const rewards: TrainerReward[] = []
+  for (const t of entry.trainers) {
+    for (const r of (t.rewards ?? [])) {
+      const key = `${r.item}:${r.amount}`
+      if (!seen.has(key)) {
+        seen.add(key)
+        rewards.push(r)
+      }
+    }
+  }
+  return rewards
+}
+
+function formatReward(r: TrainerReward): string {
+  return r.amount > 1 ? `${r.item} x${r.amount}` : r.item
+}
+
 function onLocationChange(value: string) {
   locationFilter.value = value === '__all__' ? '' : value
 }
@@ -316,6 +336,10 @@ onMounted(async () => {
                     <span v-else class="font-semibold text-sm">{{ displayName(entry.trainers[0]) }}</span>
                     <Badge v-if="entry.isForcedDouble" variant="outline" class="text-[10px] border-amber-500/60 text-amber-500">Forced Double</Badge>
                     <Badge v-else-if="entry.trainers[0].isDouble" variant="outline" class="text-[10px]">Double</Badge>
+                    <Badge v-if="entryRewards(entry).length > 0" variant="outline" class="text-[10px] border-emerald-500/60 text-emerald-500" :title="entryRewards(entry).map(formatReward).join(', ')">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-0.5"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                      Items
+                    </Badge>
                   </div>
                   <div class="text-xs text-muted-foreground mt-0.5">
                     <span class="font-mono">Lv{{ entryMaxLevel(entry) }}</span>
@@ -400,6 +424,18 @@ onMounted(async () => {
                     </div>
                   </div>
                 </template>
+                <!-- Rewards section -->
+                <div v-if="entryRewards(entry).length > 0" class="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                  <div class="text-xs font-semibold text-emerald-500 mb-1.5 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                    Items Received After Battle
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <span v-for="r in entryRewards(entry)" :key="r.item" class="text-xs px-2 py-1 rounded-md border bg-background">
+                      {{ formatReward(r) }}
+                    </span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -431,6 +467,10 @@ onMounted(async () => {
                         <span v-else class="font-semibold text-sm">{{ displayName(entry.trainers[0]) }}</span>
                         <Badge v-if="entry.isForcedDouble" variant="outline" class="text-[10px] border-amber-500/60 text-amber-500">Forced Double</Badge>
                         <Badge v-else-if="entry.trainers[0].isDouble" variant="outline" class="text-[10px]">Double</Badge>
+                        <Badge v-if="entryRewards(entry).length > 0" variant="outline" class="text-[10px] border-emerald-500/60 text-emerald-500" :title="entryRewards(entry).map(formatReward).join(', ')">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-0.5"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                          Items
+                        </Badge>
                       </div>
                       <div class="text-xs text-muted-foreground mt-0.5">
                         <span class="font-mono">Lv{{ entryMaxLevel(entry) }}</span>
@@ -474,6 +514,18 @@ onMounted(async () => {
                         </div>
                       </div>
                     </template>
+                    <!-- Rewards section -->
+                    <div v-if="entryRewards(entry).length > 0" class="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                      <div class="text-xs font-semibold text-emerald-500 mb-1.5 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                        Items Received After Battle
+                      </div>
+                      <div class="flex flex-wrap gap-2">
+                        <span v-for="r in entryRewards(entry)" :key="r.item" class="text-xs px-2 py-1 rounded-md border bg-background">
+                          {{ formatReward(r) }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

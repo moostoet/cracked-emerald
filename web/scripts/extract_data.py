@@ -59,6 +59,69 @@ def format_item_name(item_const):
     return format_constant('ITEM_', item_const)
 
 
+def parse_tm_hm_moves(repo_root):
+    """Parse tms_hms.h to build TM/HM number -> move name mappings.
+    Returns two dicts: tm_moves (1-indexed TM num -> move name),
+    and hm_moves (1-indexed HM num -> move name)."""
+    filepath = os.path.join(repo_root, 'include', 'constants', 'tms_hms.h')
+    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+        content = f.read()
+
+    tm_moves = {}
+    hm_moves = {}
+
+    # Parse FOREACH_TM(F) block: F(FOCUS_PUNCH) F(DRAGON_CLAW) ...
+    tm_match = re.search(r'#define FOREACH_TM\(F\)\s*\\(.*?)(?=\n#define)', content, re.DOTALL)
+    if tm_match:
+        for i, m in enumerate(re.finditer(r'F\((\w+)\)', tm_match.group(1)), 1):
+            tm_moves[i] = m.group(1).replace('_', ' ').title()
+
+    # Parse FOREACH_HM(F) block
+    hm_match = re.search(r'#define FOREACH_HM\(F\)\s*\\(.*?)(?=\n#define|\n#endif)', content, re.DOTALL)
+    if hm_match:
+        for i, m in enumerate(re.finditer(r'F\((\w+)\)', hm_match.group(1)), 1):
+            hm_moves[i] = m.group(1).replace('_', ' ').title()
+
+    return tm_moves, hm_moves
+
+
+def format_reward_item_name(item_const, tm_moves, hm_moves):
+    """Convert an ITEM_* constant to a human-readable name.
+    Resolves TMs/HMs to their move names (e.g. 'TM Steel Wing')."""
+    # Named TM: ITEM_TM_STEEL_WING -> "TM Steel Wing"
+    tm_named = re.match(r'^ITEM_TM_(\w+)$', item_const)
+    if tm_named:
+        move_name = tm_named.group(1).replace('_', ' ').title()
+        return f"TM {move_name}"
+
+    # Named HM: ITEM_HM_CUT -> "HM Cut"
+    hm_named = re.match(r'^ITEM_HM_(\w+)$', item_const)
+    if hm_named:
+        move_name = hm_named.group(1).replace('_', ' ').title()
+        return f"HM {move_name}"
+
+    # Numbered TM: ITEM_TM19 -> "TM Giga Drain"
+    tm_num = re.match(r'^ITEM_TM(\d+)$', item_const)
+    if tm_num:
+        num = int(tm_num.group(1))
+        move = tm_moves.get(num)
+        if move:
+            return f"TM {move}"
+        return f"TM{num}"
+
+    # Numbered HM: ITEM_HM01 -> "HM Cut"
+    hm_num = re.match(r'^ITEM_HM(\d+)$', item_const)
+    if hm_num:
+        num = int(hm_num.group(1))
+        move = hm_moves.get(num)
+        if move:
+            return f"HM {move}"
+        return f"HM{num}"
+
+    # Regular item
+    return format_item_name(item_const)
+
+
 def take_first_ternary(value_str):
     """For conditional expressions like 'B_X >= GEN_2 ? TYPE_FIGHTING : TYPE_NORMAL',
     take the first value (modern default)."""
@@ -1815,6 +1878,216 @@ def parse_trainer_locations(repo_root):
     return trainer_locations
 
 
+def parse_trainer_rewards(repo_root, tm_moves, hm_moves, trainers=None):
+    """Parse map scripts to find items given after trainer battles.
+
+    Two-pronged approach:
+    1. Direct: follow event script labels from trainerbattle_* macros,
+       then chase goto/call chains looking for giveitem/giveitem_msg/additem.
+    2. Proximity: match trainer name substrings against other labels in the
+       same file and follow those for item-giving macros.
+
+    Returns: dict of trainer_id -> list of {item, amount}.
+    """
+    maps_dir = os.path.join(repo_root, 'data', 'maps')
+    print("Parsing trainer rewards from scripts...")
+
+    # Patterns
+    label_re = re.compile(r'^(\w+)::?\s*$')
+    trainerbattle_re = re.compile(
+        r'trainerbattle_(\w+)\s+(TRAINER_\w+)'
+    )
+    # trainerbattle_single has optional 4th arg: event script label
+    # trainerbattle_single TRAINER_X, intro, lose, EventScript
+    # trainerbattle_double TRAINER_X, intro, lose, notEnough, EventScript
+    event_script_re = re.compile(
+        r'trainerbattle_single\s+\w+,\s*\w+,\s*\w+,\s*(\w+)'
+    )
+    event_script_double_re = re.compile(
+        r'trainerbattle_double\s+\w+,\s*\w+,\s*\w+,\s*\w+,\s*(\w+)'
+    )
+    goto_call_re = re.compile(r'(?:goto|call)\s+(\w+)')
+    giveitem_re = re.compile(
+        r'(?:giveitem|giveitem_msg|additem)\s+(?:\w+,\s*)?(\w+)(?:,\s*(\d+))?'
+    )
+    # More precise: giveitem ITEM_X, amount  /  giveitem_msg Label, ITEM_X, amount
+    giveitem_direct_re = re.compile(r'giveitem\s+(ITEM_\w+)(?:,\s*(\d+))?')
+    giveitem_msg_re = re.compile(r'giveitem_msg\s+\w+,\s*(ITEM_\w+)(?:,\s*(\d+))?')
+    additem_re = re.compile(r'additem\s+(ITEM_\w+)(?:,\s*(\d+))?')
+
+    trainer_rewards = defaultdict(list)  # trainer_id -> [{'item': ..., 'amount': ...}]
+
+    for dirpath, dirnames, filenames in os.walk(maps_dir):
+        if 'scripts.inc' not in filenames:
+            continue
+
+        script_path = os.path.join(dirpath, 'scripts.inc')
+        with open(script_path, 'r', encoding='utf-8', errors='replace') as f:
+            content = f.read()
+
+        lines = content.split('\n')
+
+        # Build label -> line index mapping, and label -> block (lines until next label)
+        labels = {}  # label_name -> start line index
+        for i, line in enumerate(lines):
+            m = label_re.match(line.strip())
+            if m:
+                labels[m.group(1)] = i
+
+        sorted_label_positions = sorted(labels.values())
+
+        def get_label_block(label_name):
+            """Get all lines belonging to a label's block."""
+            if label_name not in labels:
+                return []
+            start = labels[label_name]
+            # Find next label
+            pos = sorted_label_positions
+            idx = pos.index(start)
+            end = pos[idx + 1] if idx + 1 < len(pos) else len(lines)
+            return lines[start:end]
+
+        def find_items_from_label(start_label, visited=None, depth=0):
+            """Follow a label and its goto/call chains to find giveitem calls.
+            Returns list of (item_const, amount) tuples."""
+            if visited is None:
+                visited = set()
+            if start_label in visited or depth > 10:
+                return []
+            visited.add(start_label)
+
+            items = []
+            block = get_label_block(start_label)
+            for line in block:
+                stripped = line.strip()
+
+                # Check for giveitem / giveitem_msg / additem
+                for pattern in [giveitem_direct_re, giveitem_msg_re, additem_re]:
+                    im = pattern.search(stripped)
+                    if im:
+                        item_const = im.group(1)
+                        # Skip variable items (VAR_0x8009 etc)
+                        if item_const.startswith('VAR_'):
+                            continue
+                        amount = int(im.group(2)) if im.group(2) else 1
+                        items.append((item_const, amount))
+
+                # Follow goto/call to other labels
+                gm = goto_call_re.search(stripped)
+                if gm:
+                    target = gm.group(1)
+                    # Don't follow Common_ scripts or text labels
+                    if (target in labels
+                            and not target.startswith('Common_')
+                            and '_Text_' not in target
+                            and '_Movement_' not in target):
+                        items.extend(find_items_from_label(target, visited, depth + 1))
+
+            return items
+
+        # --- Prong 1: Direct event script links ---
+        # Find trainerbattle_* macros and their containing labels
+        trainer_in_label = {}  # label -> trainer_id
+        trainer_event_scripts = {}  # trainer_id -> event_script_label
+
+        current_label = None
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            lm = label_re.match(stripped)
+            if lm:
+                current_label = lm.group(1)
+
+            tb = trainerbattle_re.search(stripped)
+            if tb and current_label:
+                tid = tb.group(2)
+                trainer_in_label[current_label] = tid
+
+                # Check for event script parameter
+                es = event_script_re.search(stripped)
+                if es:
+                    trainer_event_scripts[tid] = es.group(1)
+                else:
+                    esd = event_script_double_re.search(stripped)
+                    if esd:
+                        trainer_event_scripts[tid] = esd.group(1)
+
+        # For each trainer with an event script, follow it for items
+        for tid, event_label in trainer_event_scripts.items():
+            items = find_items_from_label(event_label)
+            for item_const, amount in items:
+                trainer_rewards[tid].append({'item': item_const, 'amount': amount})
+
+        # For trainerbattle_no_intro (no event script), items follow inline
+        # after the trainerbattle line in the same label block
+        for label, tid in trainer_in_label.items():
+            if tid in trainer_event_scripts:
+                continue  # Already handled via event script
+            items = find_items_from_label(label)
+            for item_const, amount in items:
+                if {'item': item_const, 'amount': amount} not in trainer_rewards[tid]:
+                    trainer_rewards[tid].append({'item': item_const, 'amount': amount})
+
+        # --- Prong 2: Proximity - match trainer name in nearby labels ---
+        for label, tid in trainer_in_label.items():
+            # Use the trainer's actual display name for proximity matching
+            trainer_name = None
+            if trainers and tid in trainers:
+                trainer_name = trainers[tid].get('name', '')
+            if not trainer_name:
+                continue
+
+            # Normalize: "May" -> search for "May" in label names
+            # For multi-word names, use first word (e.g. "Tate&Liza" -> "Tate")
+            name_parts = re.split(r'[&\s]+', trainer_name)
+            name_candidates = {p for p in name_parts if len(p) >= 3}
+
+            # Skip generic words that the label regex might pick up
+            generic_words = {
+                'Battle', 'Defeated', 'Post', 'Give', 'Receive', 'Start',
+                'Begin', 'After', 'Before', 'Try', 'Register', 'Encounter',
+                'Arrive', 'Exit', 'Enter', 'Script', 'Event', 'Tips',
+            }
+
+            if not name_candidates:
+                continue
+
+            # Search other labels in the file for matching names
+            for other_label in labels:
+                if other_label == label:
+                    continue
+                # Only match EventScript labels, not text/movement/mapscript
+                if 'Text_' in other_label or 'Movement_' in other_label:
+                    continue
+                if 'MapScripts' in other_label or 'OnTransition' in other_label:
+                    continue
+                # Check if any name candidate appears in the label
+                for name in name_candidates:
+                    if name in other_label:
+                        items = find_items_from_label(other_label)
+                        for item_const, amount in items:
+                            entry = {'item': item_const, 'amount': amount}
+                            if entry not in trainer_rewards[tid]:
+                                trainer_rewards[tid].append(entry)
+                        break  # Don't search the same label twice
+
+    # Format item names
+    formatted_rewards = {}
+    for tid, rewards in trainer_rewards.items():
+        seen = set()
+        formatted = []
+        for r in rewards:
+            item_name = format_reward_item_name(r['item'], tm_moves, hm_moves)
+            key = (item_name, r['amount'])
+            if key not in seen:
+                seen.add(key)
+                formatted.append({'item': item_name, 'amount': r['amount']})
+        if formatted:
+            formatted_rewards[tid] = formatted
+
+    print(f"  Found rewards for {len(formatted_rewards)} trainers")
+    return formatted_rewards
+
+
 def build_trainer_order(connections):
     """BFS from Littleroot Town through map connections to derive progression order."""
 
@@ -2385,7 +2658,8 @@ def _build_script_to_trainer_map(repo_root):
 
 def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
                         doubles_data=None, script_to_trainer=None, form_remap=None,
-                        species_ids=None, natdex_ids=None, distinct_form_info=None):
+                        species_ids=None, natdex_ids=None, distinct_form_info=None,
+                        trainer_rewards=None):
     """Build final trainers list sorted by BFS map order, excluding locationless trainers."""
     location_order = build_trainer_order(connections)
 
@@ -2518,6 +2792,11 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
                                 'forced': dbl['forced'],
                             }
 
+        # Look up item rewards
+        rewards = []
+        if trainer_rewards and tid in trainer_rewards:
+            rewards = trainer_rewards[tid]
+
         trainer_list.append({
             'id': tid,
             'name': trainer['name'],
@@ -2528,6 +2807,7 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
             'subArea': sub_area,
             'party': trainer['party'],
             'doubleWith': double_with,
+            'rewards': rewards,
             'order': get_location_order(location),
         })
 
@@ -3082,6 +3362,11 @@ def main():
     trainers = parse_trainers_party(repo_root, species_ids)
     trainer_locations = parse_trainer_locations(repo_root)
 
+    # Step 9.7.1: Parse TM/HM move mappings and trainer rewards
+    tm_moves, hm_moves = parse_tm_hm_moves(repo_root)
+    print(f"  Parsed {len(tm_moves)} TM and {len(hm_moves)} HM move mappings")
+    trainer_rewards = parse_trainer_rewards(repo_root, tm_moves, hm_moves, trainers)
+
     # Step 9.8: Detect double battles
     print()
     tileset_paths = _build_tileset_path_map(repo_root)
@@ -3091,7 +3376,7 @@ def main():
     trainer_list = build_trainers_json(
         trainers, trainer_locations, map_connections, pokemon_by_id,
         doubles_data, script_to_trainer, form_remap, species_ids, natdex_ids,
-        distinct_form_info
+        distinct_form_info, trainer_rewards
     )
     print(f"  Built {len(trainer_list)} trainer entries")
 

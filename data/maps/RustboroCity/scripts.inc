@@ -166,6 +166,111 @@ RustboroCity_EventScript_Man1HaveBadge::
 	release
 	end
 
+RustboroCity_EventScript_Brock::
+	lock
+	faceplayer
+	goto_if_eq VAR_RUSTBORO_BROCK_CHALLENGE_STATE, 2, RustboroCity_EventScript_BrockPostChallenge
+	goto_if_eq VAR_RUSTBORO_BROCK_CHALLENGE_STATE, 1, RustboroCity_EventScript_BrockCheckPostAttempt
+	goto_if_set FLAG_BADGE01_GET, RustboroCity_EventScript_BrockAfterRoxanne
+	msgbox RustboroCity_Text_BrockIntro, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, RustboroCity_EventScript_BrockDeclined
+	special SavePlayerParty
+	special GenerateBrockRentalMons
+	msgbox RustboroCity_Text_BrockAccepted, MSGBOX_DEFAULT
+	special SelectBrockRentalMons
+	waitstate
+	setvar VAR_RUSTBORO_BROCK_ATTEMPT_COMPLETE, FALSE
+	cleartrainerflag TRAINER_BROCK_RUSTBORO
+	setflag FLAG_BATTLE_NO_WHITEOUT
+	setvar VAR_BATTLE_NO_BAG_USE, NO_BAG_AGAINST_TRAINER
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_RUSTBORO_BROCK, TRAINER_BROCK_RUSTBORO, RustboroCity_Text_BrockPreBattle, RustboroCity_Text_BrockDefeat, RustboroCity_EventScript_BrockAfterBattle, OBJ_ID_NONE, TRAINER_NONE, NULL, NULL, NULL, RustboroCity_Text_BrockPlayerLost, NULL, FALSE, TRUE, FALSE, FALSE
+	clearflag FLAG_BATTLE_NO_WHITEOUT
+	setvar VAR_BATTLE_NO_BAG_USE, NO_BAG_RESTRICTION
+	release
+	end
+
+RustboroCity_EventScript_BrockCheckPostAttempt::
+	goto_if_eq VAR_RUSTBORO_BROCK_ATTEMPT_COMPLETE, TRUE, RustboroCity_EventScript_BrockPostAttempt
+	setvar VAR_RUSTBORO_BROCK_CHALLENGE_STATE, 0
+	goto_if_set FLAG_BADGE01_GET, RustboroCity_EventScript_BrockAfterRoxanne
+	msgbox RustboroCity_Text_BrockIntro, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, RustboroCity_EventScript_BrockDeclined
+	special SavePlayerParty
+	special GenerateBrockRentalMons
+	msgbox RustboroCity_Text_BrockAccepted, MSGBOX_DEFAULT
+	special SelectBrockRentalMons
+	waitstate
+	setvar VAR_RUSTBORO_BROCK_ATTEMPT_COMPLETE, FALSE
+	cleartrainerflag TRAINER_BROCK_RUSTBORO
+	setflag FLAG_BATTLE_NO_WHITEOUT
+	setvar VAR_BATTLE_NO_BAG_USE, NO_BAG_AGAINST_TRAINER
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_RUSTBORO_BROCK, TRAINER_BROCK_RUSTBORO, RustboroCity_Text_BrockPreBattle, RustboroCity_Text_BrockDefeat, RustboroCity_EventScript_BrockAfterBattle, OBJ_ID_NONE, TRAINER_NONE, NULL, NULL, NULL, RustboroCity_Text_BrockPlayerLost, NULL, FALSE, TRUE, FALSE, FALSE
+	clearflag FLAG_BATTLE_NO_WHITEOUT
+	setvar VAR_BATTLE_NO_BAG_USE, NO_BAG_RESTRICTION
+	release
+	end
+
+RustboroCity_EventScript_BrockDeclined::
+	msgbox RustboroCity_Text_BrockDeclined, MSGBOX_DEFAULT
+	release
+	end
+
+RustboroCity_EventScript_BrockAfterBattle::
+	clearflag FLAG_BATTLE_NO_WHITEOUT
+	setvar VAR_BATTLE_NO_BAG_USE, NO_BAG_RESTRICTION
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_ne VAR_RESULT, B_OUTCOME_WON, RustboroCity_EventScript_BrockRestorePartyOnly
+	special CheckBrockChallengePerfectClear
+	goto_if_eq VAR_RESULT, FALSE, RustboroCity_EventScript_BrockImperfectWin
+	setvar VAR_RUSTBORO_BROCK_CHALLENGE_STATE, 2
+	setvar VAR_RUSTBORO_BROCK_ATTEMPT_COMPLETE, TRUE
+	msgbox RustboroCity_Text_BrockPlayerWon, MSGBOX_DEFAULT
+	special SelectBrockRewardMon
+	waitstate
+	special GiveBrockSelectedRental
+	goto_if_eq VAR_RESULT, MON_GIVEN_TO_PARTY, RustboroCity_EventScript_BrockRewardToParty
+	goto_if_eq VAR_RESULT, MON_GIVEN_TO_PC, RustboroCity_EventScript_BrockRewardToPC
+	goto Common_EventScript_NoMoreRoomForPokemon
+
+RustboroCity_EventScript_BrockRestorePartyOnly::
+	setvar VAR_RUSTBORO_BROCK_CHALLENGE_STATE, 1
+	setvar VAR_RUSTBORO_BROCK_ATTEMPT_COMPLETE, TRUE
+	special RestoreBrockPlayerParty
+	msgbox RustboroCity_Text_BrockPlayerLost, MSGBOX_DEFAULT
+	release
+	end
+
+RustboroCity_EventScript_BrockImperfectWin::
+	setvar VAR_RUSTBORO_BROCK_CHALLENGE_STATE, 1
+	setvar VAR_RUSTBORO_BROCK_ATTEMPT_COMPLETE, TRUE
+	special RestoreBrockPlayerParty
+	msgbox RustboroCity_Text_BrockPlayerLost, MSGBOX_DEFAULT
+	release
+	end
+
+RustboroCity_EventScript_BrockRewardToPC::
+	call Common_EventScript_TransferredToPC
+
+RustboroCity_EventScript_BrockRewardToParty::
+	msgbox RustboroCity_Text_BrockAfterChoice, MSGBOX_DEFAULT
+	release
+	end
+
+RustboroCity_EventScript_BrockAfterRoxanne::
+	msgbox RustboroCity_Text_BrockAfterRoxanne, MSGBOX_DEFAULT
+	release
+	end
+
+RustboroCity_EventScript_BrockPostAttempt::
+	msgbox RustboroCity_Text_BrockPostAttempt, MSGBOX_DEFAULT
+	release
+	end
+
+RustboroCity_EventScript_BrockPostChallenge::
+	msgbox RustboroCity_Text_BrockPostChallenge, MSGBOX_DEFAULT
+	release
+	end
+
 RustboroCity_EventScript_Boy2::
 	lock
 	faceplayer
@@ -1219,6 +1324,121 @@ RustboroCity_Text_BrendanMrBrineyHint:
 	.string "I bet you didn't know this, since you\n"
 	.string "just moved here, {PLAYER}, but\l"
 	.string "MR. BRINEY was once a great sailor.$"
+
+RustboroCity_Text_BrockIntro:
+	.string "Oh, hey there!\n"
+	.string "I'm BROCK, the GYM LEADER\l"
+	.string "of PEWTER CITY in KANTO.\p"
+	.string "I'm visiting ROXANNE to swap notes\n"
+	.string "on Rock-type training techniques.\p"
+	.string "But while I'm here, I got inspired\n"
+	.string "by something I saw at the\l"
+	.string "BATTLE FACTORY.\p"
+	.string "Tell you what - I've got a set of\n"
+	.string "rental POKéMON with me.\p"
+	.string "Pick 3 of them, and battle me\n"
+	.string "right here!\p"
+	.string "If you can beat me without a single\n"
+	.string "one of them fainting…\p"
+	.string "…I'll let you take one home\n"
+	.string "with you. For keeps.\p"
+	.string "Fair warning, though - I'm only\n"
+	.string "doing this once. So make it count!\p"
+	.string "Think you're up for it?\n"
+	.string "A real Rock-solid challenge!$"
+
+RustboroCity_Text_BrockDeclined:
+	.string "No worries.\n"
+	.string "I'll be here for a while.\p"
+	.string "Come find me if you change\n"
+	.string "your mind!$"
+
+RustboroCity_Text_BrockAccepted:
+	.string "That's the spirit!\n"
+	.string "Go ahead - choose your\l"
+	.string "3 rental POKéMON.\p"
+	.string "Choose wisely, though.\n"
+	.string "A good team is about more than\l"
+	.string "just type matchups!$"
+
+RustboroCity_Text_BrockPreBattle:
+	.string "All set?\n"
+	.string "Then let's see what you've got!\p"
+	.string "As a GYM LEADER, I won't be\n"
+	.string "holding back.\l"
+	.string "I hope you won't either!$"
+
+RustboroCity_Text_BrockDefeat:
+	.string "Nice work.\n"
+	.string "You made those rentals\l"
+	.string "work for you.$"
+
+RustboroCity_Text_BrockPlayerLost:
+	.string "Good battle!\n"
+	.string "But one of your POKéMON\l"
+	.string "went down.\p"
+	.string "A deal's a deal - and I said\n"
+	.string "I'd only offer this challenge\l"
+	.string "once.\p"
+	.string "No hard feelings, though.\n"
+	.string "You gave it a solid shot.$"
+
+RustboroCity_Text_BrockPlayerWon:
+	.string "…Wow.\n"
+	.string "Not a single one fainted.\l"
+	.string "I'm seriously impressed.\p"
+	.string "You handled those rental POKéMON\n"
+	.string "like they were your own partners.\p"
+	.string "ROXANNE could learn a thing or two\n"
+	.string "from you!\l"
+	.string "…Don't tell her I said that.\p"
+	.string "A promise is a promise.\n"
+	.string "Go ahead - pick one of your 3\l"
+	.string "to keep.\p"
+	.string "Take good care of it.\n"
+	.string "A POKéMON that battled that hard\l"
+	.string "for you deserves a great TRAINER.$"
+
+RustboroCity_Text_BrockAfterChoice:
+	.string "Great choice.\n"
+	.string "I know it'll be in good hands.\p"
+	.string "That's all I've got for you, though.\n"
+	.string "This was a one-time deal!\p"
+	.string "If you're ever in KANTO,\n"
+	.string "come challenge my GYM.\l"
+	.string "I'll be waiting!$"
+
+RustboroCity_Text_BrockAfterRoxanne:
+	.string "Ah, you're here for that\n"
+	.string "rental challenge?\p"
+	.string "Sorry, but I was only doing\n"
+	.string "that before ROXANNE's next\l"
+	.string "round of GYM battles.\p"
+	.string "If you want a real match,\n"
+	.string "come see me in PEWTER CITY\l"
+	.string "sometime.$"
+
+RustboroCity_Text_BrockPostAttempt:
+	.string "That rental challenge was a\n"
+	.string "one-time deal.\p"
+	.string "You gave it a real shot, though.\n"
+	.string "I respect that.\p"
+	.string "If you're ever in KANTO,\n"
+	.string "come challenge my GYM.\l"
+	.string "I'll be ready.$"
+
+RustboroCity_Text_BrockPostChallenge:
+	.string "Hey, it's you again!\n"
+	.string "Sorry, but I've already given\l"
+	.string "away what I could.\p"
+	.string "That was a one-time challenge.\n"
+	.string "You earned it fair and square,\l"
+	.string "though!\p"
+	.string "ROXANNE really knows her stuff\n"
+	.string "when it comes to fossils.\p"
+	.string "Maybe I should start a fossil\n"
+	.string "exhibit back in PEWTER CITY…\l"
+	.string "Heh, one thing at a time.$"
 
 RustboroCity_Text_TunnelNearingCompletion:
 	.string "“Timesaving tunnel nearing\n"

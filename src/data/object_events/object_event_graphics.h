@@ -635,3 +635,8 @@ const u16 gObjectEventPic_PidgeyOld[] = INCBIN_U16("graphics/object_events/pics/
 const u16 gObjectEventPic_ClefairyOld[] = INCBIN_U16("graphics/object_events/pics/pokemon_old/clefairy.4bpp");
 
 #endif // IS_FRLG
+
+#if !IS_FRLG
+const u16 gObjectEventPal_NpcGreen[] = INCBIN_U16("graphics/object_events/palettes/npc_green.gbapal");
+const u16 gObjectEventPic_Brock[] = INCBIN_U16("graphics/object_events/pics/people/brock.4bpp");
+#endif // !IS_FRLG

@@ -2,6 +2,7 @@
 #include "battle.h"
 #include "battle_factory_screen.h"
 #include "battle_factory.h"
+#include "brock_challenge.h"
 #include "sprite.h"
 #include "event_data.h"
 #include "overworld.h"
@@ -29,6 +30,7 @@
 #include "graphics.h"
 #include "constants/battle_frontier.h"
 #include "constants/battle_tent.h"
+#include "constants/party_menu.h"
 #include "constants/songs.h"
 #include "constants/rgb.h"
 
@@ -43,6 +45,7 @@
 #define SWAP_ENEMY_SCREEN  1  // The screen where the player selects which new Pokémon from the defeated party to swap for
 
 #define SELECTABLE_MONS_COUNT 6
+#define SELECTABLE_MONS_COUNT_BROCK_REWARD 3
 
 #define PALNUM_FADE_TEXT 14
 #define PALNUM_TEXT      15
@@ -83,6 +86,13 @@ enum {
     SELECT_CONTINUE_CHOOSING,
     SELECT_CONFIRM_MONS,
     SELECT_INVALID_MON,
+};
+
+enum FactorySelectMode
+{
+    FACTORY_SELECT_MODE_DEFAULT,
+    FACTORY_SELECT_MODE_BROCK_RENTAL,
+    FACTORY_SELECT_MODE_BROCK_REWARD,
 };
 
 struct FactorySelectableMon
@@ -189,6 +199,8 @@ static void Select_Task_HandleChooseMons(u8);
 static void Select_Task_HandleMenu(u8);
 static void CreateFrontierFactorySelectableMons(u8);
 static void CreateSlateportTentSelectableMons(u8);
+static void CreateBrockSelectableMons(u8);
+static void CreateBrockRewardSelectableMons(u8);
 static void Select_SetBallSpritePaletteNum(u8);
 static void Select_ErasePopupMenu(u8);
 static u8 Select_RunMenuOptionFunc(void);
@@ -253,10 +265,57 @@ static EWRAM_DATA u8 *sSwapMenuTilemapBuffer = NULL;
 static EWRAM_DATA u8 *sSwapMonPicBgTilemapBuffer = NULL;
 
 static struct FactorySelectScreen *sFactorySelectScreen;
+static enum FactorySelectMode sFactorySelectMode;
 static TaskFunc sSwap_CurrentOptionFunc;
 static struct FactorySwapScreen *sFactorySwapScreen;
 
 COMMON_DATA u8 (*gFactorySelect_CurrentOptionFunc)(void) = NULL;
+
+static const u8 sBrockRewardBallXs[SELECTABLE_MONS_COUNT_BROCK_REWARD] = {68, 120, 172};
+static const u8 sText_BrockRewardTitle[] = _("BROCK'S RENTALS");
+static const u8 sText_BrockChoose[] = _("CHOOSE");
+static const u8 sText_Back[] = _("BACK");
+
+static bool32 Select_IsBrockRewardMode(void)
+{
+    return sFactorySelectMode == FACTORY_SELECT_MODE_BROCK_REWARD;
+}
+
+static u8 Select_GetSelectableMonsCount(void)
+{
+    if (Select_IsBrockRewardMode())
+        return SELECTABLE_MONS_COUNT_BROCK_REWARD;
+
+    return SELECTABLE_MONS_COUNT;
+}
+
+static u8 Select_GetRequiredMonsCount(void)
+{
+    if (Select_IsBrockRewardMode())
+        return 1;
+
+    return FRONTIER_PARTY_SIZE;
+}
+
+static u8 Select_GetBallX(u8 id)
+{
+    if (Select_IsBrockRewardMode())
+        return sBrockRewardBallXs[id];
+
+    return (35 * id) + 32;
+}
+
+void DoBrockRentalSelectScreen(void)
+{
+    sFactorySelectMode = FACTORY_SELECT_MODE_BROCK_RENTAL;
+    DoBattleFactorySelectScreen();
+}
+
+void DoBrockRewardSelectScreen(void)
+{
+    sFactorySelectMode = FACTORY_SELECT_MODE_BROCK_REWARD;
+    DoBattleFactorySelectScreen();
+}
 
 static const u16 sPokeballGray_Pal[]         = INCBIN_U16("graphics/battle_frontier/factory_screen/pokeball_gray.gbapal");
 static const u16 sPokeballSelected_Pal[]     = INCBIN_U16("graphics/battle_frontier/factory_screen/pokeball_selected.gbapal");
@@ -1081,6 +1140,12 @@ static void VBlankCB_SelectScreen(void)
 
 void DoBattleFactorySelectScreen(void)
 {
+    if (sFactorySelectMode != FACTORY_SELECT_MODE_BROCK_RENTAL
+        && sFactorySelectMode != FACTORY_SELECT_MODE_BROCK_REWARD)
+    {
+        sFactorySelectMode = FACTORY_SELECT_MODE_DEFAULT;
+    }
+
     sFactorySelectScreen = NULL;
     SetMainCallback2(CB2_InitSelectScreen);
 }
@@ -1271,10 +1336,14 @@ static void Select_InitMonsData(void)
     sFactorySelectScreen->cursorPos = 0;
     sFactorySelectScreen->selectingMonsState = 1;
     sFactorySelectScreen->fromSummaryScreen = FALSE;
-    for (i = 0; i < SELECTABLE_MONS_COUNT; i++)
+    for (i = 0; i < Select_GetSelectableMonsCount(); i++)
         sFactorySelectScreen->mons[i].selectedId = 0;
 
-    if (gSaveBlock2Ptr->frontier.lvlMode != FRONTIER_LVL_TENT)
+    if (sFactorySelectMode == FACTORY_SELECT_MODE_BROCK_RENTAL)
+        CreateBrockSelectableMons(0);
+    else if (Select_IsBrockRewardMode())
+        CreateBrockRewardSelectableMons(0);
+    else if (gSaveBlock2Ptr->frontier.lvlMode != FRONTIER_LVL_TENT)
         CreateFrontierFactorySelectableMons(0);
     else
         CreateSlateportTentSelectableMons(0);
@@ -1285,9 +1354,9 @@ static void Select_InitAllSprites(void)
     u8 i, cursorPos;
     s16 x;
 
-    for (i = 0; i < SELECTABLE_MONS_COUNT; i++)
+    for (i = 0; i < Select_GetSelectableMonsCount(); i++)
     {
-        sFactorySelectScreen->mons[i].ballSpriteId = CreateSprite(&sSpriteTemplate_Select_Pokeball, (35 * i) + 32, 64, 1);
+        sFactorySelectScreen->mons[i].ballSpriteId = CreateSprite(&sSpriteTemplate_Select_Pokeball, Select_GetBallX(i), 64, 1);
         gSprites[sFactorySelectScreen->mons[i].ballSpriteId].data[0] = 0;
         Select_SetBallSpritePaletteNum(i);
     }
@@ -1310,7 +1379,7 @@ static void Select_DestroyAllSprites(void)
 {
     u8 i;
 
-    for (i = 0; i < SELECTABLE_MONS_COUNT; i++)
+    for (i = 0; i < Select_GetSelectableMonsCount(); i++)
         DestroySprite(&gSprites[sFactorySelectScreen->mons[i].ballSpriteId]);
 
     DestroySprite(&gSprites[sFactorySelectScreen->cursorSpriteId]);
@@ -1321,9 +1390,11 @@ static void Select_DestroyAllSprites(void)
 static void Select_UpdateBallCursorPosition(s8 direction)
 {
     u8 cursorPos;
+    u8 monsCount = Select_GetSelectableMonsCount();
+
     if (direction > 0) // Move cursor right.
     {
-        if (sFactorySelectScreen->cursorPos != SELECTABLE_MONS_COUNT - 1)
+        if (sFactorySelectScreen->cursorPos != monsCount - 1)
             sFactorySelectScreen->cursorPos++;
         else
             sFactorySelectScreen->cursorPos = 0;
@@ -1333,7 +1404,7 @@ static void Select_UpdateBallCursorPosition(s8 direction)
         if (sFactorySelectScreen->cursorPos != 0)
             sFactorySelectScreen->cursorPos--;
         else
-            sFactorySelectScreen->cursorPos = SELECTABLE_MONS_COUNT - 1;
+            sFactorySelectScreen->cursorPos = monsCount - 1;
     }
 
     cursorPos = sFactorySelectScreen->cursorPos;
@@ -1386,18 +1457,20 @@ static void Select_HandleMonSelectionChange(void)
 {
     u8 i, paletteNum;
     u8 cursorPos = sFactorySelectScreen->cursorPos;
+    u8 requiredCount = Select_GetRequiredMonsCount();
+    u8 selectableMonsCount = Select_GetSelectableMonsCount();
     if (sFactorySelectScreen->mons[cursorPos].selectedId) // Deselect a mon.
     {
         paletteNum = IndexOfSpritePaletteTag(PALTAG_BALL_GRAY);
-        if (sFactorySelectScreen->selectingMonsState == FRONTIER_PARTY_SIZE
+        if (sFactorySelectScreen->selectingMonsState == requiredCount
          && sFactorySelectScreen->mons[cursorPos].selectedId == 1)
         {
-            for (i = 0; i < SELECTABLE_MONS_COUNT; i++)
+            for (i = 0; i < selectableMonsCount; i++)
             {
-                if (sFactorySelectScreen->mons[i].selectedId == FRONTIER_PARTY_SIZE - 1)
+                if (sFactorySelectScreen->mons[i].selectedId == requiredCount - 1)
                     break;
             }
-            if (i == SELECTABLE_MONS_COUNT)
+            if (i == selectableMonsCount)
                 return;
             else
                 sFactorySelectScreen->mons[i].selectedId = 1;
@@ -1458,10 +1531,10 @@ static void Select_Task_OpenSummaryScreen(u8 taskId)
         DestroyTask(taskId);
         sFactorySelectScreen->fromSummaryScreen = TRUE;
         currMonId = sFactorySelectScreen->cursorPos;
-        sFactorySelectMons = AllocZeroed(sizeof(struct Pokemon) * SELECTABLE_MONS_COUNT);
-        for (i = 0; i < SELECTABLE_MONS_COUNT; i++)
+        sFactorySelectMons = AllocZeroed(sizeof(struct Pokemon) * Select_GetSelectableMonsCount());
+        for (i = 0; i < Select_GetSelectableMonsCount(); i++)
             sFactorySelectMons[i] = sFactorySelectScreen->mons[i].monData;
-        ShowPokemonSummaryScreen(SUMMARY_MODE_LOCK_MOVES, sFactorySelectMons, currMonId, SELECTABLE_MONS_COUNT - 1, CB2_InitSelectScreen);
+        ShowPokemonSummaryScreen(SUMMARY_MODE_LOCK_MOVES, sFactorySelectMons, currMonId, Select_GetSelectableMonsCount() - 1, CB2_InitSelectScreen);
         break;
     }
 }
@@ -1480,13 +1553,33 @@ static void Select_Task_Exit(u8 taskId)
     case 1:
         if (!UpdatePaletteFade())
         {
-            Select_CopyMonsToPlayerParty();
+            if (Select_IsBrockRewardMode())
+            {
+                u8 i;
+
+                gSpecialVar_0x8004 = PARTY_NOTHING_CHOSEN;
+                gSpecialVar_Result = PARTY_NOTHING_CHOSEN;
+                for (i = 0; i < Select_GetSelectableMonsCount(); i++)
+                {
+                    if (sFactorySelectScreen->mons[i].selectedId == 1)
+                    {
+                        gSpecialVar_0x8004 = i;
+                        gSpecialVar_Result = i;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                Select_CopyMonsToPlayerParty();
+            }
             DestroyTask(sFactorySelectScreen->fadeSpeciesNameTaskId);
             Select_DestroyAllSprites();
             FREE_AND_SET_NULL(sSelectMenuTilesetBuffer);
             FREE_AND_SET_NULL(sSelectMenuTilemapBuffer);
             FREE_AND_SET_NULL(sSelectMonPicBgTilemapBuffer);
             FREE_AND_SET_NULL(sFactorySelectScreen);
+            sFactorySelectMode = FACTORY_SELECT_MODE_DEFAULT;
             FreeAllWindowBuffers();
             SetMainCallback2(CB2_ReturnToFieldContinueScript);
             DestroyTask(taskId);
@@ -1504,7 +1597,8 @@ static void Select_Task_HandleYesNo(u8 taskId)
     switch (gTasks[taskId].tState)
     {
     case STATE_YESNO_SHOW_MONS:
-        Select_ShowChosenMons();
+        if (!Select_IsBrockRewardMode())
+            Select_ShowChosenMons();
         gTasks[taskId].tState = STATE_YESNO_SHOW_OPTIONS;
         break;
     case STATE_YESNO_SHOW_OPTIONS:
@@ -1518,7 +1612,8 @@ static void Select_Task_HandleYesNo(u8 taskId)
             if (sFactorySelectScreen->yesNoCursorPos == 0)
             {
                 // Selected Yes, confirmed selected Pokémon
-                Select_HideChosenMons();
+                if (!Select_IsBrockRewardMode())
+                    Select_HideChosenMons();
                 gTasks[taskId].tState = 0;
                 gTasks[taskId].func = Select_Task_Exit;
             }
@@ -1727,7 +1822,7 @@ static void CreateFrontierFactorySelectableMons(u8 firstMonId)
     rentalRank = GetNumPastRentalsRank(battleMode, lvlMode);
     otId = READ_OTID_FROM_SAVE;
 
-    for (i = 0; i < SELECTABLE_MONS_COUNT; i++)
+    for (i = 0; i < Select_GetSelectableMonsCount(); i++)
     {
         u16 monId = gSaveBlock2Ptr->frontier.rentalMons[i].monId;
         sFactorySelectScreen->mons[i + firstMonId].monId = monId;
@@ -1752,7 +1847,7 @@ static void CreateSlateportTentSelectableMons(u8 firstMonId)
     gFacilityTrainerMons = gSlateportBattleTentMons;
     otId = READ_OTID_FROM_SAVE;
 
-    for (i = 0; i < SELECTABLE_MONS_COUNT; i++)
+    for (i = 0; i < Select_GetSelectableMonsCount(); i++)
     {
         u16 monId = gSaveBlock2Ptr->frontier.rentalMons[i].monId;
         sFactorySelectScreen->mons[i + firstMonId].monId = monId;
@@ -1760,13 +1855,45 @@ static void CreateSlateportTentSelectableMons(u8 firstMonId)
     }
 }
 
+static void CreateBrockSelectableMons(u8 firstMonId)
+{
+    u8 i;
+    u8 j;
+    u8 ev = 0;
+    u32 otId = READ_OTID_FROM_SAVE;
+
+    gFacilityTrainerMons = gBrockRentalMons;
+
+    for (i = 0; i < Select_GetSelectableMonsCount(); i++)
+    {
+        u16 monId = gSaveBlock2Ptr->frontier.rentalMons[i].monId;
+        sFactorySelectScreen->mons[i + firstMonId].monId = monId;
+        CreateFacilityMon(&gFacilityTrainerMons[monId], 16, USE_RANDOM_IVS, otId, 0, &sFactorySelectScreen->mons[i + firstMonId].monData);
+        // Brock rentals should only vary by IVs.
+        for (j = 0; j < NUM_STATS; j++)
+            SetMonData(&sFactorySelectScreen->mons[i + firstMonId].monData, MON_DATA_HP_EV + j, &ev);
+        CalculateMonStats(&sFactorySelectScreen->mons[i + firstMonId].monData);
+    }
+}
+
+static void CreateBrockRewardSelectableMons(u8 firstMonId)
+{
+    u8 i;
+
+    for (i = 0; i < SELECTABLE_MONS_COUNT_BROCK_REWARD; i++)
+    {
+        sFactorySelectScreen->mons[i + firstMonId].monId = i;
+        sFactorySelectScreen->mons[i + firstMonId].monData = gPlayerParty[i];
+    }
+}
+
 static void Select_CopyMonsToPlayerParty(void)
 {
     u8 i, j;
 
-    for (i = 0; i < FRONTIER_PARTY_SIZE; i++)
+    for (i = 0; i < Select_GetRequiredMonsCount(); i++)
     {
-        for (j = 0; j < SELECTABLE_MONS_COUNT; j++)
+        for (j = 0; j < Select_GetSelectableMonsCount(); j++)
         {
             if (sFactorySelectScreen->mons[j].selectedId == i + 1)
             {
@@ -1825,7 +1952,7 @@ static void Select_ErasePopupMenu(u8 windowId)
 static void Select_PrintRentalPkmnString(void)
 {
     FillWindowPixelBuffer(SELECT_WIN_TITLE, PIXEL_FILL(0));
-    AddTextPrinterParameterized(SELECT_WIN_TITLE, FONT_NORMAL, gText_RentalPkmn2, 2, 1, 0, NULL);
+    AddTextPrinterParameterized(SELECT_WIN_TITLE, FONT_NORMAL, Select_IsBrockRewardMode() ? sText_BrockRewardTitle : gText_RentalPkmn2, 2, 1, 0, NULL);
     CopyWindowToVram(SELECT_WIN_TITLE, COPYWIN_FULL);
 }
 
@@ -1848,7 +1975,14 @@ static void Select_PrintSelectMonString(void)
     const u8 *str = NULL;
 
     FillWindowPixelBuffer(SELECT_WIN_INFO, PIXEL_FILL(0));
-    if (sFactorySelectScreen->selectingMonsState == 1)
+    if (Select_IsBrockRewardMode())
+    {
+        if (sFactorySelectScreen->selectingMonsState == 1)
+            str = gText_ChoosePokemon;
+        else
+            str = gText_AcceptThisPkmn;
+    }
+    else if (sFactorySelectScreen->selectingMonsState == 1)
         str = gText_SelectFirstPkmn;
     else if (sFactorySelectScreen->selectingMonsState == 2)
         str = gText_SelectSecondPkmn;
@@ -1877,10 +2011,12 @@ static void Select_PrintMenuOptions(void)
     AddTextPrinterParameterized3(SELECT_WIN_OPTIONS, FONT_NORMAL, 7, 1, sMenuOptionTextColors, 0, gText_Summary);
     if (selectedId != 0)
         AddTextPrinterParameterized3(SELECT_WIN_OPTIONS, FONT_NORMAL, 7, 17, sMenuOptionTextColors, 0, gText_Deselect);
+    else if (Select_IsBrockRewardMode())
+        AddTextPrinterParameterized3(SELECT_WIN_OPTIONS, FONT_NORMAL, 7, 17, sMenuOptionTextColors, 0, sText_BrockChoose);
     else
         AddTextPrinterParameterized3(SELECT_WIN_OPTIONS, FONT_NORMAL, 7, 17, sMenuOptionTextColors, 0, gText_Rent);
 
-    AddTextPrinterParameterized3(SELECT_WIN_OPTIONS, FONT_NORMAL, 7, 33, sMenuOptionTextColors, 0, gText_Others2);
+    AddTextPrinterParameterized3(SELECT_WIN_OPTIONS, FONT_NORMAL, 7, 33, sMenuOptionTextColors, 0, Select_IsBrockRewardMode() ? sText_Back : gText_Others2);
     CopyWindowToVram(SELECT_WIN_OPTIONS, COPYWIN_FULL);
 }
 
@@ -1915,7 +2051,7 @@ static u8 Select_OptionRentDeselect(void)
         Select_HandleMonSelectionChange();
         Select_PrintSelectMonString();
         Select_ErasePopupMenu(SELECT_WIN_OPTIONS);
-        if (sFactorySelectScreen->selectingMonsState > FRONTIER_PARTY_SIZE)
+        if (sFactorySelectScreen->selectingMonsState > Select_GetRequiredMonsCount())
             return SELECT_CONFIRM_MONS;
         else
             return SELECT_CONTINUE_CHOOSING;
@@ -1924,11 +2060,12 @@ static u8 Select_OptionRentDeselect(void)
 
 static u8 Select_DeclineChosenMons(void)
 {
-    Select_HideChosenMons();
+    if (!Select_IsBrockRewardMode())
+        Select_HideChosenMons();
     Select_HandleMonSelectionChange();
     Select_PrintSelectMonString();
     Select_ErasePopupMenu(SELECT_WIN_OPTIONS);
-    if (sFactorySelectScreen->selectingMonsState > FRONTIER_PARTY_SIZE)
+    if (sFactorySelectScreen->selectingMonsState > Select_GetRequiredMonsCount())
         return 2;
     else
         return 1;
@@ -1952,7 +2089,7 @@ static void Select_PrintMonCategory(void)
     u8 text[30];
     u8 x;
     u8 monId = sFactorySelectScreen->cursorPos;
-    if (monId < SELECTABLE_MONS_COUNT)
+    if (monId < Select_GetSelectableMonsCount())
     {
         PutWindowTilemap(SELECT_WIN_MON_CATEGORY);
         FillWindowPixelBuffer(SELECT_WIN_MON_CATEGORY, PIXEL_FILL(0));
@@ -2012,7 +2149,7 @@ static void Select_CreateChosenMonsSprites(void)
 
     for (i = 0; i < FRONTIER_PARTY_SIZE; i++)
     {
-        for (j = 0; j < SELECTABLE_MONS_COUNT; j++)
+        for (j = 0; j < Select_GetSelectableMonsCount(); j++)
         {
             if (sFactorySelectScreen->mons[j].selectedId == i + 1)
             {
@@ -2172,6 +2309,12 @@ static void Select_Task_CloseChosenMonPics(u8 taskId)
 
 static void Select_ShowChosenMons(void)
 {
+    if (Select_IsBrockRewardMode())
+    {
+        sFactorySelectScreen->monPicAnimating = FALSE;
+        return;
+    }
+
     sFactorySelectScreen->monPics[1].bgSpriteId = CreateSprite(&sSpriteTemplate_Select_MonPicBgAnim, 120, 64, 1);
     sFactorySelectScreen->monPics[0].bgSpriteId = CreateSprite(&sSpriteTemplate_Select_MonPicBgAnim,  44, 64, 1);
     sFactorySelectScreen->monPics[2].bgSpriteId = CreateSprite(&sSpriteTemplate_Select_MonPicBgAnim, 196, 64, 1);
@@ -2186,6 +2329,12 @@ static void Select_ShowChosenMons(void)
 static void Select_HideChosenMons(void)
 {
     u8 taskId;
+
+    if (Select_IsBrockRewardMode())
+    {
+        sFactorySelectScreen->monPicAnimating = FALSE;
+        return;
+    }
 
     FreeAndDestroyMonPicSprite(sFactorySelectScreen->monPics[0].monSpriteId);
     FreeAndDestroyMonPicSprite(sFactorySelectScreen->monPics[1].monSpriteId);
@@ -2212,9 +2361,12 @@ static bool32 Select_AreSpeciesValid(u16 monId)
     enum Species species = gFacilityTrainerMons[monId].species;
     u8 selectState = sFactorySelectScreen->selectingMonsState;
 
+    if (Select_IsBrockRewardMode())
+        return TRUE;
+
     for (i = 1; i < selectState; i++)
     {
-        for (j = 0; j < SELECTABLE_MONS_COUNT; j++)
+        for (j = 0; j < Select_GetSelectableMonsCount(); j++)
         {
             if (sFactorySelectScreen->mons[j].selectedId == i)
             {

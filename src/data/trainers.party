@@ -18349,17 +18349,48 @@ Bulbasaur
 Level: 5
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-=== TRAINER_BRENDAN_PLACEHOLDER ===
-Name: BRENDAN
-Class: RS Protag
-Pic: RS Brendan
+=== TRAINER_BROCK_RUSTBORO ===
+Name: BROCK
+Class: Leader Frlg
+Pic: Leader Brock Frlg
 Gender: Male
 Music: Male
 Double Battle: No
+AI: Smart Trainer
 
-Groudon
-Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Vulpix @ Charti Berry
+Ability: Flash Fire
+Level: 12
+IVs: 0 Atk
+- Will-O-Wisp
+- Incinerate
+- Confuse Ray
+- Roar
+
+Croagunk @ Black Sludge
+Ability: Poison Touch
+Level: 12
+- Poison Jab
+- Rock Smash
+- Taunt
+- Fake Out
+
+Pineco @ Custap Berry
+Ability: Sturdy
+Level: 12
+IVs: 0 Atk
+- Stealth Rock
+- Spikes
+- Toxic Spikes
+- Protect
+
+Onix @ Weakness Policy
+Ability: Rock Head
+Level: 13
+- Head Smash
+- Stomping Tantrum
+- Dragon Tail
+- Curse
 
 === TRAINER_MAY_PLACEHOLDER ===
 Name: MAY

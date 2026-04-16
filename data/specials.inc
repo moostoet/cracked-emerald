@@ -263,6 +263,12 @@ gSpecials::
 	def_special CallVerdanturfTentFunction
 	def_special CallFallarborTentFunction
 	def_special CallSlateportTentFunction
+	def_special GenerateBrockRentalMons
+	def_special SelectBrockRentalMons
+	def_special SelectBrockRewardMon
+	def_special CheckBrockChallengePerfectClear
+	def_special RestoreBrockPlayerParty
+	def_special GiveBrockSelectedRental
 	def_special ChoosePartyForBattleFrontier
 	def_special ValidateEReaderTrainer
 	def_special GetBattleTowerSinglesStreak

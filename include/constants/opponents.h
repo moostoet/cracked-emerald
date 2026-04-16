@@ -858,6 +858,7 @@
 #define TRAINER_RED                         851
 #define TRAINER_LEAF                        852
 #define TRAINER_BRENDAN_PLACEHOLDER         853
+#define TRAINER_BROCK_RUSTBORO              TRAINER_BRENDAN_PLACEHOLDER
 #define TRAINER_MAY_PLACEHOLDER             854
 #define TRAINER_WALLY_PETALBURG             855
 #define TRAINER_GRUNT_OCEANIC_LEFT          856

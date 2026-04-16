@@ -54,7 +54,7 @@
 #define FLAG_MOVE_TUTOR_TAUGHT_EARTHQUAKE_HYDE 0x20
 #define FLAG_OBTAINED_THIEF_FINDER 0x21
 #define FLAG_BATTLE_FOG      0x22 // Enables Gen 4 fog weather (60% accuracy) in battle when set
-#define FLAG_UNUSED_0x023    0x23 // Unused Flag
+#define FLAG_BATTLE_NO_WHITEOUT 0x23
 #define FLAG_UNUSED_0x024    0x24 // Unused Flag
 #define FLAG_UNUSED_0x025    0x25 // Unused Flag
 #define FLAG_UNUSED_0x026    0x26 // Unused Flag

@@ -18375,22 +18375,21 @@ Level: 12
 - Taunt
 - Fake Out
 
-Pineco @ Custap Berry
-Ability: Sturdy
-Level: 12
-IVs: 0 Atk
-- Stealth Rock
-- Spikes
-- Toxic Spikes
-- Protect
-
 Onix @ Weakness Policy
 Ability: Rock Head
 Level: 13
 - Head Smash
-- Stomping Tantrum
+- Dig
 - Dragon Tail
 - Curse
+
+Rhyhorn @ Muscle Band
+Ability: Lightning Rod
+Level: 13
+- Fire Blast
+- Thunder
+- Rock Throw
+- Magnitude
 
 === TRAINER_MAY_PLACEHOLDER ===
 Name: MAY

@@ -13795,36 +13795,37 @@ Pic: Leader Brock Frlg
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability
+AI: Smart Trainer
 
-Geodude
-Level: 16
-IVs: 8 HP / 8 Atk / 8 Def / 8 SpA / 8 SpD / 8 Spe
-- Rock Tomb
-- Magnitude
-- Defense Curl
-- Tackle
+Vulpix @ Charti Berry
+Ability: Flash Fire
+Level: 12
+IVs: 0 Atk
+- Will-O-Wisp
+- Incinerate
+- Confuse Ray
+- Roar
 
-Onix
-Level: 16
-IVs: 8 HP / 8 Atk / 8 Def / 8 SpA / 8 SpD / 8 Spe
-- Rock Tomb
-- Bind
-- Screech
-- Tackle
+Croagunk @ Black Sludge
+Ability: Poison Touch
+Level: 12
+- Poison Jab
+- Rock Smash
+- Taunt
+- Fake Out
 
-Nosepass
-Level: 16
-IVs: 8 HP / 8 Atk / 8 Def / 8 SpA / 8 SpD / 8 Spe
+Onix @ Weakness Policy
+Ability: Rock Head
+Level: 13
+- Head Smash
+- Dig
+- Dragon Tail
+- Curse
+
+Rhyhorn @ Muscle Band
+Ability: Lightning Rod
+Level: 13
+- Fire Blast
+- Thunder
 - Rock Throw
-- Thunder Wave
-- Harden
-- Block
-
-Lileep
-Level: 16
-IVs: 8 HP / 8 Atk / 8 Def / 8 SpA / 8 SpD / 8 Spe
-- Mega Drain
-- Acid
-- Constrict
-- Rock Tomb
+- Magnitude

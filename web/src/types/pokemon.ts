@@ -134,6 +134,15 @@ export interface TrainerReward {
   amount: number
 }
 
+export interface TrainerPokemonReward {
+  species: string
+  speciesId: number
+  level: number
+  kind: 'gift' | 'egg' | 'choice'
+  note?: string
+  formSpriteId?: string
+}
+
 export interface Trainer {
   id: string
   name: string
@@ -145,6 +154,7 @@ export interface Trainer {
   party: TrainerMon[]
   doubleWith: TrainerDoubleWith | null
   rewards: TrainerReward[]
+  pokemonRewards: TrainerPokemonReward[]
 }
 
 export interface MapConnections {

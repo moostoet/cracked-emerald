@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { Trainer, TrainerMon, TrainerReward } from '@/types/pokemon'
+import type { Trainer, TrainerMon, TrainerReward, TrainerPokemonReward } from '@/types/pokemon'
 
 const { loaded: trainersLoaded, search, filtered, load: loadTrainers, getTrainerById } = useTrainers()
 const { loaded: dexLoaded, load: loadDex, getById } = usePokedex()
@@ -223,8 +223,32 @@ function entryRewards(entry: DisplayEntry): TrainerReward[] {
   return rewards
 }
 
+function entryPokemonRewards(entry: DisplayEntry): TrainerPokemonReward[] {
+  const seen = new Set<string>()
+  const rewards: TrainerPokemonReward[] = []
+  for (const t of entry.trainers) {
+    for (const r of (t.pokemonRewards ?? [])) {
+      const key = `${r.speciesId}:${r.level}:${r.kind}:${r.note ?? ''}`
+      if (!seen.has(key)) {
+        seen.add(key)
+        rewards.push(r)
+      }
+    }
+  }
+  return rewards
+}
+
 function formatReward(r: TrainerReward): string {
   return r.amount > 1 ? `${r.item} x${r.amount}` : r.item
+}
+
+function formatPokemonReward(r: TrainerPokemonReward): string {
+  if (r.kind === 'egg') return `${r.species} Egg`
+  return r.level > 0 ? `${r.species} Lv${r.level}` : r.species
+}
+
+function pokemonRewardNote(entry: DisplayEntry): string {
+  return entryPokemonRewards(entry).find(r => r.note)?.note ?? ''
 }
 
 function onLocationChange(value: string) {
@@ -340,6 +364,9 @@ onMounted(async () => {
                       <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-0.5"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
                       Items
                     </Badge>
+                    <Badge v-if="entryPokemonRewards(entry).length > 0" variant="outline" class="text-[10px] border-sky-500/60 text-sky-500" :title="entryPokemonRewards(entry).map(formatPokemonReward).join(', ')">
+                      Pokemon
+                    </Badge>
                   </div>
                   <div class="text-xs text-muted-foreground mt-0.5">
                     <span class="font-mono">Lv{{ entryMaxLevel(entry) }}</span>
@@ -436,6 +463,21 @@ onMounted(async () => {
                     </span>
                   </div>
                 </div>
+                <div v-if="entryPokemonRewards(entry).length > 0" class="mt-3 rounded-lg border border-sky-500/20 bg-sky-500/5 p-3">
+                  <div class="text-xs font-semibold text-sky-500 mb-1.5">Pokemon Received After Battle</div>
+                  <div v-if="pokemonRewardNote(entry)" class="text-xs text-muted-foreground mb-2">{{ pokemonRewardNote(entry) }}</div>
+                  <div class="flex flex-wrap gap-2">
+                    <RouterLink
+                      v-for="r in entryPokemonRewards(entry)"
+                      :key="`${r.speciesId}:${r.level}:${r.kind}`"
+                      :to="{ name: 'pokemon-detail', params: { id: r.speciesId } }"
+                      class="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md border bg-background hover:border-primary/50 hover:text-primary transition-colors"
+                    >
+                      <SpriteImage :sprite-id="getSpriteId(r.speciesId, r.formSpriteId)" :name="r.species" size="sm" />
+                      <span>{{ formatPokemonReward(r) }}</span>
+                    </RouterLink>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -470,6 +512,9 @@ onMounted(async () => {
                         <Badge v-if="entryRewards(entry).length > 0" variant="outline" class="text-[10px] border-emerald-500/60 text-emerald-500" :title="entryRewards(entry).map(formatReward).join(', ')">
                           <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-0.5"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
                           Items
+                        </Badge>
+                        <Badge v-if="entryPokemonRewards(entry).length > 0" variant="outline" class="text-[10px] border-sky-500/60 text-sky-500" :title="entryPokemonRewards(entry).map(formatPokemonReward).join(', ')">
+                          Pokemon
                         </Badge>
                       </div>
                       <div class="text-xs text-muted-foreground mt-0.5">
@@ -524,6 +569,21 @@ onMounted(async () => {
                         <span v-for="r in entryRewards(entry)" :key="r.item" class="text-xs px-2 py-1 rounded-md border bg-background">
                           {{ formatReward(r) }}
                         </span>
+                      </div>
+                    </div>
+                    <div v-if="entryPokemonRewards(entry).length > 0" class="mt-3 rounded-lg border border-sky-500/20 bg-sky-500/5 p-3">
+                      <div class="text-xs font-semibold text-sky-500 mb-1.5">Pokemon Received After Battle</div>
+                      <div v-if="pokemonRewardNote(entry)" class="text-xs text-muted-foreground mb-2">{{ pokemonRewardNote(entry) }}</div>
+                      <div class="flex flex-wrap gap-2">
+                        <RouterLink
+                          v-for="r in entryPokemonRewards(entry)"
+                          :key="`${r.speciesId}:${r.level}:${r.kind}`"
+                          :to="{ name: 'pokemon-detail', params: { id: r.speciesId } }"
+                          class="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md border bg-background hover:border-primary/50 hover:text-primary transition-colors"
+                        >
+                          <SpriteImage :sprite-id="getSpriteId(r.speciesId, r.formSpriteId)" :name="r.species" size="sm" />
+                          <span>{{ formatPokemonReward(r) }}</span>
+                        </RouterLink>
                       </div>
                     </div>
                   </div>

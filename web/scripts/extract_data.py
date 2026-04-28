@@ -2137,6 +2137,168 @@ def parse_trainer_rewards(repo_root, tm_moves, hm_moves, trainers=None):
     return formatted_rewards
 
 
+def parse_brock_rental_reward_pool(repo_root):
+    """Parse the species pool used by Brock's selected-rental reward."""
+    filepath = os.path.join(repo_root, 'src', 'brock_challenge.c')
+    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+        content = f.read()
+
+    m = re.search(
+        r'gBrockRentalMons\s*\[[^\]]+\]\s*=\s*\{(?P<body>.*?)^\};',
+        content,
+        re.DOTALL | re.MULTILINE
+    )
+    if not m:
+        return []
+
+    rewards = []
+    seen = set()
+    for species_const in re.findall(r'\.species\s*=\s*(SPECIES_\w+)', m.group('body')):
+        if species_const in seen:
+            continue
+        seen.add(species_const)
+        rewards.append({
+            'speciesConst': species_const,
+            'level': 16,
+            'kind': 'choice',
+            'note': 'Choose one selected rental',
+        })
+    return rewards
+
+
+def parse_trainer_pokemon_rewards(repo_root, trainers=None):
+    """Parse Pokemon rewards that are given by trainer post-battle scripts.
+
+    Direct script gifts are handled generically via givemon/giveegg. Special C
+    reward paths need explicit resolvers so the output stays factual.
+    """
+    maps_dir = os.path.join(repo_root, 'data', 'maps')
+    print("Parsing trainer Pokemon rewards from scripts...")
+
+    label_re = re.compile(r'^(\w+)::?\s*$')
+    goto_call_re = re.compile(r'(?:goto|call)\s+(\w+)')
+    givemon_re = re.compile(r'givemon\s+(\w+)\s*,\s*(\d+)')
+    giveegg_re = re.compile(r'giveegg\s+(\w+)')
+    special_re = re.compile(r'special\s+(\w+)')
+
+    special_reward_resolvers = {
+        'GiveBrockSelectedRental': parse_brock_rental_reward_pool(repo_root),
+    }
+
+    trainer_rewards = defaultdict(list)
+
+    for dirpath, dirnames, filenames in os.walk(maps_dir):
+        if 'scripts.inc' not in filenames:
+            continue
+
+        script_path = os.path.join(dirpath, 'scripts.inc')
+        with open(script_path, 'r', encoding='utf-8', errors='replace') as f:
+            lines = f.read().split('\n')
+
+        labels = {}
+        for i, line in enumerate(lines):
+            m = label_re.match(line.strip())
+            if m:
+                labels[m.group(1)] = i
+
+        sorted_label_positions = sorted(labels.values())
+
+        def get_label_block(label_name):
+            if label_name not in labels:
+                return []
+            start = labels[label_name]
+            idx = sorted_label_positions.index(start)
+            end = sorted_label_positions[idx + 1] if idx + 1 < len(sorted_label_positions) else len(lines)
+            return lines[start:end]
+
+        def find_pokemon_from_label(start_label, visited=None, depth=0):
+            if visited is None:
+                visited = set()
+            if start_label in visited or depth > 10:
+                return []
+            visited.add(start_label)
+
+            pokemon_rewards = []
+            for line in get_label_block(start_label):
+                stripped = line.strip()
+
+                gm = givemon_re.search(stripped)
+                if gm and gm.group(1).startswith('SPECIES_'):
+                    pokemon_rewards.append({
+                        'speciesConst': gm.group(1),
+                        'level': int(gm.group(2)),
+                        'kind': 'gift',
+                    })
+
+                em = giveegg_re.search(stripped)
+                if em and em.group(1).startswith('SPECIES_'):
+                    pokemon_rewards.append({
+                        'speciesConst': em.group(1),
+                        'level': 0,
+                        'kind': 'egg',
+                    })
+
+                sm = special_re.search(stripped)
+                if sm and sm.group(1) in special_reward_resolvers:
+                    pokemon_rewards.extend(special_reward_resolvers[sm.group(1)])
+
+                follow = goto_call_re.search(stripped)
+                if follow:
+                    target = follow.group(1)
+                    if (target in labels
+                            and not target.startswith('Common_')
+                            and '_Text_' not in target
+                            and '_Movement_' not in target):
+                        pokemon_rewards.extend(find_pokemon_from_label(target, visited, depth + 1))
+
+            return pokemon_rewards
+
+        trainer_in_label = {}
+        trainer_event_scripts = {}
+        current_label = None
+        for line in lines:
+            stripped = line.strip()
+            lm = label_re.match(stripped)
+            if lm:
+                current_label = lm.group(1)
+
+            tid = get_trainerbattle_trainer_id(stripped)
+            if tid and current_label:
+                trainer_in_label[current_label] = tid
+                event_label = get_trainerbattle_event_script(stripped)
+                if event_label:
+                    trainer_event_scripts[tid] = event_label
+
+        for tid, event_label in trainer_event_scripts.items():
+            trainer_rewards[tid].extend(find_pokemon_from_label(event_label))
+
+        for label, tid in trainer_in_label.items():
+            if tid in trainer_event_scripts:
+                continue
+            trainer_rewards[tid].extend(find_pokemon_from_label(label))
+
+    deduped_rewards = {}
+    for tid, rewards in trainer_rewards.items():
+        seen = set()
+        deduped = []
+        for reward in rewards:
+            key = (
+                reward.get('speciesConst', ''),
+                reward.get('level', 0),
+                reward.get('kind', ''),
+                reward.get('note', ''),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            deduped.append(reward)
+        if deduped:
+            deduped_rewards[tid] = deduped
+
+    print(f"  Found Pokemon rewards for {len(deduped_rewards)} trainers")
+    return deduped_rewards
+
+
 def build_trainer_order(connections):
     """BFS from Littleroot Town through map connections to derive progression order."""
 
@@ -2705,7 +2867,7 @@ def _build_script_to_trainer_map(repo_root):
 def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
                         doubles_data=None, script_to_trainer=None, form_remap=None,
                         species_ids=None, natdex_ids=None, distinct_form_info=None,
-                        trainer_rewards=None):
+                        trainer_rewards=None, trainer_pokemon_rewards=None):
     """Build final trainers list sorted by BFS map order, excluding locationless trainers."""
     location_order = build_trainer_order(connections)
 
@@ -2843,6 +3005,43 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
         if trainer_rewards and tid in trainer_rewards:
             rewards = trainer_rewards[tid]
 
+        # Look up Pokemon rewards
+        pokemon_rewards = []
+        if trainer_pokemon_rewards and tid in trainer_pokemon_rewards:
+            for reward in trainer_pokemon_rewards[tid]:
+                species_const = reward.get('speciesConst', '')
+                sp_id = species_ids.get(species_const, 0) if species_ids else 0
+                species_name = format_constant('SPECIES_', species_const)
+                form_sprite_id = None
+
+                if form_remap and sp_id in form_remap:
+                    sp_id = form_remap[sp_id]
+                elif distinct_form_info and sp_id in distinct_form_info:
+                    info = distinct_form_info[sp_id]
+                    species_name = info['name']
+                    form_sprite_id = info['spriteId']
+                    sp_id = info['baseId']
+
+                if sp_id and sp_id not in pokemon_by_id:
+                    target_ndex = natdex_by_species_id.get(sp_id)
+                    if target_ndex and target_ndex in ndex_to_pokemon_id:
+                        sp_id = ndex_to_pokemon_id[target_ndex]
+
+                if sp_id and sp_id in pokemon_by_id and not form_sprite_id:
+                    species_name = pokemon_by_id[sp_id]['name']
+
+                entry = {
+                    'species': species_name,
+                    'speciesId': sp_id,
+                    'level': reward.get('level', 0),
+                    'kind': reward.get('kind', 'gift'),
+                }
+                if form_sprite_id:
+                    entry['formSpriteId'] = form_sprite_id
+                if reward.get('note'):
+                    entry['note'] = reward['note']
+                pokemon_rewards.append(entry)
+
         trainer_list.append({
             'id': tid,
             'name': trainer['name'],
@@ -2854,6 +3053,7 @@ def build_trainers_json(trainers, trainer_locations, connections, pokemon_by_id,
             'party': trainer['party'],
             'doubleWith': double_with,
             'rewards': rewards,
+            'pokemonRewards': pokemon_rewards,
             'order': get_location_order(location),
         })
 
@@ -3412,6 +3612,7 @@ def main():
     tm_moves, hm_moves = parse_tm_hm_moves(repo_root)
     print(f"  Parsed {len(tm_moves)} TM and {len(hm_moves)} HM move mappings")
     trainer_rewards = parse_trainer_rewards(repo_root, tm_moves, hm_moves, trainers)
+    trainer_pokemon_rewards = parse_trainer_pokemon_rewards(repo_root, trainers)
 
     # Step 9.8: Detect double battles
     print()
@@ -3422,7 +3623,7 @@ def main():
     trainer_list = build_trainers_json(
         trainers, trainer_locations, map_connections, pokemon_by_id,
         doubles_data, script_to_trainer, form_remap, species_ids, natdex_ids,
-        distinct_form_info, trainer_rewards
+        distinct_form_info, trainer_rewards, trainer_pokemon_rewards
     )
     print(f"  Built {len(trainer_list)} trainer entries")
 

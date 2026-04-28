@@ -18358,38 +18358,44 @@ Music: Male
 Double Battle: No
 AI: Smart Trainer
 
-Vulpix @ Charti Berry
-Ability: Flash Fire
+Dwebble @ Berry Juice
+Ability: Sturdy
 Level: 12
+Impish Nature
+IVs: 0 SpA
+- Stealth Rock
+- Rock Tomb
+- Knock Off
+- Endure
+
+Sandygast @ Passho Berry
+Ability: Water Compaction
+Level: 12
+Bold Nature
 IVs: 0 Atk
-- Will-O-Wisp
-- Incinerate
-- Confuse Ray
-- Roar
+- Mud Shot
+- Rock Tomb
+- Hex
+- Shore Up
 
-Croagunk @ Black Sludge
-Ability: Poison Touch
+Binacle @ Rindo Berry
+Ability: Tough Claws
 Level: 12
-- Poison Jab
-- Rock Smash
-- Taunt
-- Fake Out
+Jolly Nature
+IVs: 0 SpA
+- Razor Shell
+- Rock Tomb
+- Fury Cutter
+- Mud-Slap
 
-Onix @ Weakness Policy
+Onix @ Hard Stone
 Ability: Rock Head
 Level: 13
+Jolly Nature
 - Head Smash
-- Dig
+- Bulldoze
 - Dragon Tail
-- Curse
-
-Rhyhorn @ Muscle Band
-Ability: Lightning Rod
-Level: 13
-- Fire Blast
-- Thunder
-- Rock Throw
-- Magnitude
+- Rock Tomb
 
 === TRAINER_MAY_PLACEHOLDER ===
 Name: MAY

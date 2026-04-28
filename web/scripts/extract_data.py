@@ -1683,6 +1683,7 @@ TRAINER_SPRITE_MAP = {
     'Leader Winona': f'{_BULBA}/0/0e/Spr_RS_Winona.png',
     'Leader Tate And Liza': f'{_BULBA}/3/38/Spr_RS_Tate_and_Liza.png',
     'Leader Juan': f'{_BULBA}/1/16/Spr_E_Juan.png',
+    'Leader Brock Frlg': f'{_BULBA}/7/7c/Spr_FRLG_Brock.png',
     'Elite Four Sidney': f'{_BULBA}/8/86/Spr_RS_Sidney.png',
     'Elite Four Phoebe': f'{_BULBA}/e/e6/Spr_RS_Phoebe.png',
     'Elite Four Glacia': f'{_BULBA}/7/71/Spr_RS_Glacia.png',
@@ -1718,6 +1719,11 @@ def trainer_pic_to_sprite(pic_name):
     return TRAINER_SPRITE_MAP.get(pic_clean, '')
 
 
+def normalize_trainer_class(trainer_class):
+    """Remove internal variant suffixes that should not be shown in the UI."""
+    return re.sub(r'\s+Frlg$', '', trainer_class.strip(), flags=re.IGNORECASE)
+
+
 def parse_trainers_party(repo_root, species_ids):
     """Parse trainers.party Showdown-format file into trainer dicts."""
     filepath = os.path.join(repo_root, 'src', 'data', 'trainers.party')
@@ -1750,7 +1756,7 @@ def parse_trainers_party(repo_root, species_ids):
             if line.startswith('Name:'):
                 name = line[5:].strip()
             elif line.startswith('Class:'):
-                trainer_class = line[6:].strip()
+                trainer_class = normalize_trainer_class(line[6:])
             elif line.startswith('Pic:'):
                 pic = line[4:].strip()
             elif line.startswith('Double Battle:'):

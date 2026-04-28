@@ -54,6 +54,68 @@ def format_constant(prefix, name):
     return name.replace('_', ' ').title()
 
 
+def parse_script_command(line):
+    """Return (command, args) for simple script command lines."""
+    stripped = line.split('@', 1)[0].strip()
+    if not stripped:
+        return None, []
+
+    m = re.match(r'^([A-Za-z_]\w*)\b(?:\s+(.*))?$', stripped)
+    if not m:
+        return None, []
+
+    command = m.group(1)
+    args_text = (m.group(2) or '').strip()
+    if not args_text:
+        return command, []
+
+    args = [arg.strip() for arg in args_text.split(',')]
+    return command, args
+
+
+def get_trainerbattle_trainer_id(line):
+    """Extract the opponent trainer ID from trainerbattle commands/macros."""
+    command, args = parse_script_command(line)
+    if not command:
+        return None
+
+    if command == 'trainerbattle':
+        # Script command form:
+        # trainerbattle TYPE, LOCALID, TRAINER_ID, intro, defeat, ...
+        if len(args) >= 3 and re.fullmatch(r'TRAINER_\w+', args[2]):
+            return args[2]
+        return None
+
+    if command.startswith('trainerbattle_'):
+        # Macro form:
+        # trainerbattle_no_intro TRAINER_ID, defeat
+        # trainerbattle_single TRAINER_ID, intro, defeat, ...
+        if args and re.fullmatch(r'TRAINER_\w+', args[0]):
+            return args[0]
+
+    return None
+
+
+def get_trainerbattle_event_script(line):
+    """Extract the follow-up event script label from supported trainerbattle forms."""
+    command, args = parse_script_command(line)
+    if not command:
+        return None
+
+    if command == 'trainerbattle':
+        # Script command form: the continue script label is the sixth argument.
+        if len(args) >= 6 and args[5] not in ('NULL', '0'):
+            return args[5]
+    elif command == 'trainerbattle_single':
+        if len(args) >= 4:
+            return args[3]
+    elif command == 'trainerbattle_double':
+        if len(args) >= 5:
+            return args[4]
+
+    return None
+
+
 def format_item_name(item_const):
     """Convert ITEM_FIRE_STONE to 'Fire Stone'."""
     return format_constant('ITEM_', item_const)
@@ -1826,7 +1888,7 @@ def parse_trainers_party(repo_root, species_ids):
 
 
 def parse_trainer_locations(repo_root):
-    """Parse map scripts for trainerbattle_* macros to map trainer IDs to locations."""
+    """Parse map scripts for trainerbattle commands/macros to map trainers to locations."""
     maps_dir = os.path.join(repo_root, 'data', 'maps')
     print("Parsing trainer locations from scripts...")
 
@@ -1841,8 +1903,6 @@ def parse_trainer_locations(repo_root):
             section_display[s['id']] = re.sub(
                 r'(\d+)', lambda m: m.group(0), name.title()
             )
-
-    trainer_re = re.compile(r'trainerbattle\w*\s+(TRAINER_\w+)')
 
     trainer_locations = {}  # trainer_id -> (location, map_dir_name)
 
@@ -1869,9 +1929,9 @@ def parse_trainer_locations(repo_root):
             if sec in section_display:
                 location = section_display[sec]
 
-        for m in trainer_re.finditer(content):
-            tid = m.group(1)
-            if tid not in trainer_locations:
+        for line in content.split('\n'):
+            tid = get_trainerbattle_trainer_id(line)
+            if tid and tid not in trainer_locations:
                 trainer_locations[tid] = (location, dirname)
 
     print(f"  Found locations for {len(trainer_locations)} trainers")
@@ -1882,7 +1942,7 @@ def parse_trainer_rewards(repo_root, tm_moves, hm_moves, trainers=None):
     """Parse map scripts to find items given after trainer battles.
 
     Two-pronged approach:
-    1. Direct: follow event script labels from trainerbattle_* macros,
+    1. Direct: follow event script labels from trainerbattle commands/macros,
        then chase goto/call chains looking for giveitem/giveitem_msg/additem.
     2. Proximity: match trainer name substrings against other labels in the
        same file and follow those for item-giving macros.
@@ -1894,18 +1954,6 @@ def parse_trainer_rewards(repo_root, tm_moves, hm_moves, trainers=None):
 
     # Patterns
     label_re = re.compile(r'^(\w+)::?\s*$')
-    trainerbattle_re = re.compile(
-        r'trainerbattle_(\w+)\s+(TRAINER_\w+)'
-    )
-    # trainerbattle_single has optional 4th arg: event script label
-    # trainerbattle_single TRAINER_X, intro, lose, EventScript
-    # trainerbattle_double TRAINER_X, intro, lose, notEnough, EventScript
-    event_script_re = re.compile(
-        r'trainerbattle_single\s+\w+,\s*\w+,\s*\w+,\s*(\w+)'
-    )
-    event_script_double_re = re.compile(
-        r'trainerbattle_double\s+\w+,\s*\w+,\s*\w+,\s*\w+,\s*(\w+)'
-    )
     goto_call_re = re.compile(r'(?:goto|call)\s+(\w+)')
     giveitem_re = re.compile(
         r'(?:giveitem|giveitem_msg|additem)\s+(?:\w+,\s*)?(\w+)(?:,\s*(\d+))?'
@@ -1997,19 +2045,13 @@ def parse_trainer_rewards(repo_root, tm_moves, hm_moves, trainers=None):
             if lm:
                 current_label = lm.group(1)
 
-            tb = trainerbattle_re.search(stripped)
-            if tb and current_label:
-                tid = tb.group(2)
+            tid = get_trainerbattle_trainer_id(stripped)
+            if tid and current_label:
                 trainer_in_label[current_label] = tid
 
-                # Check for event script parameter
-                es = event_script_re.search(stripped)
-                if es:
-                    trainer_event_scripts[tid] = es.group(1)
-                else:
-                    esd = event_script_double_re.search(stripped)
-                    if esd:
-                        trainer_event_scripts[tid] = esd.group(1)
+                event_label = get_trainerbattle_event_script(stripped)
+                if event_label:
+                    trainer_event_scripts[tid] = event_label
 
         # For each trainer with an event script, follow it for items
         for tid, event_label in trainer_event_scripts.items():
@@ -2626,8 +2668,6 @@ def _build_script_to_trainer_map(repo_root):
     maps_dir = os.path.join(repo_root, 'data', 'maps')
     script_to_trainer = {}
 
-    trainer_re = re.compile(r'trainerbattle\w*\s+(TRAINER_\w+)')
-
     for dirpath, dirnames, filenames in os.walk(maps_dir):
         if 'scripts.inc' not in filenames:
             continue
@@ -2649,9 +2689,8 @@ def _build_script_to_trainer_map(repo_root):
                 if label_m:
                     current_label = label_m.group(1)
 
-            tm = trainer_re.search(stripped)
-            if tm and current_label:
-                tid = tm.group(1)
+            tid = get_trainerbattle_trainer_id(stripped)
+            if tid and current_label:
                 script_to_trainer[current_label] = tid
 
     return script_to_trainer

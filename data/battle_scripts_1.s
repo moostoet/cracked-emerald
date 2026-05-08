@@ -7634,6 +7634,10 @@ BattleScript_RemoveTerrain::
 BattleScript_Pickpocket::
 	call BattleScript_AbilityPopUp
 	jumpifability BS_ATTACKER, ABILITY_STICKY_HOLD, BattleScript_PickpocketPrevented
+	goto BattleScript_PickpocketStealsItem
+BattleScript_PickpocketStealsSwitchedOutItem::
+	call BattleScript_AbilityPopUp
+BattleScript_PickpocketStealsItem:
 	swapattackerwithtarget
 	copybyte gEffectBattler, gBattlerTarget
 	call BattleScript_ItemSteal

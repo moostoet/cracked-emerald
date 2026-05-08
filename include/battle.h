@@ -573,6 +573,9 @@ struct BattleStruct
     u8 savedTurnActionNumber;
     u8 scriptPartyIdx; // for printing the nickname
     u8 battlerPartyIndexes[MAX_BATTLERS_COUNT];
+    u8 moveEndOriginalAttackerPartyId;
+    enum Ability moveEndOriginalAttackerAbility;
+    enum HoldEffect moveEndOriginalAttackerHoldEffect;
     u8 monToSwitchIntoId[MAX_BATTLERS_COUNT];
     u8 battlerPartyOrders[MAX_BATTLERS_COUNT][PARTY_SIZE / 2];
     u8 runTries;

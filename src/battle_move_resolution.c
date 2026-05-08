@@ -2064,6 +2064,9 @@ static enum MoveEndResult MoveEndSetValues(void)
     gBattleScripting.savedDmg += gBattleStruct->moveDamage[gBattlerTarget];
     gBattleStruct->eventState.moveEndBattler = 0;
     gBattleStruct->eventState.moveEndBlock = 0;
+    gBattleStruct->moveEndOriginalAttackerPartyId = gBattlerPartyIndexes[gBattlerAttacker];
+    gBattleStruct->moveEndOriginalAttackerAbility = GetBattlerAbility(gBattlerAttacker);
+    gBattleStruct->moveEndOriginalAttackerHoldEffect = GetBattlerHoldEffect(gBattlerAttacker);
     gBattleScripting.moveendState++;
     return MOVEEND_RESULT_CONTINUE;
 }
@@ -3469,14 +3472,84 @@ static enum MoveEndResult MoveEndHitEscape(void)
     return result;
 }
 
+static bool32 IsMoveEndOriginalAttackerSwitchedOut(void)
+{
+    return gBattleStruct->moveEndOriginalAttackerPartyId < PARTY_SIZE
+        && gBattleStruct->moveEndOriginalAttackerPartyId != gBattlerPartyIndexes[gBattlerAttacker];
+}
+
+static enum Item GetMoveEndAttackerItem(void)
+{
+    if (IsMoveEndOriginalAttackerSwitchedOut())
+    {
+        struct Pokemon *party = GetBattlerParty(gBattlerAttacker);
+        return GetMonData(&party[gBattleStruct->moveEndOriginalAttackerPartyId], MON_DATA_HELD_ITEM);
+    }
+
+    return gBattleMons[gBattlerAttacker].item;
+}
+
+static struct PartyState *GetMoveEndAttackerPartyState(void)
+{
+    if (IsMoveEndOriginalAttackerSwitchedOut())
+        return &gBattleStruct->partyState[GetBattlerSide(gBattlerAttacker)][gBattleStruct->moveEndOriginalAttackerPartyId];
+
+    return GetBattlerPartyState(gBattlerAttacker);
+}
+
+static void TrySaveExchangedPartyItem(enum BattlerId battler, u32 partyId, enum Item stolenItem)
+{
+    if (B_TRAINERS_KNOCK_OFF_ITEMS == FALSE)
+        return;
+
+    if (gBattleTypeFlags & BATTLE_TYPE_TRAINER
+      && !(gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
+      && IsOnPlayerSide(battler)
+      && stolenItem == gBattleStruct->itemLost[B_SIDE_PLAYER][partyId].originalItem)
+        gBattleStruct->itemLost[B_SIDE_PLAYER][partyId].stolen = TRUE;
+}
+
+static void StealMoveEndAttackerItem(enum BattlerId battlerStealer, enum Item item)
+{
+    if (!IsMoveEndOriginalAttackerSwitchedOut())
+    {
+        StealTargetItem(battlerStealer, gBattlerAttacker);
+        return;
+    }
+
+    u32 partyId = gBattleStruct->moveEndOriginalAttackerPartyId;
+    enum Item noItem = ITEM_NONE;
+    struct Pokemon *party = GetBattlerParty(gBattlerAttacker);
+
+    gLastUsedItem = item;
+    SetMonData(&party[partyId], MON_DATA_HELD_ITEM, &noItem);
+
+    RecordItemEffectBattle(battlerStealer, GetItemHoldEffect(gLastUsedItem));
+    gBattleMons[battlerStealer].item = gLastUsedItem;
+    gBattleMons[battlerStealer].volatiles.unburdenActive = FALSE;
+    BtlController_EmitSetMonData(battlerStealer, B_COMM_TO_CONTROLLER, REQUEST_HELDITEM_BATTLE, 0, sizeof(gLastUsedItem), &gLastUsedItem);
+    MarkBattlerForControllerExec(battlerStealer);
+
+    TrySaveExchangedPartyItem(gBattlerAttacker, partyId, gLastUsedItem);
+}
+
 static enum MoveEndResult MoveEndPickpocket(void)
 {
     enum MoveEndResult result = MOVEEND_RESULT_CONTINUE;
+    enum Item attackerItem = GetMoveEndAttackerItem();
+    struct PartyState *attackerPartyState = GetMoveEndAttackerPartyState();
 
     if (IsBattlerAlive(gBattlerAttacker)
-     && gBattleMons[gBattlerAttacker].item != ITEM_NONE
-     && !GetBattlerPartyState(gBattlerAttacker)->isKnockedOff) // Gen3 edge case where the knocked of item was not removed
+     && attackerItem != ITEM_NONE
+     && !attackerPartyState->isKnockedOff) // Gen3 edge case where the knocked of item was not removed
     {
+        bool32 attackerSwitchedOut = IsMoveEndOriginalAttackerSwitchedOut();
+        enum Ability abilityAtk = attackerSwitchedOut
+            ? gBattleStruct->moveEndOriginalAttackerAbility
+            : GetBattlerAbility(gBattlerAttacker);
+        enum HoldEffect holdEffectAtk = attackerSwitchedOut
+            ? gBattleStruct->moveEndOriginalAttackerHoldEffect
+            : GetBattlerHoldEffect(gBattlerAttacker);
         enum BattlerId battlers[MAX_BATTLERS_COUNT] = {0, 1, 2, 3};
         SortBattlersBySpeed(battlers, FALSE); // Pickpocket activates for fastest mon without item
         for (u32 i = 0; i < gBattlersCount; i++)
@@ -3485,21 +3558,31 @@ static enum MoveEndResult MoveEndPickpocket(void)
             if (battlerDef != gBattlerAttacker
               && !IsBattlerUnaffectedByMove(battlerDef)
               && GetBattlerAbility(battlerDef) == ABILITY_PICKPOCKET
-              && IsMoveMakingContact(gBattlerAttacker, battlerDef, GetBattlerAbility(gBattlerAttacker), GetBattlerHoldEffect(gBattlerAttacker), gCurrentMove)
+              && IsMoveMakingContact(gBattlerAttacker, battlerDef, abilityAtk, holdEffectAtk, gCurrentMove)
               && IsBattlerTurnDamaged(battlerDef, EXCLUDING_SUBSTITUTES)
               && !DoesSubstituteBlockMove(gBattlerAttacker, battlerDef, gCurrentMove)
               && IsBattlerAlive(battlerDef)
               && gBattleMons[battlerDef].item == ITEM_NONE
-              && CanStealItem(battlerDef, gBattlerAttacker, gBattleMons[gBattlerAttacker].item))
+              && CanStealItem(battlerDef, gBattlerAttacker, attackerItem))
             {
                 gBattlerTarget = gBattlerAbility = battlerDef;
                 // Battle scripting is super brittle so we shall do the item exchange now (if possible)
-                if (GetBattlerAbility(gBattlerAttacker) != ABILITY_STICKY_HOLD)
-                    StealTargetItem(battlerDef, gBattlerAttacker);  // Target takes attacker's item
+                if (abilityAtk != ABILITY_STICKY_HOLD)
+                    StealMoveEndAttackerItem(battlerDef, attackerItem);  // Target takes attacker's item
 
-                gEffectBattler = gBattlerAttacker;
-                BattleScriptCall(BattleScript_Pickpocket);   // Includes sticky hold check to print separate string
-                result = MOVEEND_RESULT_RUN_SCRIPT;
+                if (attackerSwitchedOut && abilityAtk == ABILITY_STICKY_HOLD)
+                {
+                    result = MOVEEND_RESULT_CONTINUE;
+                }
+                else
+                {
+                    gEffectBattler = gBattlerAttacker;
+                    if (attackerSwitchedOut)
+                        BattleScriptCall(BattleScript_PickpocketStealsSwitchedOutItem);
+                    else
+                        BattleScriptCall(BattleScript_Pickpocket);   // Includes sticky hold check to print separate string
+                    result = MOVEEND_RESULT_RUN_SCRIPT;
+                }
                 break; // Pickpocket activates on fastest mon, so exit loop.
             }
         }

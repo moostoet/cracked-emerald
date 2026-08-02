@@ -5195,6 +5195,7 @@ BattleScript_MoveUsedLoafingAroundMsg::
 	printfromtable gInobedientStringIds
 	waitmessage B_WAIT_TIME_LONG
 	moveendto MOVEEND_NEXT_TARGET
+	moveendcase MOVEEND_PURSUIT_NEXT_ACTION
 	end
 BattleScript_TruantLoafingAround::
 	flushtextbox

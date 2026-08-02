@@ -88,6 +88,25 @@ SINGLE_BATTLE_TEST("Pursuit doesn't attack switching foe if user already acted t
     }
 }
 
+SINGLE_BATTLE_TEST("Pursuit doesn't prevent the target from switching if the user is loafing around due to Truant")
+{
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_ZIGZAGOON);
+        OPPONENT(SPECIES_SLAKING) { Ability(ABILITY_TRUANT); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_SCRATCH); }
+        TURN { SWITCH(player, 1); MOVE(opponent, MOVE_PURSUIT); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_SCRATCH, opponent);
+        SWITCH_OUT_MESSAGE("Wobbuffet");
+        ABILITY_POPUP(opponent, ABILITY_TRUANT);
+        MESSAGE("The opposing Slaking is loafing around!");
+        NOT ANIMATION(ANIM_TYPE_MOVE, MOVE_PURSUIT, opponent);
+        SEND_IN_MESSAGE("Zigzagoon");
+    }
+}
+
 SINGLE_BATTLE_TEST("Pursuit doubles in power if attacking while target switches out", s16 damage)
 {
     u32 speed;

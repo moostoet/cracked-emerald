@@ -7837,7 +7837,11 @@ s32 DoFixedDamageMoveCalc(struct DamageContext *ctx)
 static inline s32 DoMoveDamageCalc(struct DamageContext *ctx)
 {
     if (ctx->useStoredTypeEffectiveness)
+    {
         ctx->typeEffectivenessModifier = gSpecialStatuses[ctx->battlerDef].storedTypeEffectiveness;
+        if (ctx->updateFlags)
+            UpdateMoveResultFlags(ctx->typeEffectivenessModifier, &gBattleStruct->moveResultFlags[ctx->battlerDef]);
+    }
     else
         ctx->typeEffectivenessModifier = CalcTypeEffectivenessMultiplier(ctx);
 

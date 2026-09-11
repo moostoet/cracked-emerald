@@ -687,7 +687,7 @@ static bool32 IsSingleTarget(enum BattlerId battlerAtk, enum BattlerId battlerDe
 
 static bool32 IsSmartTarget(enum BattlerId battlerAtk, enum BattlerId battlerDef)
 {
-    if (!IsBattlerAlly(gBattlerTarget, battlerDef) || battlerAtk == battlerDef)
+    if (!IsBattlerAlly(gBattlerTarget, battlerDef) || (battlerAtk == battlerDef && battlerDef != gBattlerTarget))
         return skipFailure;
     return checkFailure;
 }
@@ -1011,6 +1011,7 @@ static enum CancelerResult CancelerPPDeduction(struct BattleCalcValues *cv)
         movePosition = gChosenMovePos;
 
     if (IsSpreadMove(moveTarget)
+     || (moveTarget == TARGET_SMART && !IsBattlerAlly(cv->battlerAtk, cv->battlerDef))
      || moveTarget == TARGET_ALL_BATTLERS
      || moveTarget == TARGET_FIELD
      || MoveForcesPressure(cv->move))
@@ -1174,7 +1175,8 @@ static bool32 ShouldSkipFailureCheckOnBattler(enum BattlerId battlerAtk, enum Ba
         return TRUE;
     if (gBattleStruct->moveResultFlags[battlerDef] & MOVE_RESULT_INVALID_TARGET)
         return TRUE;
-    if (GetConfig(B_CHECK_USER_FAILURE) >= GEN_5 && battlerAtk == battlerDef)
+    if (GetConfig(B_CHECK_USER_FAILURE) >= GEN_5 && battlerAtk == battlerDef
+     && GetBattlerMoveTargetType(battlerAtk, gCurrentMove) != TARGET_SMART)
         return TRUE;
     return FALSE;
 }

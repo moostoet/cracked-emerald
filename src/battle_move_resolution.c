@@ -1011,7 +1011,9 @@ static enum CancelerResult CancelerPPDeduction(struct BattleCalcValues *cv)
         movePosition = gChosenMovePos;
 
     if (IsSpreadMove(moveTarget)
-     || (moveTarget == TARGET_SMART && !IsBattlerAlly(cv->battlerAtk, cv->battlerDef))
+     || (moveTarget == TARGET_SMART
+      && !IsBattlerAlly(cv->battlerAtk, cv->battlerDef)
+      && !IsAffectedByFollowMe(cv->battlerAtk, GetBattlerSide(cv->battlerDef), cv->move))
      || moveTarget == TARGET_ALL_BATTLERS
      || moveTarget == TARGET_FIELD
      || MoveForcesPressure(cv->move))

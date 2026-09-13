@@ -607,25 +607,38 @@ DOUBLE_BATTLE_TEST("Dragon Darts follows positions after opposing Ally Switch un
 DOUBLE_BATTLE_TEST("Dragon Darts with Stalwart or Propeller Tail keeps targeting its ally after Ally Switch")
 {
     enum Ability ability;
-    PARAMETRIZE { ability = ABILITY_STALWART; }
-    PARAMETRIZE { ability = ABILITY_PROPELLER_TAIL; }
+    bool32 allyImmune;
+    PARAMETRIZE { ability = ABILITY_STALWART; allyImmune = FALSE; }
+    PARAMETRIZE { ability = ABILITY_STALWART; allyImmune = TRUE; }
+    PARAMETRIZE { ability = ABILITY_PROPELLER_TAIL; allyImmune = FALSE; }
+    PARAMETRIZE { ability = ABILITY_PROPELLER_TAIL; allyImmune = TRUE; }
 
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_ALLY_SWITCH) == EFFECT_ALLY_SWITCH);
         PLAYER(SPECIES_WOBBUFFET) { Ability(ability); }
-        PLAYER(SPECIES_WYNAUT);
+        PLAYER(SPECIES_WYNAUT) { Ability(allyImmune ? ABILITY_TELEPATHY : ABILITY_SHADOW_TAG); }
         OPPONENT(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WYNAUT);
     } WHEN {
         TURN { MOVE(playerRight, MOVE_ALLY_SWITCH); MOVE(playerLeft, MOVE_DRAGON_DARTS, target: playerRight); }
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_ALLY_SWITCH, playerRight);
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerRight);
-        HP_BAR(playerLeft);
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerRight);
-        HP_BAR(playerLeft);
+        if (allyImmune)
+        {
+            ABILITY_POPUP(playerLeft, ABILITY_TELEPATHY);
+            NOT ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerRight);
+        }
+        else
+        {
+            ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerRight);
+            HP_BAR(playerLeft);
+            ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerRight);
+            HP_BAR(playerLeft);
+        }
     } THEN {
         EXPECT_EQ(playerRight->hp, playerRight->maxHP);
+        if (allyImmune)
+            EXPECT_EQ(playerLeft->hp, playerLeft->maxHP);
     }
 }
 
@@ -873,5 +886,249 @@ DOUBLE_BATTLE_TEST("Dragon Darts does not recheck Lightning Rod after its first 
         HP_BAR(opponentRight);
     } THEN {
         EXPECT_EQ(opponentRight->statStages[STAT_SPATK], DEFAULT_STAT_STAGE);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Dragon Darts only counts the redirecting target's Pressure when affected by Follow Me or Rage Powder")
+{
+    struct BattlePokemon *chosenTarget = NULL;
+    enum Move redirectMove = MOVE_NONE;
+    enum Ability abilityLeft = ABILITY_NONE, abilityRight = ABILITY_NONE;
+    u32 pressureCount = 0;
+
+    for (u32 j = 0; j < 8; j++)
+    {
+        PARAMETRIZE { redirectMove = MOVE_FOLLOW_ME; chosenTarget = j & 4 ? opponentRight : opponentLeft; abilityLeft = j & 1 ? ABILITY_PRESSURE : ABILITY_SHADOW_TAG; abilityRight = j & 2 ? ABILITY_PRESSURE : ABILITY_SHADOW_TAG; pressureCount = !!(j & 2); }
+        PARAMETRIZE { redirectMove = MOVE_RAGE_POWDER; chosenTarget = j & 4 ? opponentRight : opponentLeft; abilityLeft = j & 1 ? ABILITY_PRESSURE : ABILITY_SHADOW_TAG; abilityRight = j & 2 ? ABILITY_PRESSURE : ABILITY_SHADOW_TAG; pressureCount = !!(j & 2); }
+    }
+
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_FOLLOW_ME) == EFFECT_FOLLOW_ME);
+        ASSUME(GetMoveEffect(MOVE_RAGE_POWDER) == EFFECT_FOLLOW_ME);
+        PLAYER(SPECIES_WOBBUFFET) { MovesWithPP({MOVE_DRAGON_DARTS, 10}); }
+        PLAYER(SPECIES_WYNAUT);
+        OPPONENT(SPECIES_WOBBUFFET) { Ability(abilityLeft); }
+        OPPONENT(SPECIES_WYNAUT) { Ability(abilityRight); }
+    } WHEN {
+        TURN { MOVE(opponentRight, redirectMove); MOVE(playerLeft, MOVE_DRAGON_DARTS, target: chosenTarget); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, redirectMove, opponentRight);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentRight);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentRight);
+    } THEN {
+        EXPECT_EQ(playerLeft->pp[0], 9 - pressureCount);
+        EXPECT_EQ(opponentLeft->hp, opponentLeft->maxHP);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Dragon Darts counts Pressure on opponents avoided due to Protect or type immunity")
+{
+    struct BattlePokemon *chosenTarget = NULL;
+    enum Species species;
+    PARAMETRIZE { species = SPECIES_WOBBUFFET; chosenTarget = opponentLeft; }
+    PARAMETRIZE { species = SPECIES_WOBBUFFET; chosenTarget = opponentRight; }
+    PARAMETRIZE { species = SPECIES_FIDOUGH; chosenTarget = opponentLeft; }
+    PARAMETRIZE { species = SPECIES_FIDOUGH; chosenTarget = opponentRight; }
+
+    GIVEN {
+        ASSUME(IsSpeciesOfType(SPECIES_FIDOUGH, TYPE_FAIRY));
+        PLAYER(SPECIES_WOBBUFFET) { MovesWithPP({MOVE_DRAGON_DARTS, 10}); }
+        PLAYER(SPECIES_WYNAUT);
+        OPPONENT(species) { Ability(ABILITY_PRESSURE); }
+        OPPONENT(SPECIES_WYNAUT) { Ability(ABILITY_PRESSURE); }
+    } WHEN {
+        TURN {
+            if (species == SPECIES_WOBBUFFET) MOVE(opponentLeft, MOVE_PROTECT);
+            MOVE(playerLeft, MOVE_DRAGON_DARTS, target: chosenTarget);
+        }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentRight);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentRight);
+    } THEN {
+        EXPECT_EQ(playerLeft->pp[0], 7);
+        EXPECT_EQ(opponentLeft->hp, opponentLeft->maxHP);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Dragon Darts still counts both Pressure abilities when it ignores Follow Me or Rage Powder")
+{
+    enum Move redirectMove;
+    enum Ability ability;
+    PARAMETRIZE { redirectMove = MOVE_FOLLOW_ME; ability = ABILITY_STALWART; }
+    PARAMETRIZE { redirectMove = MOVE_FOLLOW_ME; ability = ABILITY_PROPELLER_TAIL; }
+    PARAMETRIZE { redirectMove = MOVE_RAGE_POWDER; ability = ABILITY_OVERCOAT; }
+
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Ability(ability); MovesWithPP({MOVE_DRAGON_DARTS, 10}); }
+        PLAYER(SPECIES_WYNAUT);
+        OPPONENT(SPECIES_WOBBUFFET) { Ability(ABILITY_PRESSURE); }
+        OPPONENT(SPECIES_WYNAUT) { Ability(ABILITY_PRESSURE); }
+    } WHEN {
+        TURN { MOVE(opponentRight, redirectMove); MOVE(playerLeft, MOVE_DRAGON_DARTS, target: opponentLeft); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentLeft);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentRight);
+    } THEN {
+        EXPECT_EQ(playerLeft->pp[0], 7);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Dragon Darts fails after Ally Switch if both the user and its ally are immune")
+{
+    GIVEN {
+        ASSUME(IsSpeciesOfType(SPECIES_FIDOUGH, TYPE_FAIRY));
+        PLAYER(SPECIES_FIDOUGH);
+        PLAYER(SPECIES_WYNAUT) { Ability(ABILITY_TELEPATHY); }
+        OPPONENT(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WYNAUT);
+    } WHEN {
+        TURN { MOVE(playerRight, MOVE_ALLY_SWITCH); MOVE(playerLeft, MOVE_DRAGON_DARTS, target: playerRight); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ALLY_SWITCH, playerRight);
+        NONE_OF {
+            ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerRight);
+            HP_BAR(playerLeft);
+            HP_BAR(playerRight);
+            HP_BAR(opponentLeft);
+            HP_BAR(opponentRight);
+        }
+    }
+}
+
+DOUBLE_BATTLE_TEST("Dragon Darts with Infiltrator bypasses its user's Substitute after Ally Switch")
+{
+    enum Ability ability;
+    PARAMETRIZE { ability = ABILITY_CLEAR_BODY; }
+    PARAMETRIZE { ability = ABILITY_INFILTRATOR; }
+
+    GIVEN {
+        WITH_CONFIG(B_INFILTRATOR_SUBSTITUTE, GEN_6);
+        ASSUME(GetMoveEffect(MOVE_SUBSTITUTE) == EFFECT_SUBSTITUTE);
+        ASSUME(!MoveIgnoresSubstitute(MOVE_DRAGON_DARTS));
+        PLAYER(SPECIES_DRAGAPULT) { Ability(ability); Attack(100); Defense(200); Moves(MOVE_SUBSTITUTE, MOVE_DRAGON_DARTS, MOVE_ALLY_SWITCH, MOVE_CELEBRATE); }
+        PLAYER(SPECIES_WYNAUT) { Moves(MOVE_SUBSTITUTE, MOVE_DRAGON_DARTS, MOVE_ALLY_SWITCH, MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WYNAUT);
+    } WHEN {
+        TURN { MOVE(playerLeft, MOVE_SUBSTITUTE); }
+        TURN { MOVE(playerRight, MOVE_ALLY_SWITCH); MOVE(playerLeft, MOVE_DRAGON_DARTS, target: playerRight); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_SUBSTITUTE, playerLeft);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ALLY_SWITCH, playerRight);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerRight);
+        if (ability == ABILITY_INFILTRATOR)
+            HP_BAR(playerRight);
+        else
+            SUB_HIT(playerRight);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerRight);
+        HP_BAR(playerLeft);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Dragon Darts restores Infiltrator before its second hit when Neutralizing Gas faints")
+{
+    enum Ability ability;
+    PARAMETRIZE { ability = ABILITY_CLEAR_BODY; }
+    PARAMETRIZE { ability = ABILITY_INFILTRATOR; }
+
+    GIVEN {
+        WITH_CONFIG(B_INFILTRATOR_SUBSTITUTE, GEN_6);
+        ASSUME(GetMoveEffect(MOVE_SUBSTITUTE) == EFFECT_SUBSTITUTE);
+        ASSUME(!MoveIgnoresSubstitute(MOVE_DRAGON_DARTS));
+        PLAYER(SPECIES_DRAGAPULT) { Ability(ability); }
+        PLAYER(SPECIES_WYNAUT);
+        OPPONENT(SPECIES_WEEZING) { Ability(ABILITY_NEUTRALIZING_GAS); HP(1); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(opponentRight, MOVE_SUBSTITUTE); MOVE(playerLeft, MOVE_DRAGON_DARTS, target: opponentLeft); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_SUBSTITUTE, opponentRight);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentLeft);
+        MESSAGE("The effects of the neutralizing gas wore off!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        if (ability == ABILITY_INFILTRATOR)
+            HP_BAR(opponentRight);
+        else
+            SUB_HIT(opponentRight);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Dragon Darts restores damage abilities before its second hit when Neutralizing Gas faints", s16 damage)
+{
+    enum Ability abilityAtk, abilityDef;
+    PARAMETRIZE { abilityAtk = ABILITY_HUGE_POWER; abilityDef = ABILITY_SHADOW_TAG; }
+    PARAMETRIZE { abilityAtk = ABILITY_SHADOW_TAG; abilityDef = ABILITY_SHADOW_TAG; }
+    PARAMETRIZE { abilityAtk = ABILITY_SHADOW_TAG; abilityDef = ABILITY_FUR_COAT; }
+
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Ability(abilityAtk); Attack(100); }
+        PLAYER(SPECIES_WYNAUT);
+        OPPONENT(SPECIES_WEEZING) { Ability(ABILITY_NEUTRALIZING_GAS); HP(1); }
+        OPPONENT(SPECIES_WOBBUFFET) { Ability(abilityDef); Defense(100); }
+    } WHEN {
+        TURN { MOVE(playerLeft, MOVE_DRAGON_DARTS, target: opponentLeft); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentLeft);
+        MESSAGE("The effects of the neutralizing gas wore off!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentRight, captureDamage: &results[i].damage);
+    } FINALLY {
+        EXPECT_MUL_EQ(results[1].damage, Q_4_12(2), results[0].damage);
+        EXPECT_MUL_EQ(results[2].damage, Q_4_12(2), results[1].damage);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Dragon Darts does not recheck Klutz and Ring Target after its first hit removes Neutralizing Gas")
+{
+    GIVEN {
+        ASSUME(IsSpeciesOfType(SPECIES_FIDOUGH, TYPE_FAIRY));
+        ASSUME(GetItemHoldEffect(ITEM_RING_TARGET) == HOLD_EFFECT_RING_TARGET);
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_WYNAUT);
+        OPPONENT(SPECIES_WEEZING) { Ability(ABILITY_NEUTRALIZING_GAS); HP(1); }
+        OPPONENT(SPECIES_FIDOUGH) { Ability(ABILITY_KLUTZ); Item(ITEM_RING_TARGET); }
+    } WHEN {
+        TURN { MOVE(playerLeft, MOVE_DRAGON_DARTS, target: opponentLeft); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentLeft);
+        MESSAGE("The effects of the neutralizing gas wore off!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentRight);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Dragon Darts does not retarget a semi-invulnerable opponent when Neutralizing Gas ends and restores No Guard")
+{
+    enum Ability abilityAtk, abilityDef;
+    PARAMETRIZE { abilityAtk = ABILITY_NO_GUARD; abilityDef = ABILITY_SHADOW_TAG; }
+    PARAMETRIZE { abilityAtk = ABILITY_SHADOW_TAG; abilityDef = ABILITY_NO_GUARD; }
+
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Ability(abilityAtk); }
+        PLAYER(SPECIES_WYNAUT);
+        OPPONENT(SPECIES_WEEZING) { Ability(ABILITY_NEUTRALIZING_GAS); HP(1); }
+        OPPONENT(SPECIES_WOBBUFFET) { Ability(abilityDef); }
+    } WHEN {
+        TURN { MOVE(opponentRight, MOVE_FLY, target: playerLeft); MOVE(playerLeft, MOVE_DRAGON_DARTS, target: opponentLeft); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_FLY, opponentRight);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+        HP_BAR(opponentLeft);
+        MESSAGE("The effects of the neutralizing gas wore off!");
+        NONE_OF {
+            ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAGON_DARTS, playerLeft);
+            HP_BAR(opponentRight);
+        }
+    } THEN {
+        EXPECT_EQ(opponentRight->hp, opponentRight->maxHP);
     }
 }

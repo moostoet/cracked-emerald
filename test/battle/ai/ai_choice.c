@@ -10,10 +10,11 @@ ASSUMPTIONS
 
 AI_SINGLE_BATTLE_TEST("Choiced Pokémon switch out after using a status move once")
 {
-    u32 j, heldItem = ITEM_NONE;
+    u32 j;
+    enum Item heldItem = ITEM_NONE;
     enum Ability ability = ABILITY_NONE;
 
-    static const u32 choiceItems[] = {
+    static const enum Item choiceItems[] = {
         ITEM_CHOICE_SPECS,
         ITEM_CHOICE_BAND,
         ITEM_CHOICE_SCARF,
@@ -62,10 +63,11 @@ AI_SINGLE_BATTLE_TEST("Choiced Pokémon only consider their own status moves whe
 AI_SINGLE_BATTLE_TEST("Choiced Pokémon won't use stat boosting moves")
 {
     // Moves defined by TARGET_USER (with exceptions?)
-    u32 j, heldItem = ITEM_NONE;
+    u32 j;
+    enum Item heldItem = ITEM_NONE;
     enum Ability ability = ABILITY_NONE;
 
-    static const u32 choiceItems[] = {
+    static const enum Item choiceItems[] = {
         ITEM_CHOICE_SPECS,
         ITEM_CHOICE_BAND,
         ITEM_CHOICE_SCARF,
@@ -95,9 +97,10 @@ AI_SINGLE_BATTLE_TEST("Choiced Pokémon won't use stat boosting moves")
 
 AI_SINGLE_BATTLE_TEST("Choiced Pokémon won't use status move if they are the only party member")
 {
-    u32 j, isAlive = 0, heldItem = ITEM_NONE;
+    u32 j, isAlive = 0;
+    enum Item heldItem = ITEM_NONE;
     enum Ability ability = ABILITY_NONE;
-    static const u32 choiceItems[] = {
+    static const enum Item choiceItems[] = {
         ITEM_CHOICE_SPECS,
         ITEM_CHOICE_BAND,
         ITEM_CHOICE_SCARF,
@@ -132,7 +135,7 @@ AI_SINGLE_BATTLE_TEST("Choiced Pokémon won't use status move if they don't have
 {
     u32 j;
     enum Move move = MOVE_NONE;
-    u32 species = SPECIES_NONE;
+    enum Species species = SPECIES_NONE;
     enum Item heldItem = ITEM_NONE;
     enum Ability ability = ABILITY_NONE;
     static const enum Item choiceItems[] = {
@@ -170,10 +173,10 @@ AI_SINGLE_BATTLE_TEST("Choiced Pokémon won't use status move if they are trappe
 {
     u32 j;
     enum Ability aiAbility = ABILITY_NONE, playerAbility = ABILITY_NONE;
-    u32 species = SPECIES_NONE;
+    enum Species species = SPECIES_NONE;
     enum Item heldItem = ITEM_NONE;
 
-    static const u32 choiceItems[] = {
+    static const enum Item choiceItems[] = {
         ITEM_CHOICE_SPECS,
         ITEM_CHOICE_BAND,
         ITEM_CHOICE_SCARF,
@@ -249,19 +252,19 @@ AI_SINGLE_BATTLE_TEST("Choiced Pokémon will only see choiced moves when conside
         ASSUME(GetMoveType(MOVE_WATER_GUN) == TYPE_WATER);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
         PLAYER(SPECIES_WOOPER) { Ability(ABILITY_WATER_ABSORB); Moves(MOVE_CELEBRATE); }
-        PLAYER(SPECIES_DWEBBLE) { Moves(MOVE_WATER_GUN); }
+        PLAYER(SPECIES_DWEBBLE) { Moves(MOVE_SURF); }
         OPPONENT(SPECIES_MUDKIP) { Item(ITEM_CHOICE_SCARF); Moves(MOVE_SCRATCH, MOVE_WATER_GUN); }
         OPPONENT(SPECIES_WOOPER) { Ability(ABILITY_WATER_ABSORB); Moves(MOVE_SCRATCH); }
     } WHEN {
         TURN { SWITCH(player, 1); EXPECT_MOVE(opponent, MOVE_SCRATCH); }
-        TURN { MOVE(player, MOVE_WATER_GUN); EXPECT_MOVE(opponent, MOVE_SCRATCH); }
-        TURN { MOVE(player, MOVE_WATER_GUN); EXPECT_SWITCH(opponent, 1); }
+        TURN { MOVE(player, MOVE_SURF); EXPECT_MOVE(opponent, MOVE_SCRATCH); }
+        TURN { MOVE(player, MOVE_SURF); EXPECT_SWITCH(opponent, 1); }
     }
 }
 
 AI_DOUBLE_BATTLE_TEST("Choiced Pokémon won't switch out if they can still affect one opposing Pokémon in doubles")
 {
-    u32 defendingSpecies = SPECIES_NONE;
+    enum Species defendingSpecies = SPECIES_NONE;
     enum Ability defendingAbility = ABILITY_NONE;
     PARAMETRIZE { defendingSpecies = SPECIES_VAPOREON; defendingAbility = ABILITY_WATER_ABSORB; }
     PARAMETRIZE { defendingSpecies = SPECIES_ZIGZAGOON; defendingAbility = ABILITY_GLUTTONY; }

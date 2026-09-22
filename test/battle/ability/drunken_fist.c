@@ -41,3 +41,29 @@ SINGLE_BATTLE_TEST("Drunken Fist does not activate on non-contact moves")
         }
     }
 }
+
+SINGLE_BATTLE_TEST("Drunken Fist handles stat-drop abilities without losing its Attack boost")
+{
+    enum Ability ability;
+
+    PARAMETRIZE { ability = ABILITY_NONE; }
+    PARAMETRIZE { ability = ABILITY_MIRROR_ARMOR; }
+    PARAMETRIZE { ability = ABILITY_CONTRARY; }
+    PARAMETRIZE { ability = ABILITY_KEEN_EYE; }
+
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Ability(ABILITY_DRUNKEN_FIST); }
+        OPPONENT(SPECIES_WYNAUT) { Ability(ability); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_SCRATCH); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_ATK], DEFAULT_STAT_STAGE + 1);
+        EXPECT_EQ(player->statStages[STAT_ACC], DEFAULT_STAT_STAGE - (ability == ABILITY_MIRROR_ARMOR));
+        if (ability == ABILITY_CONTRARY)
+            EXPECT_EQ(opponent->statStages[STAT_ACC], DEFAULT_STAT_STAGE + 1);
+        else if (ability == ABILITY_NONE)
+            EXPECT_EQ(opponent->statStages[STAT_ACC], DEFAULT_STAT_STAGE - 1);
+        else
+            EXPECT_EQ(opponent->statStages[STAT_ACC], DEFAULT_STAT_STAGE);
+    }
+}

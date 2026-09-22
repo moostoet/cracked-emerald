@@ -112,3 +112,55 @@ SINGLE_BATTLE_TEST("Terrain started after the one which started the battle lasts
         ResetStartingStatuses();
     }
 }
+
+SINGLE_BATTLE_TEST("Rising Tide starts once and remains active after five turns")
+{
+    SetStartingStatus(STARTING_STATUS_RISING_TIDE);
+
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN {}
+        TURN {}
+        TURN {}
+        TURN {}
+        TURN {}
+        TURN {}
+    } SCENE {
+        MESSAGE("The sound of waves invigorate the spirit!");
+        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_RESTORE_BG);
+        NOT MESSAGE("The sound of waves invigorate the spirit!");
+    } THEN {
+        EXPECT_EQ(gFieldTimers.terrain, B_TERRAIN_RISING_TIDE);
+        ResetStartingStatuses();
+    }
+}
+
+SINGLE_BATTLE_TEST("Rising Tide can be replaced or removed by terrain moves")
+{
+    enum Move move;
+
+    PARAMETRIZE { move = MOVE_ELECTRIC_TERRAIN; }
+    PARAMETRIZE { move = MOVE_DEFOG; }
+
+    SetStartingStatus(STARTING_STATUS_RISING_TIDE);
+
+    GIVEN {
+        WITH_CONFIG(B_DEFOG_EFFECT_CLEARING, GEN_9);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, move); }
+    } SCENE {
+        MESSAGE("The sound of waves invigorate the spirit!");
+        ANIMATION(ANIM_TYPE_MOVE, move, player);
+        if (move == MOVE_ELECTRIC_TERRAIN)
+            MESSAGE("An electric current ran across the battlefield!");
+        else
+            MESSAGE("The sound of waves faded away!");
+    } THEN {
+        EXPECT_EQ(gFieldTimers.terrain, move == MOVE_ELECTRIC_TERRAIN ? B_TERRAIN_ELECTRIC : B_TERRAIN_NONE);
+        ResetStartingStatuses();
+    }
+}

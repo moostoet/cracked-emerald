@@ -477,10 +477,10 @@ static bool32 __attribute__((unused)) Fishing_DoesFirstMonInPartyHaveSuctionCups
 {
     enum Ability ability;
 
-    if (GetMonData(&gParties[B_TRAINER_0][0], MON_DATA_SANITY_IS_EGG))
+    if (GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_SANITY_IS_EGG))
         return FALSE;
 
-    ability = GetMonAbility(&gParties[B_TRAINER_0][0]);
+    ability = GetMonAbility(&gParties[B_TRAINER_PLAYER][0]);
 
     return (ability == ABILITY_SUCTION_CUPS || ability == ABILITY_STICKY_HOLD);
 }

@@ -22,3 +22,24 @@ SINGLE_BATTLE_TEST("Noble Aura does not reactivate when only the opposing replac
         EXPECT_EQ(opponent->statStages[STAT_SPATK], DEFAULT_STAT_STAGE);
     }
 }
+
+DOUBLE_BATTLE_TEST("Noble Aura lowers both opponents' Sp. Atk without lowering its ally's")
+{
+    GIVEN {
+        PLAYER(SPECIES_SERVINE) { Ability(ABILITY_NOBLE_AURA); }
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WYNAUT);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN {}
+    } SCENE {
+        ABILITY_POPUP(playerLeft, ABILITY_NOBLE_AURA);
+        MESSAGE("The opposing Wynaut's Sp. Atk fell!");
+        MESSAGE("The opposing Wobbuffet's Sp. Atk fell!");
+    } THEN {
+        EXPECT_EQ(playerLeft->statStages[STAT_SPATK], DEFAULT_STAT_STAGE);
+        EXPECT_EQ(playerRight->statStages[STAT_SPATK], DEFAULT_STAT_STAGE);
+        EXPECT_EQ(opponentLeft->statStages[STAT_SPATK], DEFAULT_STAT_STAGE - 1);
+        EXPECT_EQ(opponentRight->statStages[STAT_SPATK], DEFAULT_STAT_STAGE - 1);
+    }
+}

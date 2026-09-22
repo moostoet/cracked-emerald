@@ -537,7 +537,7 @@ u8 GetLinkPartnerNames(void)
     {
         if (myLinkPlayerNumber != i)
         {
-            StringCopy(gTVStringVarPtrs[j], gLinkPlayers[i].name);
+            StringCopy(GetStringVar(j), gLinkPlayers[i].name);
             j++;
         }
     }
@@ -1004,7 +1004,7 @@ u16 GetWeekCount(void)
 
 u8 GetLeadMonFriendshipScore(void)
 {
-    return GetMonFriendshipScore(&gParties[B_TRAINER_0][GetLeadMonIndex()]);
+    return GetMonFriendshipScore(&gParties[B_TRAINER_PLAYER][GetLeadMonIndex()]);
 }
 
 static void CB2_FieldShowRegionMap(void)
@@ -1295,7 +1295,7 @@ void ResetTrickHouseNuggetFlag(void)
 
 bool8 CheckLeadMonCool(void)
 {
-    if (GetMonData(&gParties[B_TRAINER_0][GetLeadMonIndex()], MON_DATA_COOL) < 200)
+    if (GetMonData(&gParties[B_TRAINER_PLAYER][GetLeadMonIndex()], MON_DATA_COOL) < 200)
         return FALSE;
 
     return TRUE;
@@ -1303,7 +1303,7 @@ bool8 CheckLeadMonCool(void)
 
 bool8 CheckLeadMonBeauty(void)
 {
-    if (GetMonData(&gParties[B_TRAINER_0][GetLeadMonIndex()], MON_DATA_BEAUTY) < 200)
+    if (GetMonData(&gParties[B_TRAINER_PLAYER][GetLeadMonIndex()], MON_DATA_BEAUTY) < 200)
         return FALSE;
 
     return TRUE;
@@ -1311,7 +1311,7 @@ bool8 CheckLeadMonBeauty(void)
 
 bool8 CheckLeadMonCute(void)
 {
-    if (GetMonData(&gParties[B_TRAINER_0][GetLeadMonIndex()], MON_DATA_CUTE) < 200)
+    if (GetMonData(&gParties[B_TRAINER_PLAYER][GetLeadMonIndex()], MON_DATA_CUTE) < 200)
         return FALSE;
 
     return TRUE;
@@ -1319,7 +1319,7 @@ bool8 CheckLeadMonCute(void)
 
 bool8 CheckLeadMonSmart(void)
 {
-    if (GetMonData(&gParties[B_TRAINER_0][GetLeadMonIndex()], MON_DATA_SMART) < 200)
+    if (GetMonData(&gParties[B_TRAINER_PLAYER][GetLeadMonIndex()], MON_DATA_SMART) < 200)
         return FALSE;
 
     return TRUE;
@@ -1327,7 +1327,7 @@ bool8 CheckLeadMonSmart(void)
 
 bool8 CheckLeadMonTough(void)
 {
-    if (GetMonData(&gParties[B_TRAINER_0][GetLeadMonIndex()], MON_DATA_TOUGH) < 200)
+    if (GetMonData(&gParties[B_TRAINER_PLAYER][GetLeadMonIndex()], MON_DATA_TOUGH) < 200)
         return FALSE;
 
     return TRUE;
@@ -1340,7 +1340,7 @@ void IsGrassTypeInParty(void)
     struct Pokemon *pokemon;
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        pokemon = &gParties[B_TRAINER_0][i];
+        pokemon = &gParties[B_TRAINER_PLAYER][i];
         if (GetMonData(pokemon, MON_DATA_SANITY_HAS_SPECIES) && !GetMonData(pokemon, MON_DATA_IS_EGG))
         {
             species = GetMonData(pokemon, MON_DATA_SPECIES);
@@ -1374,7 +1374,7 @@ void RemoveCameraObject(void)
 
 u8 GetPokeblockNameByMonNature(void)
 {
-    return CopyMonFavoritePokeblockName(GetNature(&gParties[B_TRAINER_0][GetLeadMonIndex()]), gStringVar1);
+    return CopyMonFavoritePokeblockName(GetNature(&gParties[B_TRAINER_PLAYER][GetLeadMonIndex()]), gStringVar1);
 }
 
 void GetSecretBaseNearbyMapName(void)
@@ -1477,7 +1477,7 @@ bool8 FoundAbandonedShipRoom6Key(void)
 
 bool8 LeadMonHasEffortRibbon(void)
 {
-    return GetMonData(&gParties[B_TRAINER_0][GetLeadMonIndex()], MON_DATA_EFFORT_RIBBON);
+    return GetMonData(&gParties[B_TRAINER_PLAYER][GetLeadMonIndex()], MON_DATA_EFFORT_RIBBON);
 }
 
 void GiveLeadMonEffortRibbon(void)
@@ -1487,7 +1487,7 @@ void GiveLeadMonEffortRibbon(void)
     IncrementGameStat(GAME_STAT_RECEIVED_RIBBONS);
     FlagSet(FLAG_SYS_RIBBON_GET);
     ribbonSet = TRUE;
-    leadMon = &gParties[B_TRAINER_0][GetLeadMonIndex()];
+    leadMon = &gParties[B_TRAINER_PLAYER][GetLeadMonIndex()];
     SetMonData(leadMon, MON_DATA_EFFORT_RIBBON, &ribbonSet);
     if (GetRibbonCount(leadMon) > NUM_CUTIES_RIBBONS)
         TryPutSpotTheCutiesOnAir(leadMon, MON_DATA_EFFORT_RIBBON);
@@ -1495,7 +1495,7 @@ void GiveLeadMonEffortRibbon(void)
 
 bool8 Special_AreLeadMonEVsMaxedOut(void)
 {
-    if (GetMonEVCount(&gParties[B_TRAINER_0][GetLeadMonIndex()]) >= MAX_TOTAL_EVS)
+    if (GetMonEVCount(&gParties[B_TRAINER_PLAYER][GetLeadMonIndex()]) >= MAX_TOTAL_EVS)
         return TRUE;
 
     return FALSE;
@@ -1529,15 +1529,15 @@ void SetShoalItemFlag(u16 unused)
 void LoadWallyZigzagoon(void)
 {
     u16 monData;
-    CreateRandomMon(&gParties[B_TRAINER_0][0], SPECIES_ZIGZAGOON, 7);
+    CreateRandomMon(&gParties[B_TRAINER_PLAYER][0], SPECIES_ZIGZAGOON, 7);
     monData = TRUE;
-    SetMonData(&gParties[B_TRAINER_0][0], MON_DATA_ABILITY_NUM, &monData);
+    SetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_ABILITY_NUM, &monData);
     monData = MOVE_TACKLE;
-    SetMonData(&gParties[B_TRAINER_0][0], MON_DATA_MOVE1, &monData);
+    SetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_MOVE1, &monData);
     monData = MOVE_NONE;
-    SetMonData(&gParties[B_TRAINER_0][0], MON_DATA_MOVE2, &monData);
-    SetMonData(&gParties[B_TRAINER_0][0], MON_DATA_MOVE3, &monData);
-    SetMonData(&gParties[B_TRAINER_0][0], MON_DATA_MOVE4, &monData);
+    SetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_MOVE2, &monData);
+    SetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_MOVE3, &monData);
+    SetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_MOVE4, &monData);
 }
 
 bool8 IsStarterInParty(void)
@@ -1547,7 +1547,7 @@ bool8 IsStarterInParty(void)
     u8 partyCount = CalculatePlayerPartyCount();
     for (i = 0; i < partyCount; i++)
     {
-        if (GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_SPECIES_OR_EGG) == starter)
+        if (GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES_OR_EGG) == starter)
             return TRUE;
     }
     return FALSE;
@@ -1632,8 +1632,8 @@ u8 GetLeadMonIndex(void)
     u8 partyCount = CalculatePlayerPartyCount();
     for (i = 0; i < partyCount; i++)
     {
-        if (GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_SPECIES_OR_EGG) != SPECIES_EGG
-         && GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_SPECIES_OR_EGG) != SPECIES_NONE)
+        if (GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES_OR_EGG) != SPECIES_EGG
+         && GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES_OR_EGG) != SPECIES_NONE)
             return i;
     }
     return 0;
@@ -1641,13 +1641,7 @@ u8 GetLeadMonIndex(void)
 
 enum Species ScriptGetPartyMonSpecies(void)
 {
-    return GetMonData(&gParties[B_TRAINER_0][gSpecialVar_0x8004], MON_DATA_SPECIES_OR_EGG, NULL);
-}
-
-enum Species ScriptGetSelectedMonSpecies(void)
-{
-    struct BoxPokemon *boxmon = GetSelectedBoxMonFromPcOrParty();
-    return GetBoxMonData(boxmon, MON_DATA_SPECIES_OR_EGG);
+    return GetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], MON_DATA_SPECIES_OR_EGG, NULL);
 }
 
 // Removed for Emerald
@@ -1758,7 +1752,7 @@ bool8 IsBadEggInParty(void)
 
     for (i = 0; i < partyCount; i++)
     {
-        if (GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_SANITY_IS_BAD_EGG) == TRUE)
+        if (GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SANITY_IS_BAD_EGG) == TRUE)
             return TRUE;
     }
 
@@ -2544,48 +2538,48 @@ static const u8 *const sScrollableMultichoiceOptions[][MAX_SCROLL_MULTI_LENGTH] 
     },
     [SCROLL_MULTI_BF_EXCHANGE_CORNER_DECOR_VENDOR_1] =
     {
-        COMPOUND_STRING("KISS POSTER{CLEAR_TO 0x5E}16BP"),
-        COMPOUND_STRING("KISS CUSHION{CLEAR_TO 0x5E}32BP"),
-        COMPOUND_STRING("SMOOCHUM DOLL{CLEAR_TO 0x5E}32BP"),
-        COMPOUND_STRING("TOGEPI DOLL{CLEAR_TO 0x5E}48BP"),
-        COMPOUND_STRING("MEOWTH DOLL{CLEAR_TO 0x5E}48BP"),
-        COMPOUND_STRING("CLEFAIRY DOLL{CLEAR_TO 0x5E}48BP"),
-        COMPOUND_STRING("DITTO DOLL{CLEAR_TO 0x5E}48BP"),
-        COMPOUND_STRING("CYNDAQUIL DOLL{CLEAR_TO 0x5E}80BP"),
-        COMPOUND_STRING("CHIKORITA DOLL{CLEAR_TO 0x5E}80BP"),
-        COMPOUND_STRING("TOTODILE DOLL{CLEAR_TO 0x5E}80BP"),
+        COMPOUND_STRING("KISS POSTER{CLEAR_TO 94}16BP"),
+        COMPOUND_STRING("KISS CUSHION{CLEAR_TO 94}32BP"),
+        COMPOUND_STRING("SMOOCHUM DOLL{CLEAR_TO 94}32BP"),
+        COMPOUND_STRING("TOGEPI DOLL{CLEAR_TO 94}48BP"),
+        COMPOUND_STRING("MEOWTH DOLL{CLEAR_TO 94}48BP"),
+        COMPOUND_STRING("CLEFAIRY DOLL{CLEAR_TO 94}48BP"),
+        COMPOUND_STRING("DITTO DOLL{CLEAR_TO 94}48BP"),
+        COMPOUND_STRING("CYNDAQUIL DOLL{CLEAR_TO 94}80BP"),
+        COMPOUND_STRING("CHIKORITA DOLL{CLEAR_TO 94}80BP"),
+        COMPOUND_STRING("TOTODILE DOLL{CLEAR_TO 94}80BP"),
         gText_Exit
     },
     [SCROLL_MULTI_BF_EXCHANGE_CORNER_DECOR_VENDOR_2] =
     {
-        COMPOUND_STRING("LAPRAS DOLL{CLEAR_TO 0x58}128BP"),
-        COMPOUND_STRING("SNORLAX DOLL{CLEAR_TO 0x58}128BP"),
-        COMPOUND_STRING("VENUSAUR DOLL{CLEAR_TO 0x58}256BP"),
-        COMPOUND_STRING("CHARIZARD DOLL{CLEAR_TO 0x58}256BP"),
-        COMPOUND_STRING("BLASTOISE DOLL{CLEAR_TO 0x58}256BP"),
+        COMPOUND_STRING("LAPRAS DOLL{CLEAR_TO 88}128BP"),
+        COMPOUND_STRING("SNORLAX DOLL{CLEAR_TO 88}128BP"),
+        COMPOUND_STRING("VENUSAUR DOLL{CLEAR_TO 88}256BP"),
+        COMPOUND_STRING("CHARIZARD DOLL{CLEAR_TO 88}256BP"),
+        COMPOUND_STRING("BLASTOISE DOLL{CLEAR_TO 88}256BP"),
         gText_Exit
     },
     [SCROLL_MULTI_BF_EXCHANGE_CORNER_VITAMIN_VENDOR] =
     {
-        COMPOUND_STRING("PROTEIN{CLEAR_TO 0x64}1BP"),
-        COMPOUND_STRING("CALCIUM{CLEAR_TO 0x64}1BP"),
-        COMPOUND_STRING("IRON{CLEAR_TO 0x64}1BP"),
-        COMPOUND_STRING("ZINC{CLEAR_TO 0x64}1BP"),
-        COMPOUND_STRING("CARBOS{CLEAR_TO 0x64}1BP"),
-        COMPOUND_STRING("HP UP{CLEAR_TO 0x64}1BP"),
+        COMPOUND_STRING("PROTEIN{CLEAR_TO 100}1BP"),
+        COMPOUND_STRING("CALCIUM{CLEAR_TO 100}1BP"),
+        COMPOUND_STRING("IRON{CLEAR_TO 100}1BP"),
+        COMPOUND_STRING("ZINC{CLEAR_TO 100}1BP"),
+        COMPOUND_STRING("CARBOS{CLEAR_TO 100}1BP"),
+        COMPOUND_STRING("HP UP{CLEAR_TO 100}1BP"),
         gText_Exit
     },
     [SCROLL_MULTI_BF_EXCHANGE_CORNER_HOLD_ITEM_VENDOR] =
     {
-        COMPOUND_STRING("LEFTOVERS{CLEAR_TO 0x5E}48BP"),
-        COMPOUND_STRING("WHITE HERB{CLEAR_TO 0x5E}48BP"),
-        COMPOUND_STRING("QUICK CLAW{CLEAR_TO 0x5E}48BP"),
-        COMPOUND_STRING("MENTAL HERB{CLEAR_TO 0x5E}48BP"),
-        COMPOUND_STRING("BRIGHTPOWDER{CLEAR_TO 0x5E}64BP"),
-        COMPOUND_STRING("CHOICE BAND{CLEAR_TO 0x5E}64BP"),
-        COMPOUND_STRING("KING'S ROCK{CLEAR_TO 0x5E}64BP"),
-        COMPOUND_STRING("FOCUS BAND{CLEAR_TO 0x5E}64BP"),
-        COMPOUND_STRING("SCOPE LENS{CLEAR_TO 0x5E}64BP"),
+        COMPOUND_STRING("LEFTOVERS{CLEAR_TO 94}48BP"),
+        COMPOUND_STRING("WHITE HERB{CLEAR_TO 94}48BP"),
+        COMPOUND_STRING("QUICK CLAW{CLEAR_TO 94}48BP"),
+        COMPOUND_STRING("MENTAL HERB{CLEAR_TO 94}48BP"),
+        COMPOUND_STRING("BRIGHTPOWDER{CLEAR_TO 94}64BP"),
+        COMPOUND_STRING("CHOICE BAND{CLEAR_TO 94}64BP"),
+        COMPOUND_STRING("KING'S ROCK{CLEAR_TO 94}64BP"),
+        COMPOUND_STRING("FOCUS BAND{CLEAR_TO 94}64BP"),
+        COMPOUND_STRING("SCOPE LENS{CLEAR_TO 94}64BP"),
         gText_Exit
     },
     [SCROLL_MULTI_BERRY_POWDER_VENDOR] =
@@ -2618,30 +2612,30 @@ static const u8 *const sScrollableMultichoiceOptions[][MAX_SCROLL_MULTI_LENGTH] 
     },
     [SCROLL_MULTI_BF_MOVE_TUTOR_1] =
     {
-        COMPOUND_STRING("SOFTBOILED{CLEAR_TO 0x4E}16BP"),
-        COMPOUND_STRING("SEISMIC TOSS{CLEAR_TO 0x4E}24BP"),
-        COMPOUND_STRING("DREAM EATER{CLEAR_TO 0x4E}24BP"),
-        COMPOUND_STRING("MEGA PUNCH{CLEAR_TO 0x4E}24BP"),
-        COMPOUND_STRING("MEGA KICK{CLEAR_TO 0x4E}48BP"),
-        COMPOUND_STRING("BODY SLAM{CLEAR_TO 0x4E}48BP"),
-        COMPOUND_STRING("ROCK SLIDE{CLEAR_TO 0x4E}48BP"),
-        COMPOUND_STRING("COUNTER{CLEAR_TO 0x4E}48BP"),
-        COMPOUND_STRING("THUNDER WAVE{CLEAR_TO 0x4E}48BP"),
-        COMPOUND_STRING("SWORDS DANCE{CLEAR_TO 0x4E}48BP"),
+        COMPOUND_STRING("SOFTBOILED{CLEAR_TO 78}16BP"),
+        COMPOUND_STRING("SEISMIC TOSS{CLEAR_TO 78}24BP"),
+        COMPOUND_STRING("DREAM EATER{CLEAR_TO 78}24BP"),
+        COMPOUND_STRING("MEGA PUNCH{CLEAR_TO 78}24BP"),
+        COMPOUND_STRING("MEGA KICK{CLEAR_TO 78}48BP"),
+        COMPOUND_STRING("BODY SLAM{CLEAR_TO 78}48BP"),
+        COMPOUND_STRING("ROCK SLIDE{CLEAR_TO 78}48BP"),
+        COMPOUND_STRING("COUNTER{CLEAR_TO 78}48BP"),
+        COMPOUND_STRING("THUNDER WAVE{CLEAR_TO 78}48BP"),
+        COMPOUND_STRING("SWORDS DANCE{CLEAR_TO 78}48BP"),
         gText_Exit
     },
     [SCROLL_MULTI_BF_MOVE_TUTOR_2] =
     {
-        COMPOUND_STRING("DEFENSE CURL{CLEAR_TO 0x4E}16BP"),
-        COMPOUND_STRING("SNORE{CLEAR_TO 0x4E}24BP"),
-        COMPOUND_STRING("MUD-SLAP{CLEAR_TO 0x4E}24BP"),
-        COMPOUND_STRING("SWIFT{CLEAR_TO 0x4E}24BP"),
-        COMPOUND_STRING("ICY WIND{CLEAR_TO 0x4E}24BP"),
-        COMPOUND_STRING("ENDURE{CLEAR_TO 0x4E}48BP"),
-        COMPOUND_STRING("PSYCH UP{CLEAR_TO 0x4E}48BP"),
-        COMPOUND_STRING("ICE PUNCH{CLEAR_TO 0x4E}48BP"),
-        COMPOUND_STRING("THUNDERPUNCH{CLEAR_TO 0x4E}48BP"),
-        COMPOUND_STRING("FIRE PUNCH{CLEAR_TO 0x4E}48BP"),
+        COMPOUND_STRING("DEFENSE CURL{CLEAR_TO 78}16BP"),
+        COMPOUND_STRING("SNORE{CLEAR_TO 78}24BP"),
+        COMPOUND_STRING("MUD-SLAP{CLEAR_TO 78}24BP"),
+        COMPOUND_STRING("SWIFT{CLEAR_TO 78}24BP"),
+        COMPOUND_STRING("ICY WIND{CLEAR_TO 78}24BP"),
+        COMPOUND_STRING("ENDURE{CLEAR_TO 78}48BP"),
+        COMPOUND_STRING("PSYCH UP{CLEAR_TO 78}48BP"),
+        COMPOUND_STRING("ICE PUNCH{CLEAR_TO 78}48BP"),
+        COMPOUND_STRING("THUNDERPUNCH{CLEAR_TO 78}48BP"),
+        COMPOUND_STRING("FIRE PUNCH{CLEAR_TO 78}48BP"),
         gText_Exit
     },
     [SCROLL_MULTI_SS_TIDAL_DESTINATION] =
@@ -3327,17 +3321,17 @@ void DoDeoxysRockInteraction(void)
 }
 
 static const u16 sDeoxysRockPalettes[DEOXYS_ROCK_LEVELS][16] = {
-    INCBIN_U16("graphics/field_effects/palettes/deoxys_rock_1.gbapal"),
-    INCBIN_U16("graphics/field_effects/palettes/deoxys_rock_2.gbapal"),
-    INCBIN_U16("graphics/field_effects/palettes/deoxys_rock_3.gbapal"),
-    INCBIN_U16("graphics/field_effects/palettes/deoxys_rock_4.gbapal"),
-    INCBIN_U16("graphics/field_effects/palettes/deoxys_rock_5.gbapal"),
-    INCBIN_U16("graphics/field_effects/palettes/deoxys_rock_6.gbapal"),
-    INCBIN_U16("graphics/field_effects/palettes/deoxys_rock_7.gbapal"),
-    INCBIN_U16("graphics/field_effects/palettes/deoxys_rock_8.gbapal"),
-    INCBIN_U16("graphics/field_effects/palettes/deoxys_rock_9.gbapal"),
-    INCBIN_U16("graphics/field_effects/palettes/deoxys_rock_10.gbapal"),
-    INCBIN_U16("graphics/field_effects/palettes/deoxys_rock_11.gbapal"),
+    INCGFX_U16("graphics/field_effects/palettes/deoxys_rock_1.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_effects/palettes/deoxys_rock_2.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_effects/palettes/deoxys_rock_3.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_effects/palettes/deoxys_rock_4.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_effects/palettes/deoxys_rock_5.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_effects/palettes/deoxys_rock_6.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_effects/palettes/deoxys_rock_7.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_effects/palettes/deoxys_rock_8.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_effects/palettes/deoxys_rock_9.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_effects/palettes/deoxys_rock_10.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_effects/palettes/deoxys_rock_11.pal", ".gbapal"),
 };
 
 static const u8 sDeoxysRockCoords[DEOXYS_ROCK_LEVELS][2] = {
@@ -4387,7 +4381,7 @@ void TrySkyBattle(void)
     }
     for (i = 0; i < CalculatePlayerPartyCount(); i++)
     {
-        struct Pokemon* pokemon = &gParties[B_TRAINER_0][i];
+        struct Pokemon* pokemon = &gParties[B_TRAINER_PLAYER][i];
         if (CanMonParticipateInSkyBattle(pokemon) && GetMonData(pokemon, MON_DATA_HP) > 0)
         {
             PreparePartyForSkyBattle();
@@ -4408,7 +4402,7 @@ void PreparePartyForSkyBattle(void)
 
     for (i = 0; i < partyCount; i++)
     {
-        struct Pokemon* pokemon = &gParties[B_TRAINER_0][i];
+        struct Pokemon* pokemon = &gParties[B_TRAINER_PLAYER][i];
 
         if (CanMonParticipateInSkyBattle(pokemon))
             participatingPokemonSlot += 1 << i;
@@ -4462,7 +4456,7 @@ bool32 CheckPartyHasSpecies(enum Species givenSpecies)
     u32 partyIndex;
 
     for (partyIndex = 0; partyIndex < CalculatePlayerPartyCount(); partyIndex++)
-        if (GetMonData(&gParties[B_TRAINER_0][partyIndex], MON_DATA_SPECIES) == givenSpecies)
+        if (GetMonData(&gParties[B_TRAINER_PLAYER][partyIndex], MON_DATA_SPECIES) == givenSpecies)
             return TRUE;
 
     return FALSE;
@@ -4510,7 +4504,7 @@ static void UIShowMoveList(u8 taskId)
     gSpecialVar_0x8000 = gTasks[taskId].tPartyIndex;
     gSpecialVar_0x8001 = gTasks[taskId].tMove;
     DestroyTask(taskId);
-    ShowSelectMovePokemonSummaryScreen(gParties[B_TRAINER_0], gTasks[taskId].tPartyIndex, CB2_ReturnToFieldWhileLearningMove, gTasks[taskId].tMove);
+    ShowSelectMovePokemonSummaryScreen(gParties[B_TRAINER_PLAYER], gTasks[taskId].tPartyIndex, CB2_ReturnToFieldWhileLearningMove, gTasks[taskId].tMove);
 }
 
 static const struct MoveLearnUI sMoveLearnUI =
@@ -4591,14 +4585,14 @@ void GetCodeFeedback(void)
 void SetHiddenNature(void)
 {
     u32 hiddenNature = gSpecialVar_Result;
-    SetMonData(&gParties[B_TRAINER_0][gSpecialVar_0x8004], MON_DATA_HIDDEN_NATURE, &hiddenNature);
-    CalculateMonStats(&gParties[B_TRAINER_0][gSpecialVar_0x8004]);
+    SetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], MON_DATA_HIDDEN_NATURE, &hiddenNature);
+    CalculateMonStats(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004]);
 }
 
 void SetAbility(void)
 {
-    u32 ability = gSpecialVar_Result;
-    SetMonData(&gParties[B_TRAINER_0][gSpecialVar_0x8004], MON_DATA_ABILITY_NUM, &ability);
+    enum Ability ability = gSpecialVar_Result;
+    SetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], MON_DATA_ABILITY_NUM, &ability);
 }
 
 // Thievable Items NPC Feature
@@ -4680,13 +4674,13 @@ static bool32 HasSeenAnyInEncounterInfo(const struct WildPokemonInfo *info, u32 
 
 void DaisyMassageServices(void)
 {
-    AdjustFriendship(&gParties[B_TRAINER_0][gSpecialVar_0x8004], FRIENDSHIP_EVENT_MASSAGE);
+    AdjustFriendship(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], FRIENDSHIP_EVENT_MASSAGE);
     VarSet(VAR_MASSAGE_COOLDOWN_STEP_COUNTER, 0);
 }
 
 u8 GetLeadMonFriendship(void)
 {
-    struct Pokemon * pokemon = &gParties[B_TRAINER_0][GetLeadMonIndex()];
+    struct Pokemon * pokemon = &gParties[B_TRAINER_PLAYER][GetLeadMonIndex()];
     if (GetMonData(pokemon, MON_DATA_FRIENDSHIP) == 255)
         return 6;
     else if (GetMonData(pokemon, MON_DATA_FRIENDSHIP) >= 200)
@@ -4726,11 +4720,12 @@ bool8 CapeBrinkGetMoveToTeachLeadPokemon(void)
     //   8007 = Index of lead mon
     //   to specialvar = whether a move can be taught in the first place
     u8 i, leadMonSlot, moveCount = 0;
-    u16 moveId, tutorFlag;
+    enum Move moveId;
+    u16 tutorFlag;
     struct Pokemon *leadMon;
 
     leadMonSlot = GetLeadMonIndex();
-    leadMon = &gParties[B_TRAINER_0][leadMonSlot];
+    leadMon = &gParties[B_TRAINER_PLAYER][leadMonSlot];
 
     if (GetMonData(leadMon, MON_DATA_FRIENDSHIP) != 255)
         return FALSE;
@@ -5022,7 +5017,7 @@ bool8 DoesPlayerPartyContainSpecies(void)
     u8 i;
     for (i = 0; i < partyCount; i++)
     {
-        if (GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_SPECIES_OR_EGG, NULL) == gSpecialVar_0x8004)
+        if (GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES_OR_EGG, NULL) == gSpecialVar_0x8004)
             return TRUE;
     }
     return FALSE;
@@ -5077,15 +5072,15 @@ void Special_GetRouteThievableItems(void)
     {
         encounterTypes = &header->encounterTypes[timeOfDay];
 
-        if (HasSeenAnyInEncounterInfo(encounterTypes->landMonsInfo, LAND_WILD_COUNT))
+        if (HasSeenAnyInEncounterInfo(encounterTypes->landMonsInfo, NUM_LAND_MONS_ENCOUNTER_SLOTS))
             hasSeenAny = TRUE;
-        else if (HasSeenAnyInEncounterInfo(encounterTypes->waterMonsInfo, WATER_WILD_COUNT))
+        else if (HasSeenAnyInEncounterInfo(encounterTypes->waterMonsInfo, NUM_WATER_MONS_ENCOUNTER_SLOTS))
             hasSeenAny = TRUE;
-        else if (HasSeenAnyInEncounterInfo(encounterTypes->fishingMonsInfo, FISH_WILD_COUNT))
+        else if (HasSeenAnyInEncounterInfo(encounterTypes->fishingMonsInfo, NUM_FISHING_MONS_ENCOUNTER_SLOTS))
             hasSeenAny = TRUE;
-        else if (HasSeenAnyInEncounterInfo(encounterTypes->rockSmashMonsInfo, ROCK_WILD_COUNT))
+        else if (HasSeenAnyInEncounterInfo(encounterTypes->rockSmashMonsInfo, NUM_ROCK_SMASH_MONS_ENCOUNTER_SLOTS))
             hasSeenAny = TRUE;
-        else if (HasSeenAnyInEncounterInfo(encounterTypes->hiddenMonsInfo, HIDDEN_WILD_COUNT))
+        else if (HasSeenAnyInEncounterInfo(encounterTypes->hiddenMonsInfo, NUM_HIDDEN_MONS_ENCOUNTER_SLOTS))
             hasSeenAny = TRUE;
     }
 
@@ -5101,11 +5096,11 @@ void Special_GetRouteThievableItems(void)
     {
         encounterTypes = &header->encounterTypes[timeOfDay];
 
-        AddAllItemsFromEncounterInfo(encounterTypes->landMonsInfo, LAND_WILD_COUNT);
-        AddAllItemsFromEncounterInfo(encounterTypes->waterMonsInfo, WATER_WILD_COUNT);
-        AddAllItemsFromEncounterInfo(encounterTypes->fishingMonsInfo, FISH_WILD_COUNT);
-        AddAllItemsFromEncounterInfo(encounterTypes->rockSmashMonsInfo, ROCK_WILD_COUNT);
-        AddAllItemsFromEncounterInfo(encounterTypes->hiddenMonsInfo, HIDDEN_WILD_COUNT);
+        AddAllItemsFromEncounterInfo(encounterTypes->landMonsInfo, NUM_LAND_MONS_ENCOUNTER_SLOTS);
+        AddAllItemsFromEncounterInfo(encounterTypes->waterMonsInfo, NUM_WATER_MONS_ENCOUNTER_SLOTS);
+        AddAllItemsFromEncounterInfo(encounterTypes->fishingMonsInfo, NUM_FISHING_MONS_ENCOUNTER_SLOTS);
+        AddAllItemsFromEncounterInfo(encounterTypes->rockSmashMonsInfo, NUM_ROCK_SMASH_MONS_ENCOUNTER_SLOTS);
+        AddAllItemsFromEncounterInfo(encounterTypes->hiddenMonsInfo, NUM_HIDDEN_MONS_ENCOUNTER_SLOTS);
     }
 
     if (sThievableItemsCount == 0)
@@ -5678,30 +5673,30 @@ void BrailleCursorToggle(void)
 }
 
 static const u16 sEliteFourLightingPalettes[][16] = {
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_0.gbapal"),
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_1.gbapal"),
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_2.gbapal"),
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_3.gbapal"),
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_4.gbapal"),
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_5.gbapal"),
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_6.gbapal"),
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_7.gbapal"),
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_8.gbapal"),
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_9.gbapal"),
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_10.gbapal"),
-    INCBIN_U16("graphics/field_specials/elite_four_lighting_11.gbapal")
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_0.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_1.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_2.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_3.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_4.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_5.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_6.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_7.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_8.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_9.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_10.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/elite_four_lighting_11.pal", ".gbapal")
 };
 
 static const u16 sChampionRoomLightingPalettes[][16] = {
-    INCBIN_U16("graphics/field_specials/champion_room_lighting_0.gbapal"),
-    INCBIN_U16("graphics/field_specials/champion_room_lighting_1.gbapal"),
-    INCBIN_U16("graphics/field_specials/champion_room_lighting_2.gbapal"),
-    INCBIN_U16("graphics/field_specials/champion_room_lighting_3.gbapal"),
-    INCBIN_U16("graphics/field_specials/champion_room_lighting_4.gbapal"),
-    INCBIN_U16("graphics/field_specials/champion_room_lighting_5.gbapal"),
-    INCBIN_U16("graphics/field_specials/champion_room_lighting_6.gbapal"),
-    INCBIN_U16("graphics/field_specials/champion_room_lighting_7.gbapal"),
-    INCBIN_U16("graphics/field_specials/champion_room_lighting_8.gbapal")
+    INCGFX_U16("graphics/field_specials/champion_room_lighting_0.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/champion_room_lighting_1.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/champion_room_lighting_2.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/champion_room_lighting_3.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/champion_room_lighting_4.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/champion_room_lighting_5.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/champion_room_lighting_6.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/champion_room_lighting_7.pal", ".gbapal"),
+    INCGFX_U16("graphics/field_specials/champion_room_lighting_8.pal", ".gbapal")
 };
 
 static const u8 sEliteFourLightingTimers[] = {
@@ -5799,14 +5794,6 @@ static void Task_CancelPokemonLeagueLightingEffect(u8 taskId)
     }
 }
 
-void StopPokemonLeagueLightingEffectTask(void)
-{
-    if (FuncIsActiveTask(Task_RunPokemonLeagueLightingEffect) == TRUE)
-    {
-        DestroyTask(FindTaskIdByFunc(Task_RunPokemonLeagueLightingEffect));
-    }
-}
-
 /*
  * Determines which of Lorelei's doll collection to show
  * based on how many times you've entered the Hall of Fame.
@@ -5890,8 +5877,8 @@ bool8 PlayerPartyContainsSpeciesWithPlayerID(void)
     u8 i;
     for (i = 0; i < playerCount; i++)
     {
-        if (GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_SPECIES_OR_EGG, NULL) == gSpecialVar_0x8004
-            && GetPlayerIDAsU32() == GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_OT_ID, NULL))
+        if (GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES_OR_EGG, NULL) == gSpecialVar_0x8004
+            && GetPlayerIDAsU32() == GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_OT_ID, NULL))
             return TRUE;
     }
     return FALSE;
@@ -5991,8 +5978,8 @@ void UpdateTrainerCardPhotoIcons(void)
     partyCount = CalculatePlayerPartyCount();
     for (i = 0; i < partyCount; i++)
     {
-        species[i] = GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_SPECIES_OR_EGG, NULL);
-        personality[i] = GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_PERSONALITY, NULL);
+        species[i] = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES_OR_EGG, NULL);
+        personality[i] = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_PERSONALITY, NULL);
     }
     VarSet(VAR_TRAINER_CARD_MON_ICON_1, SpeciesToMailSpecies(species[0], personality[0]));
     VarSet(VAR_TRAINER_CARD_MON_ICON_2, SpeciesToMailSpecies(species[1], personality[1]));

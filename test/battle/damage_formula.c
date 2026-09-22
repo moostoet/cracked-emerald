@@ -318,7 +318,6 @@ SINGLE_BATTLE_TEST("Gem boosted Damage calculation")
     PARAMETRIZE { expectedDamage = 205; }
     PARAMETRIZE { expectedDamage = 204; }
 #else
-    KNOWN_FAILING;
     PARAMETRIZE { expectedDamage = 273; }
     PARAMETRIZE { expectedDamage = 270; }
     PARAMETRIZE { expectedDamage = 267; }
@@ -338,7 +337,7 @@ SINGLE_BATTLE_TEST("Gem boosted Damage calculation")
 #endif
     GIVEN {
         PLAYER(SPECIES_MAKUHITA) { Item(ITEM_FIGHTING_GEM); }
-        OPPONENT(SPECIES_MAKUHITA);
+        OPPONENT(SPECIES_MAKUHITA) { MaxHP(999); HP(999); }
     } WHEN {
         TURN {
             MOVE(player, MOVE_DRAIN_PUNCH, WITH_RNG(RNG_DAMAGE_MODIFIER, i));
@@ -416,5 +415,42 @@ DOUBLE_BATTLE_TEST("Transistor Damage calculation", s16 damage)
         EXPECT_EQ(damageOpponentRight, expectedDamageTransistorSpec);
         EXPECT_EQ(damagePlayerLeft, expectedDamageRegularPhys);
         EXPECT_EQ(damagePlayerRight, expectedDamageTransistorPhys);
+    }
+}
+
+SINGLE_BATTLE_TEST("Damage calculation for Protosynthesis")
+{
+    s16 dmg;
+    s16 expectedDamage;
+    PARAMETRIZE { expectedDamage = 105; }
+    PARAMETRIZE { expectedDamage = 103; }
+    PARAMETRIZE { expectedDamage = 102; }
+    PARAMETRIZE { expectedDamage = 100; }
+    PARAMETRIZE { expectedDamage = 100; }
+    PARAMETRIZE { expectedDamage = 99; }
+    PARAMETRIZE { expectedDamage = 97; }
+    PARAMETRIZE { expectedDamage = 97; }
+    PARAMETRIZE { expectedDamage = 96; }
+    PARAMETRIZE { expectedDamage = 94; }
+    PARAMETRIZE { expectedDamage = 94; }
+    PARAMETRIZE { expectedDamage = 93; }
+    PARAMETRIZE { expectedDamage = 91; }
+    PARAMETRIZE { expectedDamage = 90; }
+    PARAMETRIZE { expectedDamage = 90; }
+    PARAMETRIZE { expectedDamage = 88; }
+    GIVEN {
+        ASSUME(GetMoveCategory(MOVE_CLOSE_COMBAT) == DAMAGE_CATEGORY_PHYSICAL);
+        PLAYER(SPECIES_URSHIFU_RAPID_STRIKE) { Level(95); Attack(281); }
+        OPPONENT(SPECIES_GOUGING_FIRE) { Defense(305); Ability(ABILITY_PROTOSYNTHESIS); Item(ITEM_BOOSTER_ENERGY); }
+    } WHEN {
+        TURN {
+            MOVE(player, MOVE_CLOSE_COMBAT, WITH_RNG(RNG_DAMAGE_MODIFIER, i));
+        }
+    }
+    SCENE {
+        HP_BAR(opponent, captureDamage: &dmg);
+    }
+    THEN {
+        EXPECT_EQ(expectedDamage, dmg);
     }
 }

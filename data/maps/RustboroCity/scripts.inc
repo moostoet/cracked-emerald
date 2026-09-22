@@ -76,7 +76,6 @@ RustboroCity_EventScript_PleaseSelectPokenav::
 RustboroCity_EventScript_MatchCallTutorial::
 	setflag FLAG_ADDED_MATCH_CALL_TO_POKENAV
 	special ScriptMenu_CreateStartMenuForPokenavTutorial
-	waitstate
 	switch VAR_RESULT
 	case 0, RustboroCity_EventScript_PleaseSelectPokenav
 	case 1, RustboroCity_EventScript_PleaseSelectPokenav
@@ -87,7 +86,6 @@ RustboroCity_EventScript_MatchCallTutorial::
 	case 7, RustboroCity_EventScript_PleaseSelectPokenav
 	case MULTI_B_PRESSED, RustboroCity_EventScript_PleaseSelectPokenav
 	special OpenPokenavForTutorial
-	waitstate
 	delay 20
 	msgbox RustboroCity_Text_IdBetterGetBackToWork, MSGBOX_DEFAULT
 	closemessage
@@ -183,7 +181,7 @@ RustboroCity_EventScript_Brock::
 	cleartrainerflag TRAINER_BROCK_RUSTBORO
 	setflag FLAG_BATTLE_NO_WHITEOUT
 	setvar VAR_BATTLE_NO_BAG_USE, NO_BAG_AGAINST_TRAINER
-	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_RUSTBORO_BROCK, TRAINER_BROCK_RUSTBORO, RustboroCity_Text_BrockPreBattle, RustboroCity_Text_BrockDefeat, RustboroCity_EventScript_BrockAfterBattle, OBJ_ID_NONE, TRAINER_NONE, NULL, NULL, NULL, RustboroCity_Text_BrockPlayerLost, NULL, FALSE, TRUE, FALSE, FALSE
+	trainerbattle LOCALID_RUSTBORO_BROCK, TRAINER_BROCK_RUSTBORO, RustboroCity_Text_BrockPreBattle, RustboroCity_Text_BrockDefeat, RustboroCity_EventScript_BrockAfterBattle, OBJ_ID_NONE, TRAINER_NONE, NULL, NULL, NULL, RustboroCity_Text_BrockPlayerLost, NULL, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE
 	clearflag FLAG_BATTLE_NO_WHITEOUT
 	setvar VAR_BATTLE_NO_BAG_USE, NO_BAG_RESTRICTION
 	release
@@ -204,7 +202,7 @@ RustboroCity_EventScript_BrockCheckPostAttempt::
 	cleartrainerflag TRAINER_BROCK_RUSTBORO
 	setflag FLAG_BATTLE_NO_WHITEOUT
 	setvar VAR_BATTLE_NO_BAG_USE, NO_BAG_AGAINST_TRAINER
-	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_RUSTBORO_BROCK, TRAINER_BROCK_RUSTBORO, RustboroCity_Text_BrockPreBattle, RustboroCity_Text_BrockDefeat, RustboroCity_EventScript_BrockAfterBattle, OBJ_ID_NONE, TRAINER_NONE, NULL, NULL, NULL, RustboroCity_Text_BrockPlayerLost, NULL, FALSE, TRUE, FALSE, FALSE
+	trainerbattle LOCALID_RUSTBORO_BROCK, TRAINER_BROCK_RUSTBORO, RustboroCity_Text_BrockPreBattle, RustboroCity_Text_BrockDefeat, RustboroCity_EventScript_BrockAfterBattle, OBJ_ID_NONE, TRAINER_NONE, NULL, NULL, NULL, RustboroCity_Text_BrockPlayerLost, NULL, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE
 	clearflag FLAG_BATTLE_NO_WHITEOUT
 	setvar VAR_BATTLE_NO_BAG_USE, NO_BAG_RESTRICTION
 	release

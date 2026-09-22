@@ -3,7 +3,7 @@
 
 ASSUMPTIONS
 {
-    ASSUME(GetMoveEffect(MOVE_SPICY_EXTRACT) == EFFECT_SPICY_EXTRACT);
+    ASSUME_STAT_CHANGE(MOVE_SPICY_EXTRACT, attack: +2, defense: -2);
 }
 
 SINGLE_BATTLE_TEST("Spicy Extract raises target's Attack by 2 stages and lowers target's Defense by 2 stages")
@@ -33,7 +33,7 @@ SINGLE_BATTLE_TEST("Spicy Extract is prevented by target's ability if it's Attac
     PARAMETRIZE { ability = ABILITY_LIGHT_METAL; }
 
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_SWORDS_DANCE) == EFFECT_ATTACK_UP_2);
+        ASSUME_STAT_CHANGE(MOVE_SWORDS_DANCE, attack: +2);
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_BELDUM) { Ability(ability); }
     } WHEN {
@@ -160,49 +160,5 @@ SINGLE_BATTLE_TEST("Spicy Extract against Clear Amulet and Contrary raises Defen
     } THEN {
         EXPECT_EQ(opponent->statStages[STAT_ATK], DEFAULT_STAT_STAGE);
         EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE + 2);
-    }
-}
-
-AI_DOUBLE_BATTLE_TEST("Spicy Extract user will use it if partner holds Clear Amulet and a physical move")
-{
-    enum Move move;
-
-    PARAMETRIZE { move = MOVE_SCRATCH; }
-    PARAMETRIZE { move = MOVE_SWIFT; }
-
-    GIVEN {
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
-        PLAYER(SPECIES_WOBBUFFET) { Speed(10); }
-        PLAYER(SPECIES_WOBBUFFET) { Speed(10); }
-        OPPONENT(SPECIES_WOBBUFFET) { Speed(20); Item(ITEM_CLEAR_AMULET); Moves(move); }
-        OPPONENT(SPECIES_WOBBUFFET) { Speed(40); Moves(MOVE_SCRATCH, MOVE_SPICY_EXTRACT); }
-    } WHEN {
-        TURN {
-            if (move == MOVE_SCRATCH)
-                EXPECT_MOVE(opponentRight, MOVE_SPICY_EXTRACT);
-            else
-                EXPECT_MOVE(opponentRight, MOVE_SCRATCH);
-        }
-    }
-}
-
-AI_DOUBLE_BATTLE_TEST("Spicy Extract user will not choose the move if it does not benefit partner")
-{
-    u32 species;
-    enum Ability ability;
-
-    PARAMETRIZE { species = SPECIES_GHOLDENGO; ability = ABILITY_GOOD_AS_GOLD; }
-    PARAMETRIZE { species = SPECIES_SNIVY; ability = ABILITY_CONTRARY; }
-
-    GIVEN {
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
-        PLAYER(SPECIES_WOBBUFFET) { Speed(10); }
-        PLAYER(SPECIES_WOBBUFFET) { Speed(10); }
-        OPPONENT(species) { Speed(20); Ability(ability); Moves(MOVE_SCRATCH); }
-        OPPONENT(SPECIES_WOBBUFFET) { Speed(40); Moves(MOVE_SCRATCH, MOVE_SPICY_EXTRACT); }
-    } WHEN {
-        TURN {
-            EXPECT_MOVE(opponentRight, MOVE_SCRATCH);
-        }
     }
 }

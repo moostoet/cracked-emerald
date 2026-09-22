@@ -80,10 +80,11 @@ def get_trainerbattle_trainer_id(line):
         return None
 
     if command == 'trainerbattle':
-        # Script command form:
-        # trainerbattle TYPE, LOCALID, TRAINER_ID, intro, defeat, ...
-        if len(args) >= 3 and re.fullmatch(r'TRAINER_\w+', args[2]):
-            return args[2]
+        # Current form starts with LOCALID, TRAINER_ID; older commands
+        # include a leading battle TYPE before those arguments.
+        trainer_index = 1 if len(args) >= 20 else 2
+        if len(args) > trainer_index and re.fullmatch(r'TRAINER_\w+', args[trainer_index]):
+            return args[trainer_index]
         return None
 
     if command.startswith('trainerbattle_'):
@@ -103,9 +104,10 @@ def get_trainerbattle_event_script(line):
         return None
 
     if command == 'trainerbattle':
-        # Script command form: the continue script label is the sixth argument.
-        if len(args) >= 6 and args[5] not in ('NULL', '0'):
-            return args[5]
+        # The leading battle TYPE was removed from the current command.
+        script_index = 4 if len(args) >= 20 else 5
+        if len(args) > script_index and args[script_index] not in ('NULL', '0'):
+            return args[script_index]
     elif command == 'trainerbattle_single':
         if len(args) >= 4:
             return args[3]

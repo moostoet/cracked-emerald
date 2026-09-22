@@ -87,6 +87,12 @@ def get_trainerbattle_trainer_id(line):
             return args[trainer_index]
         return None
 
+    if command == 'trainerbattle_lavaridge':
+        # This macro takes the local object ID before the trainer ID.
+        if len(args) > 1 and re.fullmatch(r'TRAINER_\w+', args[1]):
+            return args[1]
+        return None
+
     if command.startswith('trainerbattle_'):
         # Macro form:
         # trainerbattle_no_intro TRAINER_ID, defeat
@@ -108,6 +114,9 @@ def get_trainerbattle_event_script(line):
         script_index = 4 if len(args) >= 20 else 5
         if len(args) > script_index and args[script_index] not in ('NULL', '0'):
             return args[script_index]
+    elif command == 'trainerbattle_lavaridge':
+        if len(args) >= 5:
+            return args[4]
     elif command == 'trainerbattle_single':
         if len(args) >= 4:
             return args[3]

@@ -106,7 +106,7 @@ Wally's Donphan, Basculegion, and Gardevoir continue the Phanpy, white-striped B
 
 The Winstrates use ten Pokemon across four consecutive battles: Victor 2, Victoria 2, Vivi 3, Vicky 3. Their levels and party sizes account for the lack of healing between battles.
 
-The exact items, abilities, natures, IV exceptions, and moves are defined in [trainers.party](../src/data/trainers.party). Trainer IDs, story gates, maps, rewards, and rematch parties retain their existing behavior.
+The exact items, abilities, natures, IV exceptions, and moves are defined in [trainers.party](https://github.com/moostoet/cracked-emerald/blob/new-branch-updated-v2/src/data/trainers.party). Trainer IDs, story gates, maps, rewards, and rematch parties retain their existing behavior.
 
 ## Validation
 

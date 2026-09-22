@@ -6,6 +6,7 @@ on:
       - master
       - new-branch-updated-v2
     paths:
+      - 'docs/**'
       - 'src/data/**'
       - 'include/constants/**'
       - 'graphics/pokemon/**'

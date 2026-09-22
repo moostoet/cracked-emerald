@@ -9,6 +9,7 @@ on:
       - 'src/data/**'
       - 'include/constants/**'
       - 'graphics/pokemon/**'
+      - 'graphics/trainers/**'
       - 'web/**'
       - '.github/workflows/pokedex.yml'
   workflow_dispatch:

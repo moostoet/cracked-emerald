@@ -5,6 +5,7 @@ import { useTrainers } from '@/composables/useTrainers'
 import { usePokedex } from '@/composables/usePokedex'
 import { useMoves } from '@/composables/useMoves'
 import SpriteImage from '@/components/SpriteImage.vue'
+import TrainerPortrait from '@/components/TrainerPortrait.vue'
 import TypeBadge from '@/components/TypeBadge.vue'
 import MovePopover from '@/components/MovePopover.vue'
 import { Card, CardContent } from '@/components/ui/card'
@@ -340,14 +341,7 @@ onMounted(async () => {
                 <!-- Trainer sprite(s) -->
                 <div class="flex shrink-0" :class="entry.isForcedDouble ? '-space-x-2' : ''">
                   <template v-for="trainer in entry.trainers" :key="trainer.id">
-                    <img
-                      v-if="trainer.sprite"
-                      :src="trainer.sprite"
-                      :alt="displayName(trainer)"
-                      class="w-16 h-16 object-contain image-rendering-pixelated"
-                      loading="lazy"
-                    />
-                    <div v-else class="w-16 h-16 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">?</div>
+                    <TrainerPortrait :src="trainer.sprite" :name="displayName(trainer)" />
                   </template>
                 </div>
 
@@ -499,8 +493,7 @@ onMounted(async () => {
                   <div class="flex items-center gap-3">
                     <div class="flex shrink-0" :class="entry.isForcedDouble ? '-space-x-2' : ''">
                       <template v-for="trainer in entry.trainers" :key="trainer.id">
-                        <img v-if="trainer.sprite" :src="trainer.sprite" :alt="displayName(trainer)" class="w-16 h-16 object-contain image-rendering-pixelated" loading="lazy" />
-                        <div v-else class="w-16 h-16 rounded bg-muted flex items-center justify-center text-muted-foreground text-xs">?</div>
+                        <TrainerPortrait :src="trainer.sprite" :name="displayName(trainer)" />
                       </template>
                     </div>
                     <div class="flex-1 min-w-0">

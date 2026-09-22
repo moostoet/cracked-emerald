@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Copy Pokemon front sprites from the repo to web/public/sprites/ with normalized names.
+Copy Pokemon and trainer front sprites into web/public/sprites/.
 
 Usage: python3 copy_sprites.py [repo_root]
 """
@@ -108,6 +108,17 @@ def copy_sprites(repo_root):
     return copied, skipped, errors
 
 
+def copy_trainer_sprites(repo_root):
+    """Bundle the same transparent portrait PNGs used by the ROM."""
+    source_dir = os.path.join(repo_root, 'graphics', 'trainers', 'front_pics')
+    output_dir = os.path.join(repo_root, 'web', 'public', 'sprites', 'trainers')
+    os.makedirs(output_dir, exist_ok=True)
+    filenames = sorted(name for name in os.listdir(source_dir) if name.endswith('.png'))
+    for filename in filenames:
+        shutil.copy2(os.path.join(source_dir, filename), os.path.join(output_dir, filename))
+    return len(filenames)
+
+
 def main():
     repo_root = find_repo_root(sys.argv[1] if len(sys.argv) > 1 else None)
     print(f"Repo root: {repo_root}")
@@ -117,9 +128,10 @@ def main():
 
     print("Copying sprites...")
     copied, skipped, errors = copy_sprites(repo_root)
+    trainer_count = copy_trainer_sprites(repo_root)
 
     print()
-    print(f"Done! Copied {copied} sprites.")
+    print(f"Done! Copied {copied} Pokemon sprites and {trainer_count} trainer portraits.")
     if errors:
         print(f"  {errors} errors occurred.")
 

@@ -1613,110 +1613,40 @@ def parse_effectiveness_row(row_str, macro_values):
 # Trainer Parser
 # ---------------------------------------------------------------------------
 
-_BULBA = 'https://archives.bulbagarden.net/media/upload'
-TRAINER_SPRITE_MAP = {
-    # Pic field value -> Bulbagarden Gen III sprite URL
-    'Hiker': f'{_BULBA}/b/b7/Spr_RS_Hiker.png',
-    'Youngster': f'{_BULBA}/c/c5/Spr_RS_Youngster.png',
-    'Lass': f'{_BULBA}/1/16/Spr_RS_Lass.png',
-    'Beauty': f'{_BULBA}/c/cb/Spr_RS_Beauty.png',
-    'Fisherman': f'{_BULBA}/9/9a/Spr_RS_Fisherman.png',
-    'Lady': f'{_BULBA}/2/2d/Spr_RS_Lady.png',
-    'Guitarist': f'{_BULBA}/1/14/Spr_RS_Guitarist.png',
-    'Camper': f'{_BULBA}/e/e1/Spr_RS_Camper.png',
-    'Picnicker': f'{_BULBA}/7/71/Spr_RS_Picnicker.png',
-    'Bug Catcher': f'{_BULBA}/7/7f/Spr_RS_Bug_Catcher.png',
-    'Bug Maniac': f'{_BULBA}/4/4f/Spr_RS_Bug_Maniac.png',
-    'Hex Maniac': f'{_BULBA}/3/3d/Spr_RS_Hex_Maniac.png',
-    'Ninja Boy': f'{_BULBA}/b/bc/Spr_RS_Ninja_Boy.png',
-    'Kindler': f'{_BULBA}/0/07/Spr_RS_Kindler.png',
-    'Collector': f'{_BULBA}/2/28/Spr_RS_Collector.png',
-    'Gentleman': f'{_BULBA}/f/f8/Spr_RS_Gentleman.png',
-    'Sailor': f'{_BULBA}/f/f1/Spr_RS_Sailor.png',
-    'Rich Boy': f'{_BULBA}/d/d7/Spr_RS_Rich_Boy.png',
-    'Aroma Lady': f'{_BULBA}/2/22/Spr_RS_Aroma_Lady.png',
-    'Ruin Maniac': f'{_BULBA}/9/9a/Spr_RS_Ruin_Maniac.png',
-    'Pokemaniac': f'{_BULBA}/6/61/Spr_RS_Pok%C3%A9Maniac.png',
-    'Bird Keeper': f'{_BULBA}/4/4f/Spr_RS_Bird_Keeper.png',
-    'Black Belt': f'{_BULBA}/f/f8/Spr_RS_Black_Belt.png',
-    'Dragon Tamer': f'{_BULBA}/1/12/Spr_RS_Dragon_Tamer.png',
-    'Battle Girl': f'{_BULBA}/5/54/Spr_RS_Battle_Girl.png',
-    'Parasol Lady': f'{_BULBA}/e/ea/Spr_RS_Parasol_Lady.png',
-    'Swimmer M': f'{_BULBA}/6/6e/Spr_RS_Swimmer_M.png',
-    'Swimmer F': f'{_BULBA}/7/77/Spr_RS_Swimmer_F.png',
-    'Tuber M': f'{_BULBA}/e/ed/Spr_RS_Tuber_M.png',
-    'Tuber F': f'{_BULBA}/d/d9/Spr_RS_Tuber_F.png',
-    'Cooltrainer M': f'{_BULBA}/f/f8/Spr_RS_Cooltrainer_M.png',
-    'Cooltrainer F': f'{_BULBA}/7/78/Spr_RS_Cooltrainer_F.png',
-    'School Kid M': f'{_BULBA}/5/54/Spr_RS_School_Kid_M.png',
-    'School Kid F': f'{_BULBA}/4/4f/Spr_RS_School_Kid_F.png',
-    'Psychic M': f'{_BULBA}/b/b7/Spr_RS_Psychic_M.png',
-    'Psychic F': f'{_BULBA}/6/6b/Spr_RS_Psychic_F.png',
-    'Pokefan M': f'{_BULBA}/a/a3/Spr_RS_Pok%C3%A9fan_M.png',
-    'Pokefan F': f'{_BULBA}/6/63/Spr_RS_Pok%C3%A9fan_F.png',
-    'Expert M': f'{_BULBA}/d/d0/Spr_RS_Expert_M.png',
-    'Expert F': f'{_BULBA}/6/66/Spr_RS_Expert_F.png',
-    'Pokemon Breeder M': f'{_BULBA}/5/55/Spr_RS_Pok%C3%A9mon_Breeder_M.png',
-    'Pokemon Breeder F': f'{_BULBA}/a/a8/Spr_RS_Pok%C3%A9mon_Breeder_F.png',
-    'Pokemon Ranger M': f'{_BULBA}/b/ba/Spr_RS_Pok%C3%A9mon_Ranger_M.png',
-    'Pokemon Ranger F': f'{_BULBA}/4/48/Spr_RS_Pok%C3%A9mon_Ranger_F.png',
-    'Cycling Triathlete M': f'{_BULBA}/2/29/Spr_RS_Triathlete_Biker_M.png',
-    'Cycling Triathlete F': f'{_BULBA}/0/0d/Spr_RS_Triathlete_Biker_F.png',
-    'Running Triathlete M': f'{_BULBA}/8/8d/Spr_RS_Triathlete_Runner_M.png',
-    'Running Triathlete F': f'{_BULBA}/2/21/Spr_RS_Triathlete_Runner_F.png',
-    'Swimming Triathlete M': f'{_BULBA}/8/8a/Spr_RS_Triathlete_Swimmer_M.png',
-    'Swimming Triathlete F': f'{_BULBA}/6/60/Spr_RS_Triathlete_Swimmer_F.png',
-    'Aqua Grunt M': f'{_BULBA}/7/74/Spr_RS_Team_Aqua_Grunt_M.png',
-    'Aqua Grunt F': f'{_BULBA}/5/54/Spr_RS_Team_Aqua_Grunt_F.png',
-    'Aqua Admin M': f'{_BULBA}/d/d0/Spr_RS_Matt.png',
-    'Aqua Admin F': f'{_BULBA}/e/e2/Spr_RS_Shelly.png',
-    'Aqua Leader Archie': f'{_BULBA}/f/fe/Spr_RS_Archie.png',
-    'Magma Grunt M': f'{_BULBA}/a/a0/Spr_RS_Team_Magma_Grunt_M.png',
-    'Magma Grunt F': f'{_BULBA}/0/03/Spr_RS_Team_Magma_Grunt_F.png',
-    'Magma Admin': f'{_BULBA}/5/51/Spr_RS_Tabitha.png',
-    'Magma Leader Maxie': f'{_BULBA}/e/e3/Spr_RS_Maxie.png',
-    'Leader Roxanne': f'{_BULBA}/e/ef/Spr_RS_Roxanne.png',
-    'Leader Brawly': f'{_BULBA}/9/92/Spr_RS_Brawly.png',
-    'Leader Wattson': f'{_BULBA}/b/b2/Spr_RS_Wattson.png',
-    'Leader Flannery': f'{_BULBA}/b/be/Spr_RS_Flannery.png',
-    'Leader Norman': f'{_BULBA}/7/75/Spr_RS_Norman.png',
-    'Leader Winona': f'{_BULBA}/0/0e/Spr_RS_Winona.png',
-    'Leader Tate And Liza': f'{_BULBA}/3/38/Spr_RS_Tate_and_Liza.png',
-    'Leader Juan': f'{_BULBA}/1/16/Spr_E_Juan.png',
-    'Leader Brock Frlg': f'{_BULBA}/7/7c/Spr_FRLG_Brock.png',
-    'Elite Four Sidney': f'{_BULBA}/8/86/Spr_RS_Sidney.png',
-    'Elite Four Phoebe': f'{_BULBA}/e/e6/Spr_RS_Phoebe.png',
-    'Elite Four Glacia': f'{_BULBA}/7/71/Spr_RS_Glacia.png',
-    'Elite Four Drake': f'{_BULBA}/0/04/Spr_RS_Drake.png',
-    'Champion Wallace': f'{_BULBA}/c/cc/Spr_E_Wallace.png',
-    'Steven': f'{_BULBA}/a/ad/Spr_RS_Steven.png',
-    'Wally': f'{_BULBA}/8/87/Spr_RS_Wally.png',
-    'May': f'{_BULBA}/a/a4/Spr_E_May.png',
-    'Brendan': f'{_BULBA}/e/e6/Spr_E_Brendan.png',
-    'RS May': f'{_BULBA}/3/38/Spr_RS_May.png',
-    'RS Brendan': f'{_BULBA}/6/68/Spr_RS_Brendan.png',
-    'Leaf': f'{_BULBA}/3/38/Spr_RS_May.png',
-    'Red': f'{_BULBA}/a/ad/Spr_RS_Steven.png',
-    'Twins': f'{_BULBA}/3/34/Spr_RS_Twins.png',
-    'Old Couple': f'{_BULBA}/0/06/Spr_RS_Old_Couple.png',
-    'Sis And Bro': f'{_BULBA}/3/3a/Spr_RS_Sis_and_Bro.png',
-    'Sr And Jr': f'{_BULBA}/7/70/Spr_RS_Sr_and_Jr.png',
-    'Young Couple': f'{_BULBA}/2/2c/Spr_RS_Young_Couple.png',
-    'Interviewer': f'{_BULBA}/5/5e/Spr_RS_Interviewer.png',
-    'Arena Tycoon Greta': f'{_BULBA}/f/fc/Spr_E_Greta.png',
-    'Dome Ace Tucker': f'{_BULBA}/b/bd/Spr_E_Tucker.png',
-    'Factory Head Noland': f'{_BULBA}/c/c2/Spr_E_Noland.png',
-    'Palace Maven Spenser': f'{_BULBA}/1/12/Spr_E_Spenser.png',
-    'Pike Queen Lucy': f'{_BULBA}/5/5d/Spr_E_Lucy.png',
-    'Pyramid King Brandon': f'{_BULBA}/2/2c/Spr_E_Brandon.png',
-    'Salon Maiden Anabel': f'{_BULBA}/d/d1/Spr_E_Anabel.png',
-}
+def parse_trainer_sprite_paths(repo_root):
+    """Resolve portrait constants through the ROM's own graphics table."""
+    filepath = os.path.join(repo_root, 'src', 'data', 'graphics', 'trainers.h')
+    with open(filepath, encoding='utf-8') as f:
+        content = f.read()
+
+    # Support both older INCBIN graphics and current INCGFX source paths.
+    front_pics = dict(re.findall(
+        r'(gTrainerFrontPic_\w+)\[\]\s*=\s*INC(?:BIN|GFX)_U32\('
+        r'"graphics/trainers/front_pics/([^"/.]+)\.[^"]+"', content
+    ))
+    portraits = {}
+    for pic, symbol in re.findall(
+            r'\[(TRAINER_PIC_\w+)\]\s*=\s*\{\s*'
+            r'\.frontPic\s*=\s*TRAINER_FRONT_PIC\((gTrainerFrontPic_\w+)',
+            content):
+        filename = front_pics[symbol] + '.png'
+        source = os.path.join(repo_root, 'graphics', 'trainers', 'front_pics', filename)
+        if not os.path.isfile(source):
+            raise FileNotFoundError(f'Missing trainer portrait: {source}')
+        portraits[pic] = f'sprites/trainers/{filename}'
+    return portraits
 
 
-def trainer_pic_to_sprite(pic_name):
-    """Convert trainer Pic field to Bulbagarden Gen III sprite URL."""
-    pic_clean = pic_name.strip()
-    return TRAINER_SPRITE_MAP.get(pic_clean, '')
+def trainer_pic_to_sprite(pic_name, sprite_paths):
+    """Convert a Showdown Pic name or constant to a bundled portrait path."""
+    pic = pic_name.strip().upper().replace(' ', '_')
+    if not pic:
+        return ''
+    if not pic.startswith('TRAINER_PIC_'):
+        pic = 'TRAINER_PIC_' + pic
+    if pic not in sprite_paths:
+        raise ValueError(f'No trainer portrait mapping for {pic_name!r}')
+    return sprite_paths[pic]
 
 
 def normalize_trainer_class(trainer_class):
@@ -1728,6 +1658,7 @@ def parse_trainers_party(repo_root, species_ids):
     """Parse trainers.party Showdown-format file into trainer dicts."""
     filepath = os.path.join(repo_root, 'src', 'data', 'trainers.party')
     print("Parsing trainers.party...")
+    sprite_paths = parse_trainer_sprite_paths(repo_root)
 
     with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
         content = f.read()
@@ -1885,7 +1816,7 @@ def parse_trainers_party(repo_root, species_ids):
             'name': name.title() if name.isupper() else name,
             'trainerClass': trainer_class,
             'isDouble': is_double,
-            'sprite': trainer_pic_to_sprite(pic),
+            'sprite': trainer_pic_to_sprite(pic, sprite_paths),
             'party': party,
         }
 

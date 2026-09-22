@@ -10610,15 +10610,16 @@
     "id": "302",
     "name": "Sunflora",
     "type": [
-      "Grass"
+      "Grass",
+      "Fire"
     ],
     "base": {
-      "HP": 75,
-      "Attack": 75,
-      "Defense": 55,
-      "Sp. Attack": 105,
+      "HP": 85,
+      "Attack": 55,
+      "Defense": 75,
+      "Sp. Attack": 125,
       "Sp. Defense": 85,
-      "Speed": 30
+      "Speed": 55
     },
     "species": "Sun",
     "evolution": {},
@@ -10631,7 +10632,7 @@
       "ability": [
         "Chlorophyll",
         "Solar Power",
-        "Early Bird"
+        "Drought"
       ]
     },
     "image": {

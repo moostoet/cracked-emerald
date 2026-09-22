@@ -98,7 +98,7 @@ Wally's Donphan, Basculegion, and Gardevoir continue the Phanpy, white-striped B
 | Route 117 | Anna & Meg | Clefairy (33), Annihilape (34), Farigiraf (33), Hariyama (34) | Friend Guard and redirection support Bulk Up; the reserves offer a slower Trick Room mode and Wide Guard. |
 | Route 117 | Brandi | Espeon (34), Swoobat (34) | Magic Bounce and screens cover Aisha; Simple makes the second Psychic a setup threat. |
 | Route 117 | Aisha | Primeape (34), Lopunny (34) | Defiant discourages Intimidate against the pair, and the hack's Fighting-type Lopunny supplies Fake Out. |
-| Route 118 / West | Rose | Bellossom (33), Lurantis (34), Sunflora (34) | Sun, Contrary, and Solar Power give three Grass species different offensive jobs. |
+| Route 118 / West | Rose | Bellossom (33), Lurantis (34), Sunflora (34) | Bellossom sets sun, Lurantis uses Contrary, and Grass/Fire Sunflora uses Solar Power with Charcoal, Giga Drain, and Flamethrower. |
 | Route 118 / West | Wade | Qwilfish (33), Clawitzer (34) | An Intimidate hazard setter makes room for Mega Launcher coverage. |
 | Route 118 / West | Dalton | Electrode-Hisui (33), Loudred (33) | An Electric/Grass pivot and a Scrappy vocalist retain his electric-and-sound identity. |
 | Route 118 / West | Deandre | Furret (33), Togedemaru (34), Arbok (34) | Tidy Up, contact punishment, and Coil turn familiar route Pokemon into distinct threats. |

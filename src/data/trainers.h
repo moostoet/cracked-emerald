@@ -2135,7 +2135,7 @@
             .species = SPECIES_SUNFLORA,
             .gender = TRAINER_MON_RANDOM_GENDER,
 #line 859
-            .heldItem = ITEM_LIFE_ORB,
+            .heldItem = ITEM_CHARCOAL,
 #line 863
             .iv = TRAINER_PARTY_IVS(31, 0, 31, 31, 31, 31),
 #line 860
@@ -2148,8 +2148,8 @@
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
 #line 864
-                MOVE_SOLAR_BEAM,
-                MOVE_WEATHER_BALL,
+                MOVE_GIGA_DRAIN,
+                MOVE_FLAMETHROWER,
                 MOVE_EARTH_POWER,
                 MOVE_MORNING_SUN,
             },

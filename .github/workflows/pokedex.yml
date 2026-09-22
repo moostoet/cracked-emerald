@@ -9,6 +9,11 @@ on:
       - 'docs/**'
       - 'src/data/**'
       - 'include/constants/**'
+      - 'include/config/pokemon.h'
+      - 'include/config/pokedex_plus_hgss.h'
+      - 'tools/learnset_helpers/**'
+      - 'data/maps/**/scripts.inc'
+      - 'data/scripts/**'
       - 'graphics/pokemon/**'
       - 'graphics/trainers/**'
       - 'web/**'
@@ -50,6 +55,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Generate teachable learnsets
+        run: |
+          mkdir -p tools/learnset_helpers/build
+          python3 tools/learnset_helpers/make_tutors.py tools/learnset_helpers/build/all_tutors.json
+          python3 tools/learnset_helpers/make_teaching_types.py tools/learnset_helpers/build/all_teaching_types.json
+          python3 tools/learnset_helpers/make_teachables.py tools/learnset_helpers/build
 
       - name: Extract game data
         run: python3 web/scripts/extract_data.py

@@ -10200,15 +10200,21 @@ Pic: Aroma Lady Frlg
 Gender: Male
 Music: Female
 Double Battle: No
-AI: Check Bad Move
+AI: Smart Trainer
 
 Sunkern
 Level: 49
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-Sunflora
+Sunflora @ Heat Rock
+Ability: Drought
 Level: 49
+Modest Nature
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+- Solar Beam
+- Flamethrower
+- Earth Power
+- Morning Sun
 
 === TRAINER_SWIMMER_MALE_SAMIR ===
 Name: SAMIR

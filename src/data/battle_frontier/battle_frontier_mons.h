@@ -1666,10 +1666,11 @@ const struct TrainerMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_SUNFLORA_1] = {
         .species = SPECIES_SUNFLORA,
-        .moves = {MOVE_PETAL_DANCE, MOVE_INGRAIN, MOVE_LEECH_SEED, MOVE_LIGHT_SCREEN},
-        .heldItem = ITEM_PERSIM_BERRY,
-        .ev = TRAINER_PARTY_EVS(252, 0, 252, 0, 0, 0),
-        .nature = NATURE_QUIRKY,
+        .moves = {MOVE_GIGA_DRAIN, MOVE_FLAMETHROWER, MOVE_LEECH_SEED, MOVE_MORNING_SUN},
+        .heldItem = ITEM_LEFTOVERS,
+        .ability = ABILITY_DROUGHT,
+        .ev = TRAINER_PARTY_EVS(252, 0, 4, 0, 252, 0),
+        .nature = NATURE_MODEST,
         .ball = BALL_POKE
     },
     [FRONTIER_MON_CHIMECHO_1] = {
@@ -2506,10 +2507,11 @@ const struct TrainerMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_SUNFLORA_2] = {
         .species = SPECIES_SUNFLORA,
-        .moves = {MOVE_GIGA_DRAIN, MOVE_GRASS_WHISTLE, MOVE_GROWTH, MOVE_DOUBLE_TEAM},
-        .heldItem = ITEM_LEFTOVERS,
-        .ev = TRAINER_PARTY_EVS(252, 0, 252, 0, 0, 0),
-        .nature = NATURE_QUIET,
+        .moves = {MOVE_SOLAR_BEAM, MOVE_FLAMETHROWER, MOVE_EARTH_POWER, MOVE_SUNNY_DAY},
+        .heldItem = ITEM_LIFE_ORB,
+        .ability = ABILITY_CHLOROPHYLL,
+        .ev = TRAINER_PARTY_EVS(4, 0, 0, 252, 252, 0),
+        .nature = NATURE_TIMID,
         .ball = BALL_POKE
     },
     [FRONTIER_MON_CHIMECHO_2] = {

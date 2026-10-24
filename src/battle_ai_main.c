@@ -1937,6 +1937,7 @@ static s32 AI_CheckBadMove(enum BattlerId battlerAtk, enum BattlerId battlerDef,
         if (IsWakeupTurn(battlerAtk) || !IsAsleepOrComatose(battlerAtk, aiData->abilities[battlerAtk]))
             ADJUST_SCORE(-10);    // if mon will wake up, is not asleep, or is not comatose
         break;
+    case EFFECT_OCTOLOCK:
     case EFFECT_MEAN_LOOK:
         if (AI_CanBattlerEscape(battlerDef)
             || IsBattlerTrapped(battlerAtk, battlerDef)
@@ -4748,6 +4749,7 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
         else if (gBattleMons[battlerAtk].volatiles.battlerWithSureHit == battlerDef + 1)
             ADJUST_SCORE(BEST_EFFECT);
         break;
+    case EFFECT_OCTOLOCK:
     case EFFECT_MEAN_LOOK:
         if (ShouldTrap(battlerAtk, battlerDef, move, DONT_CONSIDER_WRAP_DAMAGE))
             ADJUST_SCORE(GOOD_EFFECT);

@@ -714,6 +714,18 @@ AI_SINGLE_BATTLE_TEST("AI score for Mean Look will be decreased if target can es
     }
 }
 
+AI_SINGLE_BATTLE_TEST("AI score for Octolock will be decreased if target can escape")
+{
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_OCTOLOCK) == EFFECT_OCTOLOCK);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_BULBASAUR) { Item(ITEM_SHED_SHELL); }
+        OPPONENT(SPECIES_BULBASAUR) { Moves(MOVE_TACKLE, MOVE_OCTOLOCK); }
+    } WHEN {
+        TURN { SCORE_EQ_VAL(opponent, MOVE_OCTOLOCK, 90); }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_SWITCHING: AI considers Focus Sash when determining if it should switch out")
 {
     GIVEN {

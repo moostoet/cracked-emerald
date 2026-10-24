@@ -4436,15 +4436,10 @@ u32 GetBattlerTotalSpeedStat(enum BattlerId battler, enum Ability ability, enum 
     if (gSideStatuses[GetBattlerSide(battler)] & SIDE_STATUS_SWAMP)
         speed /= 4;
     
-    // Rising Tide: Non-Fighting types lose 20% Speed
-    if (gFieldTimers.terrain == B_TERRAIN_RISING_TIDE && !FlagGet(FLAG_DEWFORD_DEFEATED))
-    {
-        if (gBattleMons[battler].types[0] != TYPE_FIGHTING && 
-            gBattleMons[battler].types[1] != TYPE_FIGHTING)
-        {
-            speed = (speed * 80) / 100; // 20% reduction
-        }
-    }
+    // Rising Tide: Non-Fighting types lose 10% Speed
+    if (gFieldTimers.terrain == B_TERRAIN_RISING_TIDE && !FlagGet(FLAG_DEWFORD_DEFEATED)
+     && !IS_BATTLER_OF_TYPE(battler, TYPE_FIGHTING))
+        speed = (speed * 90) / 100;
 
     return speed;
 }

@@ -9,7 +9,7 @@ The reference teams are the existing edited trainers on `new-branch-updated-v2`:
 - Each trainer has a battle plan: weather, screens, status, setup, pivoting, ability interactions, or complementary coverage.
 - Held items support that plan. Use the hack's actual abilities and altered species, including Iron Fist Lopunny, Magma Core Camerupt, Poison Heal Parasect, bulky Ariados, and Protector Ledian.
 - Most ordinary trainers have two or three Pokemon. The breeders retain six; Anna & Meg have four; Wally has five; Wattson has six.
-- Use Smart Trainer AI. Wally and Wattson also keep their last party member as their ace.
+- Use Smart Trainer AI. Brawly, Wally, and Wattson also keep their last party member as their ace.
 - Follow the existing level caps: Route 116 teams are level 17-18 under the cap of 20; later ordinary teams are level 32-35 under the cap of 37. Wally's ace is 36 and Wattson's is 37.
 - These sets use default 31 IVs and no added EV spreads, with zero Attack for purely special sets and zero Speed for the Trick Room support members. Return users explicitly have maximum happiness.
 - Items provide the new teams' sustain and setup effects. Wattson uses held items in place of his old two-Super-Potion inventory, as do the previously edited gym leaders.
@@ -21,6 +21,21 @@ The parties retain their existing map and battle formats. Jerry/Janice and Sarah
 Tyron's single-target Ground moves remain useful beside Celina's Grassy Terrain. Hayden's sun supports Bianca's Chlorophyll lead in their optional paired battle; his Fire moves do not hit allies. Anna & Meg open with Clefairy/Annihilape and have a slower Farigiraf/Hariyama reserve mode.
 
 ## Boss teams
+
+### Brawly
+
+Every Dewford Gym battle is fought on a Rising Tide: Fighting-type moves gain 10% power, and Pokémon that aren't Fighting-type lose 10% of their Speed until the player beats every gym trainer. All six of Brawly's Pokémon are part Fighting-type, and each fights in its own style. Grapploct opens by grabbing with Octolock and poisoning with Toxic, so Merciless turns its Poison Jab and Drain Punch into critical hits. Spinda-Drunken rolls with contact hits, Hariyama shoves setup out of the ring with Whirlwind while Rocky Helmet punishes contact, and the Water/Fighting Floatzel ace closes with a Technician-boosted Jet Punch.
+
+| Pokemon | Level | Item | Ability | Moves |
+|---|---:|---|---|---|
+| Grapploct | 26 | Black Sludge | Merciless | Octolock / Toxic / Poison Jab / Drain Punch |
+| Monferno | 25 | Focus Sash | Iron Fist | Power-Up Punch / Fire Punch / Mach Punch / Thunder Punch |
+| Spinda-Drunken | 25 | Lum Berry | Drunken Fist | Drain Punch / Dizzy Punch / Rock Tomb / Counter |
+| Hariyama | 25 | Rocky Helmet | Thick Fat | Whirlwind / Knock Off / Force Palm / Bullet Punch |
+| Lucario | 26 | Wise Glasses | Inner Focus | Flash Cannon / Aura Sphere / Water Pulse / Dark Pulse |
+| Floatzel | 27 | Sitrus Berry | Technician | Jet Punch / Force Palm / Ice Punch / Bulk Up |
+
+All of these moves are in the Pokémon's learnsets. Grapploct, which this hack makes Fighting/Poison, learns Poison Jab on evolution, Drain Punch at 22, and Toxic by TM. The Water/Fighting Floatzel learns Jet Punch at 33; Brawly's Floatzel uses it six levels early as his own technique. Lucario learns Flash Cannon and Dark Pulse at level 1. Trainer AI scores Octolock like Mean Look, so Grapploct traps a poisoned target instead of letting it switch out.
 
 ### Wally
 
@@ -57,6 +72,7 @@ Wally's Donphan, Basculegion, and Gardevoir continue the Phanpy, white-striped B
 | Route 116 | Janice | Marill (17), Buneary (18) | Cute physical attackers combine priority, disruption, and the hack's Iron Fist Buneary. |
 | Route 116 | Sarah | Dolliv (17), Espurr (18) | A patient Lady uses Leech Seed support and a special attacker. |
 | Route 116 | Dawson | Linoone (17), Mightyena (18) | His familiar pets evolve into a pinch-berry attacker and an Intimidate partner. |
+| Dewford Gym / Leader | Brawly | Grapploct (26), Monferno (25), Spinda-Drunken (25), Hariyama (25), Lucario (26), Floatzel (27) | Each member has its own fighting style on a Rising Tide: Grapploct traps and poisons for Merciless critical hits, and the Water/Fighting Floatzel closes with Jet Punch. |
 | Route 110 | Edward | Musharna (32), Malamar (33) | Yawn opens a setup opportunity for Contrary Malamar. |
 | Route 110 | Jaclyn | Farigiraf (33), Veluza (34) | Priority denial supports a Calm Mind user, with a Sharpness attacker for physical coverage. |
 | Route 110 | Edwin | Castform (32), Ludicolo (33), Shiftry (33) | The collector keeps his Ludicolo/Shiftry families and adds a weather specimen. |

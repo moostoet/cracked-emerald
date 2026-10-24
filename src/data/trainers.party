@@ -5247,18 +5247,27 @@ Pic: Leader Brawly
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Smart Trainer
+AI: Smart Trainer / Ace Pokemon
 Starting Status: Rising Tide
 
-Monferno @ Focus Sash  
-Ability: Iron Fist  
-Level: 25    
-EVs: 150 Spe  
-Jolly Nature  
-- Fake Out  
-- Stealth Rock  
-- Fire Punch  
-- Mach Punch  
+Grapploct @ Black Sludge
+Ability: Merciless
+Level: 26
+Adamant Nature
+- Octolock
+- Toxic
+- Poison Jab
+- Drain Punch
+
+Monferno @ Focus Sash
+Ability: Iron Fist
+Level: 25
+EVs: 150 Spe
+Jolly Nature
+- Power-Up Punch
+- Fire Punch
+- Mach Punch
+- Thunder Punch
 
 Spinda-Drunken @ Lum Berry  
 Ability: Drunken Fist  
@@ -5269,22 +5278,14 @@ Adamant Nature
 - Rock Tomb
 - Counter
 
-Hariyama @ Flame Orb  
-Ability: Guts  
-Level: 25      
-- Fake Out  
-- Drain Punch  
-- Knock Off  
-- Bullet Punch  
-
-Grapploct @ Assault Vest  
-Ability: Merciless  
-Level: 26   
-Adamant Nature  
-- Sucker Punch  
-- Poison Jab  
-- Drain Punch  
-- Ice Punch  
+Hariyama @ Rocky Helmet
+Ability: Thick Fat
+Level: 25
+Adamant Nature
+- Whirlwind
+- Knock Off
+- Force Palm
+- Bullet Punch
 
 Lucario @ Wise Glasses  
 Ability: Inner Focus  
@@ -5296,14 +5297,14 @@ IVs: 0 Atk
 - Water Pulse  
 - Dark Pulse  
 
-Floatzel @ White Herb  
-Ability: Technician  
-Level: 27   
-Jolly Nature  
-- Jet Punch  
-- Force Palm  
-- Ice Punch  
-- Bulk Up  
+Floatzel @ Sitrus Berry
+Ability: Technician
+Level: 27
+Jolly Nature
+- Jet Punch
+- Force Palm
+- Ice Punch
+- Bulk Up
 
 === TRAINER_WATTSON_1 ===
 Name: WATTSON

@@ -137,6 +137,35 @@ SINGLE_BATTLE_TEST("Rising Tide starts once and remains active after five turns"
     }
 }
 
+SINGLE_BATTLE_TEST("Rising Tide lowers the Speed of non-Fighting-type Pokemon by 10%")
+{
+    u32 opponentSpeed;
+
+    PARAMETRIZE { opponentSpeed = 89; }
+    PARAMETRIZE { opponentSpeed = 91; }
+
+    SetStartingStatus(STARTING_STATUS_RISING_TIDE);
+
+    GIVEN {
+        ASSUME(GetSpeciesType(SPECIES_WOBBUFFET, 0) != TYPE_FIGHTING && GetSpeciesType(SPECIES_WOBBUFFET, 1) != TYPE_FIGHTING);
+        ASSUME(GetSpeciesType(SPECIES_MACHOP, 0) == TYPE_FIGHTING);
+        PLAYER(SPECIES_WOBBUFFET) { Speed(100); }
+        OPPONENT(SPECIES_MACHOP) { Speed(opponentSpeed); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_CELEBRATE); MOVE(opponent, MOVE_CELEBRATE); }
+    } SCENE {
+        if (opponentSpeed < 90) {
+            ANIMATION(ANIM_TYPE_MOVE, MOVE_CELEBRATE, player);
+            ANIMATION(ANIM_TYPE_MOVE, MOVE_CELEBRATE, opponent);
+        } else {
+            ANIMATION(ANIM_TYPE_MOVE, MOVE_CELEBRATE, opponent);
+            ANIMATION(ANIM_TYPE_MOVE, MOVE_CELEBRATE, player);
+        }
+    } THEN {
+        ResetStartingStatuses();
+    }
+}
+
 SINGLE_BATTLE_TEST("Rising Tide can be replaced or removed by terrain moves")
 {
     enum Move move;

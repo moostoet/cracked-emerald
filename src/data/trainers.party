@@ -3652,14 +3652,14 @@ Double Battle: No
 AI: Smart Trainer
 
 Electrode @ Light Clay
-Ability: Soundproof
+Ability: Static
 Level: 34
 Timid Nature
 IVs: 0 Atk
-- Thunderbolt
-- Volt Switch
 - Reflect
 - Light Screen
+- Thunder
+- Taunt
 
 SPECIES_TOXTRICITY_LOW_KEY @ Throat Spray
 Ability: Punk Rock
@@ -3667,18 +3667,18 @@ Level: 35
 Modest Nature
 IVs: 0 Atk
 - Overdrive
+- Thunder
 - Sludge Bomb
-- Snarl
 - Protect
 
-Heliolisk @ Expert Belt
+Heliolisk @ Life Orb
 Ability: Dry Skin
 Level: 35
 Timid Nature
 IVs: 0 Atk
-- Thunderbolt
+- Thunder
+- Weather Ball
 - Grass Knot
-- Hyper Voice
 - Volt Switch
 
 === TRAINER_GRUNT_AQUA_HIDEOUT_7 ===
@@ -3720,33 +3720,35 @@ Music: Intense
 Double Battle: No
 AI: Smart Trainer
 
-Magneton @ Eviolite
-Ability: Analytic
+Electrode-Hisui @ Focus Sash
+Ability: Static
 Level: 34
-Modest Nature
+Timid Nature
 IVs: 0 Atk
-- Volt Switch
-- Flash Cannon
-- Thunder Wave
-- Magnet Rise
+- Thunder
+- Energy Ball
+- Taunt
+- Stun Spore
 
-Emolga @ Sitrus Berry
-Ability: Motor Drive
+Bellibolt @ Leftovers
+Ability: Electromorphosis
+Level: 34
+Bold Nature
+IVs: 0 Atk
+- Thunder
+- Weather Ball
+- Slack Off
+- Toxic
+
+Kilowattrel @ Life Orb
+Ability: Competitive
 Level: 35
 Timid Nature
-- Thunderbolt
-- Air Slash
-- Encore
-- U-turn
-
-Luxio @ Eviolite
-Ability: Intimidate
-Level: 34
-Adamant Nature
-- Wild Charge
-- Bite
-- Ice Fang
-- Roar
+IVs: 0 Atk
+- Thunder
+- Hurricane
+- Weather Ball
+- Volt Switch
 
 === TRAINER_FERNANDO_1 ===
 Name: FERNANDO
@@ -5312,64 +5314,63 @@ Music: Male
 Double Battle: No
 AI: Smart Trainer / Ace Pokemon
 
-Pincurchin @ Terrain Extender
-Ability: Electric Surge
-Level: 35
-Modest Nature
-IVs: 0 Atk
-- Rising Voltage
-- Scald
-- Spikes
-- Recover
-
-Rotom-Mow @ Sitrus Berry
+Rotom-Wash @ Sitrus Berry
 Ability: Levitate
 Level: 35
-Timid Nature
-IVs: 0 Atk
-- Volt Switch
-- Leaf Storm
-- Will-O-Wisp
-- Hex
-
-Magneton @ Eviolite
-Ability: Sturdy
-Level: 36
 Modest Nature
 IVs: 0 Atk
-- Thunderbolt
-- Flash Cannon
-- Body Press
-- Magnet Rise
+- Hydro Pump
+- Thunder
+- Thunder Wave
+- Hex
 
-Luxray @ Flame Orb
-Ability: Guts
-Level: 36
-Adamant Nature
-- Wild Charge
-- Ice Fang
-- Crunch
-- Protect
+Eelektross @ Leftovers
+Ability: Levitate
+Level: 35
+Modest Nature
+IVs: 0 Atk
+- Thunder
+- Giga Drain
+- Gastro Acid
+- Thunder Wave
 
 Raichu-Alola @ Focus Sash
 Ability: Surge Surfer
 Level: 36
 Timid Nature
 IVs: 0 Atk
-- Rising Voltage
-- Psychic
-- Grass Knot
 - Nasty Plot
+- Thunder
+- Psychic
+- Surf
 
-Manectric @ Expert Belt
-Ability: Lightning Rod
-Level: 37
-Timid Nature
+Electivire @ Expert Belt
+Ability: Motor Drive
+Level: 36
+Adamant Nature
+- Thunder Punch
+- Ice Punch
+- Brick Break
+- Earthquake
+
+Kingdra @ Scope Lens
+Ability: Swift Swim
+Level: 36
+Modest Nature
 IVs: 0 Atk
-- Thunderbolt
-- Flamethrower
-- Snarl
-- Volt Switch
+- Focus Energy
+- Surf
+- Dragon Pulse
+- Ice Beam
+
+Archaludon @ Weakness Policy
+Ability: Stamina
+Level: 37
+Modest Nature
+- Electro Shot
+- Flash Cannon
+- Earthquake
+- Breaking Swipe
 
 === TRAINER_FLANNERY_1 ===
 Name: FLANNERY
@@ -6705,34 +6706,34 @@ Music: Male
 Double Battle: No
 AI: Smart Trainer
 
-Pikachu @ Light Ball
-Ability: Lightning Rod
-Level: 34
-Hasty Nature
-- Fake Out
-- Volt Tackle
-- Grass Knot
-- Iron Tail
-
-Diggersby @ Sitrus Berry
-Ability: Huge Power
-Level: 34
-Adamant Nature
-Happiness: 255
-- Stomping Tantrum
-- Return
-- Quick Attack
-- Thunder Punch
-
-Lanturn @ Leftovers
-Ability: Volt Absorb
+Swanna @ Leftovers
+Ability: Hydration
 Level: 35
+Bold Nature
+IVs: 0 Atk
+- Hurricane
+- Surf
+- Feather Dance
+- Rest
+
+Golduck @ Mystic Water
+Ability: Swift Swim
+Level: 34
 Modest Nature
 IVs: 0 Atk
-- Thunderbolt
-- Scald
+- Surf
+- Psychic
 - Ice Beam
-- Thunder Wave
+- Calm Mind
+
+Pikachu @ Light Ball
+Ability: Lightning Rod
+Level: 35
+Timid Nature
+- Fake Out
+- Nasty Plot
+- Thunder
+- Surf
 
 === TRAINER_QUINCY ===
 Name: QUINCY
@@ -13844,30 +13845,30 @@ AI: Smart Trainer
 
 Pawmot @ Punching Glove
 Ability: Iron Fist
-Level: 35
-Jolly Nature
-- Thunder Punch
-- Drain Punch
-- Ice Punch
-- Fake Out
-
-Hitmonchan @ Assault Vest
-Ability: Iron Fist
 Level: 34
-Adamant Nature
-- Mach Punch
-- Drain Punch
+Jolly Nature
+- Fake Out
 - Thunder Punch
+- Mach Punch
 - Ice Punch
 
-Medicham @ Sitrus Berry
-Ability: Pure Power
+Poliwrath @ Sitrus Berry
+Ability: Swift Swim
 Level: 35
 Jolly Nature
-- Thunder Punch
+- Belly Drum
+- Waterfall
+- Brick Break
+- Ice Punch
+
+Toxicroak @ Life Orb
+Ability: Dry Skin
+Level: 35
+Adamant Nature
 - Drain Punch
-- Psycho Cut
-- Fake Out
+- Poison Jab
+- Sucker Punch
+- Ice Punch
 
 === TRAINER_DANIELLE ===
 Name: DANIELLE
@@ -18243,7 +18244,7 @@ Double Battle: No
 AI: Smart Trainer
 
 Galvantula @ Focus Sash
-Ability: Compound Eyes
+Ability: Swarm
 Level: 34
 Timid Nature
 IVs: 0 Atk
@@ -18252,25 +18253,24 @@ IVs: 0 Atk
 - Bug Buzz
 - Giga Drain
 
-Volbeat @ Sitrus Berry
-Ability: Prankster
+Accelgor @ Life Orb
+Ability: Hydration
 Level: 34
-Calm Nature
+Timid Nature
 IVs: 0 Atk
-- Tail Glow
-- Baton Pass
 - Bug Buzz
-- Encore
+- Sludge Bomb
+- Water Shuriken
+- Rest
 
-Vikavolt @ Occa Berry
-Ability: Levitate
+Araquanid @ Sitrus Berry
+Ability: Water Bubble
 Level: 35
-Modest Nature
-IVs: 0 Atk
-- Thunderbolt
-- Bug Buzz
-- Energy Ball
-- Roost
+Adamant Nature
+- Liquidation
+- Leech Life
+- Soak
+- Mirror Coat
 
 === TRAINER_DARIUS ===
 Name: DARIUS

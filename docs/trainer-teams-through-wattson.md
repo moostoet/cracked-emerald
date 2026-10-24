@@ -16,7 +16,7 @@ The reference teams are the existing edited trainers on `new-branch-updated-v2`:
 
 ## Paired encounters
 
-The parties retain their existing map and battle formats. Jerry/Janice and Sarah/Dawson combine support with physical offense. Isabel/Kaleb lead with Plus and Minus. Kirk/Vivian combine screens and special offense with physical fighters; Shawn/Angelo combine electric pivots with bugs. Brandi/Aisha pair Psychic support with Fighting attackers.
+The parties retain their existing map and battle formats. Jerry/Janice and Sarah/Dawson combine support with physical offense. Isabel/Kaleb lead with Plus and Minus. In the rain-soaked Mauville Gym, Kirk/Vivian pair Kirk's screens and Taunt with Vivian's Swift Swim and Dry Skin fighters; Shawn/Angelo pair Sticky Web and Soak with sure-hit Thunder. Brandi/Aisha pair Psychic support with Fighting attackers.
 
 Tyron's single-target Ground moves remain useful beside Celina's Grassy Terrain. Hayden's sun supports Bianca's Chlorophyll lead in their optional paired battle; his Fire moves do not hit allies. Anna & Meg open with Clefairy/Annihilape and have a slower Farigiraf/Hariyama reserve mode.
 
@@ -36,18 +36,18 @@ Evolve his Petalburg Phanpy, white-striped Basculin, and Kirlia; add support for
 
 ### Wattson
 
-Electric Terrain powers Surge Surfer and Rising Voltage; Levitate, Magnet Rise, and Guts offer different answers to Ground counters.
+The gym's sprinklers keep every Mauville Gym battle in permanent rain, so Thunder never misses, Archaludon fires Electro Shot every turn, and Kingdra's Swift Swim and Focus Energy + Scope Lens make its rain-boosted Surf a fast guaranteed critical hit. Levitate on Rotom-Wash and Eelektross blanks Ground counters while Surf and Giga Drain punish them; Gastro Acid strips Cloud Nine, Swift Swim, or Volt Absorb, and Electivire's punches and Archaludon's Weakness Policy punish whatever gets through.
 
 | Pokemon | Level | Item | Ability | Moves |
 |---|---:|---|---|---|
-| Pincurchin | 35 | Terrain Extender | Electric Surge | Rising Voltage / Scald / Spikes / Recover |
-| Rotom-Mow | 35 | Sitrus Berry | Levitate | Volt Switch / Leaf Storm / Will-O-Wisp / Hex |
-| Magneton | 36 | Eviolite | Sturdy | Thunderbolt / Flash Cannon / Body Press / Magnet Rise |
-| Luxray | 36 | Flame Orb | Guts | Wild Charge / Ice Fang / Crunch / Protect |
-| Raichu-Alola | 36 | Focus Sash | Surge Surfer | Rising Voltage / Psychic / Grass Knot / Nasty Plot |
-| Manectric | 37 | Expert Belt | Lightning Rod | Thunderbolt / Flamethrower / Snarl / Volt Switch |
+| Rotom-Wash | 35 | Sitrus Berry | Levitate | Hydro Pump / Thunder / Thunder Wave / Hex |
+| Eelektross | 35 | Leftovers | Levitate | Thunder / Giga Drain / Gastro Acid / Thunder Wave |
+| Raichu-Alola | 36 | Focus Sash | Surge Surfer | Nasty Plot / Thunder / Psychic / Surf |
+| Electivire | 36 | Expert Belt | Motor Drive | Thunder Punch / Ice Punch / Brick Break / Earthquake |
+| Kingdra | 36 | Scope Lens | Swift Swim | Focus Energy / Surf / Dragon Pulse / Ice Beam |
+| Archaludon | 37 | Weakness Policy | Stamina | Electro Shot / Flash Cannon / Earthquake / Breaking Swipe |
 
-Wally's Donphan, Basculegion, and Gardevoir continue the Phanpy, white-striped Basculin, and Kirlia from his earlier Petalburg battle. Wattson's Electric Terrain comes from Pincurchin and lasts for its normal held-item-extended duration; the field can expire or be replaced.
+Wally's Donphan, Basculegion, and Gardevoir continue the Phanpy, white-striped Basculin, and Kirlia from his earlier Petalburg battle. The Mauville Gym map uses `WEATHER_RAIN`, so every gym battle starts in rain with no timer. Because overworld weather can't be overridden, Rain Dance, Drizzle, Sunny Day, and other weather changes fail for both sides; the player's answers are Cloud Nine, Air Lock, Utility Umbrella, or fighting through the rain.
 
 ## All revised encounters
 
@@ -75,12 +75,12 @@ Wally's Donphan, Basculegion, and Gardevoir continue the Phanpy, white-striped B
 | Trick House / Puzzle 1 | Eddie | Zoroark (33), Greedent (32) | Illusion disguises a special attacker as a bulky berry-eating Normal type. |
 | Trick House / Puzzle 1 | Robin | Delcatty (32), Breloom (33), Azumarill (32) | Her original three families become a Normalize disruptor, Poison Heal setup user, and bulky priority attacker. |
 | Mauville City | Wally | Donphan (34), Roselia (34), Basculegion (35), Magneton (35), Gardevoir (36) | Evolve his Petalburg Phanpy, white-striped Basculin, and Kirlia; add support for a five-member rival team. |
-| Mauville Gym | Kirk | Electrode (34), Toxtricity Low Key (35), Heliolisk (35) | Screens protect Vivian's physical fighters while sound-based offense attacks from the special side. |
-| Mauville Gym | Shawn | Magneton (34), Emolga (35), Luxio (34) | A durable electric core covers Angelo's bugs; a flying pivot avoids Ground attacks. |
-| Mauville Gym | Ben | Pikachu (34), Diggersby (34), Lanturn (35) | An electric mascot, Ground-type bruiser, and Volt Absorb pivot introduce immunity switching. |
-| Mauville Gym | Vivian | Pawmot (35), Hitmonchan (34), Medicham (35) | Electric coverage and Fake Out let physical fighters take advantage of Kirk's screens. |
-| Mauville Gym | Angelo | Galvantula (34), Volbeat (34), Vikavolt (35) | Electric bugs set Web and receive Prankster Tail Glow boosts through Baton Pass. |
-| Mauville Gym / Leader | Wattson | Pincurchin (35), Rotom-Mow (35), Magneton (36), Luxray (36), Raichu-Alola (36), Manectric (37) | Electric Terrain powers Surge Surfer and Rising Voltage; Levitate, Magnet Rise, and Guts offer different answers to Ground counters. |
+| Mauville Gym | Kirk | Electrode (34), Toxtricity Low Key (35), Heliolisk (35) | A fast Electrode Taunts and sets Light Clay screens; Throat Spray Overdrive and a Life Orb Dry Skin Heliolisk follow with sure-hit Thunder and a 100 BP Water Weather Ball. |
+| Mauville Gym | Shawn | Electrode-Hisui (34), Bellibolt (34), Kilowattrel (35) | Wattson's student leads with a Focus Sash Electric/Grass that Taunts, spreads Stun Spore, and Energy Balls Ground counters; a Toxic and Slack Off frog and a Life Orb storm bird keep up sure-hit Thunder, Hurricane, and Water Weather Ball. |
+| Mauville Gym | Ben | Swanna (35), Golduck (34), Pikachu (35) | Three rain tricks: a status-proof Hydration Swanna whose Rest heals in one turn, a Swift Swim Golduck that always moves first, and a Lightning Rod Pikachu that absorbs Electric moves aimed at his Water types and answers with sure-hit Thunder. |
+| Mauville Gym | Vivian | Pawmot (34), Poliwrath (35), Toxicroak (35) | Fake Out Pawmot opens for a Swift Swim Poliwrath that Belly Drums with a Sitrus Berry, and a Dry Skin Toxicroak absorbs the player's rain-boosted Water moves. |
+| Mauville Gym | Angelo | Galvantula (34), Accelgor (34), Araquanid (35) | A Sash spider lays Sticky Web and fires sure-hit Thunder, a Hydration Accelgor makes Rest a one-turn heal, and a Water Bubble diver washes out Ground types or Soaks them for an electric partner. |
+| Mauville Gym / Leader | Wattson | Rotom-Wash (35), Eelektross (35), Raichu-Alola (36), Electivire (36), Kingdra (36), Archaludon (37) | Permanent rain makes Thunder a sure hit, doubles Kingdra's Speed for guaranteed Focus Energy crits, and lets Archaludon fire Electro Shot every turn, while Levitate, Giga Drain, and Gastro Acid answer Ground counters and rain-blocking abilities. |
 | Route 111 / South | Tyron | Hippopotas (33), Sandslash (34), Cacturne (34) | Sand supports Sand Rush and Sand Veil; single-target Ground moves work alongside Celina's Grassy Terrain. |
 | Route 111 / South | Celina | Arboliva (34), Comfey (33) | Seed Sower and Triage reward careful use of recovery and draining moves. |
 | Route 111 / South | Hayden | Torkoal (33), Camerupt (34), Magmar (34) | Sun boosts Magma Core Camerupt and, when paired, Bianca's Chlorophyll Jumpluff. Fire attacks spare the ally. |

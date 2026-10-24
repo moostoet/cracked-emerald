@@ -6859,6 +6859,7 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct DamageContext *ctx)
         {
             modifier = uq4_12_multiply(modifier, UQ_4_12(0.5));
         }
+        break;
     case ABILITY_DRY_SKIN:
         if (moveType == TYPE_FIRE)
             modifier = uq4_12_multiply(modifier, UQ_4_12(1.25));
@@ -7082,6 +7083,7 @@ static inline u32 CalcAttackStat(struct DamageContext *ctx)
     case ABILITY_MAGMA_CORE:
         if (moveType == TYPE_FIRE && gBattleMons[battlerAtk].volatiles.magmaCoreBoosted)
             modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
+        break;
     case ABILITY_SWARM:
         if (moveType == TYPE_BUG && gBattleMons[battlerAtk].hp <= (gBattleMons[battlerAtk].maxHP / 3))
             modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));

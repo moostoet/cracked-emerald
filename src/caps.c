@@ -16,6 +16,7 @@ u32 GetCurrentLevelCap(void)
         {FLAG_BADGE02_GET, 27},
         {FLAG_ARCHIE_OCEANIC_DEFEATED, 31},
         {FLAG_BADGE03_GET, 37},
+        {FLAG_COLRESS_NM_DEFEATED, 41},
         {FLAG_BADGE06_GET, 42},
         {FLAG_BADGE07_GET, 46},
         {FLAG_BADGE08_GET, 58},
@@ -28,6 +29,9 @@ u32 GetCurrentLevelCap(void)
     {
         for (i = 0; i < ARRAY_COUNT(sLevelCapFlagMap); i++)
         {
+            // Colress in New Mauville is optional, so his cap stops applying once the player earns Badge 6
+            if (sLevelCapFlagMap[i][0] == FLAG_COLRESS_NM_DEFEATED && FlagGet(FLAG_BADGE06_GET))
+                continue;
             if (!FlagGet(sLevelCapFlagMap[i][0]))
                 return sLevelCapFlagMap[i][1];
         }

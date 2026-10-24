@@ -19332,23 +19332,17 @@ Jolly Nature
 - Dragon Tail
 - Rock Tomb
 
-=== TRAINER_COLRESS_TEST ===
-Name: COLRESS
-Class: Scientist Frlg
-Pic: Colress
-Gender: Male
+=== TRAINER_MAY_PLACEHOLDER ===
+Name: MAY
+Class: RS Protag
+Pic: RS May
+Gender: Female
 Music: Male
 Double Battle: No
-AI: Smart Trainer
 
-Klink
-Level: 10
-
-Elgyem
-Level: 10
-
-Magnemite
-Level: 11
+Kyogre
+Level: 5
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_HYDE ===
 Name: HYDE
@@ -19442,3 +19436,72 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Zen Headbutt
 - Pursuit
 - Bullet Punch
+
+=== TRAINER_COLRESS_NEW_MAUVILLE ===
+Name: COLRESS
+Class: Scientist Frlg
+Pic: Colress
+Gender: Male
+Music: Male
+Double Battle: No
+AI: Smart Trainer / Ace Pokemon
+Starting Status: Electric Terrain
+
+Probopass @ Custap Berry
+Ability: Sturdy
+Level: 39
+Modest Nature
+IVs: 0 Atk
+- Stealth Rock
+- Discharge
+- Earth Power
+- Power Gem
+
+Magnezone @ Magnet
+Ability: Sturdy
+Level: 39
+Modest Nature
+IVs: 0 Atk
+- Thunderbolt
+- Flash Cannon
+- Reflect
+- Electric Terrain
+
+Golurk @ Electric Seed
+Ability: Iron Fist
+Level: 40
+Adamant Nature
+- High Horsepower
+- Shadow Punch
+- Ice Punch
+- Thunder Punch
+
+Vikavolt @ Expert Belt
+Ability: Levitate
+Level: 40
+Modest Nature
+IVs: 0 Atk
+- Thunderbolt
+- Bug Buzz
+- Mud Shot
+- Thunder Wave
+
+Porygon-Z @ Life Orb
+Ability: Adaptability
+Level: 40
+Modest Nature
+IVs: 0 Atk
+- Thunderbolt
+- Conversion
+- Ice Beam
+- Shadow Ball
+
+Ampharos @ Ampharosite
+Ability: Static
+Level: 41
+Modest Nature
+IVs: 0 Atk
+- Thunderbolt
+- Dragon Pulse
+- Power Gem
+- Charge

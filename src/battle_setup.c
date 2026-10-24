@@ -919,7 +919,7 @@ enum BattleTransition GetTrainerBattleTransition(void)
     enum TrainerClassID trainerClass = GetTrainerClassFromId(TRAINER_BATTLE_PARAM.opponentA);
 
     // Ahead of the mugshot check: this transition ends with its own mugshots
-    if (TRAINER_BATTLE_PARAM.opponentA == TRAINER_COLRESS_TEST)
+    if (TRAINER_BATTLE_PARAM.opponentA == TRAINER_COLRESS_NEW_MAUVILLE)
         return B_TRANSITION_PLASMA;
 
     if (DoesTrainerHaveMugshot(trainerId))

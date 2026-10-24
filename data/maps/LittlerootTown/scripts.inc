@@ -249,28 +249,6 @@ LittlerootTown_EventScript_Boy::
 	msgbox LittlerootTown_Text_BirchSpendsDaysInLab, MSGBOX_NPC
 	end
 
-@ Test-build only: repeatable battle against Colress with his battle theme
-LittlerootTown_EventScript_ColressTest::
-	lock
-	faceplayer
-	getpartysize
-	call_if_eq VAR_RESULT, 0, LittlerootTown_EventScript_ColressTestGiveMon
-	playbgm MUS_ENCOUNTER_COLRESS, FALSE
-	msgbox LittlerootTown_Text_ColressTestIntro, MSGBOX_DEFAULT
-	special HealPlayerParty
-	cleartrainerflag TRAINER_COLRESS_TEST
-	setflag FLAG_BATTLE_NO_WHITEOUT
-	trainerbattle_no_intro TRAINER_COLRESS_TEST, LittlerootTown_Text_ColressTestDefeat
-	clearflag FLAG_BATTLE_NO_WHITEOUT
-	special HealPlayerParty
-	msgbox LittlerootTown_Text_ColressTestPostBattle, MSGBOX_DEFAULT
-	release
-	end
-
-LittlerootTown_EventScript_ColressTestGiveMon::
-	givemon SPECIES_TORCHIC, 15
-	return
-
 LittlerootTown_EventScript_Twin::
 	lock
 	faceplayer
@@ -1036,16 +1014,3 @@ LittlerootTown_Text_BirchSomethingToShowYouAtLab:
 	.string "I have something to show you.\n"
 	.string "Let's go to my LAB.$"
 
-
-LittlerootTown_Text_ColressTestIntro:
-	.string "COLRESS: The power to draw out a\n"
-	.string "POKéMON's full potential…\p"
-	.string "Let me see it for myself!$"
-
-LittlerootTown_Text_ColressTestDefeat:
-	.string "Fascinating! Your POKéMON\n"
-	.string "respond to you remarkably well.$"
-
-LittlerootTown_Text_ColressTestPostBattle:
-	.string "COLRESS: Talk to me again whenever\n"
-	.string "you want another test.$"

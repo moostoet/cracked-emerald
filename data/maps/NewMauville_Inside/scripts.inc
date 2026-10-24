@@ -245,6 +245,36 @@ NewMauville_Inside_EventScript_DefeatedVoltorb3::
 	goto Common_EventScript_RemoveStaticPokemon
 	end
 
+NewMauville_Inside_EventScript_Colress::
+	lock
+	faceplayer
+	goto_if_set FLAG_COLRESS_NM_DEFEATED, NewMauville_Inside_EventScript_ColressGiveRingAgain
+	playbgm MUS_ENCOUNTER_COLRESS, FALSE
+	msgbox NewMauville_Inside_Text_ColressIntro, MSGBOX_DEFAULT
+	trainerbattle_no_intro TRAINER_COLRESS_NEW_MAUVILLE, NewMauville_Inside_Text_ColressDefeat
+	setflag FLAG_COLRESS_NM_DEFEATED
+	msgbox NewMauville_Inside_Text_ColressPostBattle, MSGBOX_DEFAULT
+	goto NewMauville_Inside_EventScript_ColressGiveMegaRing
+
+NewMauville_Inside_EventScript_ColressGiveRingAgain::
+	msgbox NewMauville_Inside_Text_ColressGiveRingAgain, MSGBOX_DEFAULT
+NewMauville_Inside_EventScript_ColressGiveMegaRing::
+	giveitem ITEM_MEGA_RING
+	goto_if_eq VAR_RESULT, FALSE, NewMauville_Inside_EventScript_ColressBagFull
+	msgbox NewMauville_Inside_Text_ColressExplainMegaRing, MSGBOX_DEFAULT
+	closemessage
+	fadescreen FADE_TO_BLACK
+	removeobject LOCALID_NEW_MAUVILLE_COLRESS
+	setflag FLAG_RECEIVED_MEGA_RING
+	fadescreen FADE_FROM_BLACK
+	release
+	end
+
+NewMauville_Inside_EventScript_ColressBagFull::
+	msgbox NewMauville_Inside_Text_ColressBagFull, MSGBOX_DEFAULT
+	release
+	end
+
 NewMauville_Inside_Text_GeneratorRadiatingHeat:
 	.string "The generator is radiating heat that\n"
 	.string "can be felt even at a distance.\p"
@@ -261,3 +291,56 @@ NewMauville_Inside_Text_SteppedOnSwitchGeneratorStopped:
 	.string "… … … … … … … …\p"
 	.string "The generator appears to have\n"
 	.string "stopped…$"
+
+NewMauville_Inside_Text_ColressIntro:
+	.string "Oh! A visitor? Forgive me, I was\n"
+	.string "lost in my readings.\p"
+	.string "My name is COLRESS. I'm a scientist\n"
+	.string "who studies the power of POKéMON.\p"
+	.string "Can you feel it? NEW MAUVILLE is\n"
+	.string "teeming with a natural power.\p"
+	.string "The people who founded this place\n"
+	.string "saw its potential right away.\p"
+	.string "They built all of this to harness it…\n"
+	.string "but it was more than they could tame.\p"
+	.string "It makes me wonder.\p"
+	.string "Is a POKéMON's true strength drawn\n"
+	.string "out by a power like this one?\p"
+	.string "Or by the TRAINER who stands\n"
+	.string "beside it?\p"
+	.string "Let's find out! Show me everything\n"
+	.string "you and your POKéMON can do!$"
+
+NewMauville_Inside_Text_ColressDefeat:
+	.string "Fascinating! So that is how you\n"
+	.string "draw out your POKéMON's power!$"
+
+NewMauville_Inside_Text_ColressPostBattle:
+	.string "Your POKéMON reached a strength no\n"
+	.string "machine here could ever give them.\p"
+	.string "The founders tried to harness the\n"
+	.string "power around them…\p"
+	.string "But the greatest power lies within\n"
+	.string "POKéMON themselves.\p"
+	.string "MEGA EVOLUTION unlocks it, but only\n"
+	.string "when a TRAINER and POKéMON share\l"
+	.string "a bond as strong as yours.\p"
+	.string "Please, take this. I believe you're\n"
+	.string "the right person to have it.$"
+
+NewMauville_Inside_Text_ColressExplainMegaRing:
+	.string "With the MEGA RING, a POKéMON holding\n"
+	.string "its MEGA STONE can MEGA EVOLVE\l"
+	.string "in battle.\p"
+	.string "Find MEGA STONES, and show me what\n"
+	.string "else you can unlock!\p"
+	.string "Now then, I have data to analyze.\n"
+	.string "Until we meet again!$"
+
+NewMauville_Inside_Text_ColressGiveRingAgain:
+	.string "Ah, there you are. I've been holding\n"
+	.string "on to something for you.$"
+
+NewMauville_Inside_Text_ColressBagFull:
+	.string "Oh dear, your BAG is full. Make some\n"
+	.string "room, and I'll be right here.$"

@@ -4257,7 +4257,7 @@ static const struct TrainerTowerFloor sTrainerTowerFloor_Knockout_3 = {
                 {
                     .species = SPECIES_GOLDUCK,
                     .heldItem = ITEM_MYSTIC_WATER,
-                    .moves = {MOVE_HYDRO_PUMP, MOVE_ICE_BEAM, MOVE_CALM_MIND, MOVE_LIGHT_SCREEN},
+                    .moves = {MOVE_FOCUS_ENERGY, MOVE_AQUA_CUTTER, MOVE_PSYCHO_CUT, MOVE_ICE_PUNCH},
                     .hpEV = 84,
                     .attackEV = 84,
                     .defenseEV = 84,
@@ -5036,12 +5036,12 @@ static const struct TrainerTowerFloor sTrainerTowerFloor_Single_1 = {
                 {
                     .species = SPECIES_GOLDUCK,
                     .heldItem = ITEM_SCOPE_LENS,
-                    .moves = {MOVE_CROSS_CHOP, MOVE_SURF, MOVE_ICE_BEAM, MOVE_DISABLE},
+                    .moves = {MOVE_CROSS_CHOP, MOVE_AQUA_CUTTER, MOVE_PSYCHO_CUT, MOVE_ICE_PUNCH},
                     .hpEV = 0,
-                    .attackEV = 100,
+                    .attackEV = 200,
                     .defenseEV = 100,
                     .speedEV = 0,
-                    .spAttackEV = 100,
+                    .spAttackEV = 0,
                     .spDefenseEV = 210,
                     .otId = TRAINER_TOWER_OTID,
                     .hpIV = 15,
@@ -8072,7 +8072,7 @@ static const struct TrainerTowerFloor sTrainerTowerFloor_Double_Unused3 = {
                 {
                     .species = SPECIES_GOLDUCK,
                     .heldItem = ITEM_SCOPE_LENS,
-                    .moves = {MOVE_ATTRACT, MOVE_SURF, MOVE_DIG, MOVE_CROSS_CHOP},
+                    .moves = {MOVE_ATTRACT, MOVE_AQUA_CUTTER, MOVE_DIG, MOVE_CROSS_CHOP},
                     .hpEV = 0,
                     .attackEV = 155,
                     .defenseEV = 50,

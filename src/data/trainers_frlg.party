@@ -6125,10 +6125,10 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 Golduck
 Level: 42
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
-- Confusion
-- Scratch
-- Screech
-- Disable
+- Aqua Cutter
+- Psycho Cut
+- Focus Energy
+- Night Slash
 
 === TRAINER_COOLTRAINER_ROLANDO ===
 Name: ROLANDO

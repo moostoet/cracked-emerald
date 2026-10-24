@@ -3348,10 +3348,11 @@ const struct TrainerMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_GOLDUCK_1] = {
         .species = SPECIES_GOLDUCK,
-        .moves = {MOVE_HYDRO_PUMP, MOVE_DIG, MOVE_BRICK_BREAK, MOVE_LIGHT_SCREEN},
+        .moves = {MOVE_FOCUS_ENERGY, MOVE_AQUA_CUTTER, MOVE_PSYCHO_CUT, MOVE_NIGHT_SLASH},
         .heldItem = ITEM_SHELL_BELL,
-        .ev = TRAINER_PARTY_EVS(0, 252, 0, 0, 252, 0),
-        .nature = NATURE_QUIET,
+        .ability = ABILITY_SHARPNESS,
+        .ev = TRAINER_PARTY_EVS(0, 252, 0, 252, 0, 0),
+        .nature = NATURE_ADAMANT,
         .ball = BALL_POKE
     },
     [FRONTIER_MON_RAPIDASH_1] = {
@@ -4116,10 +4117,11 @@ const struct TrainerMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_GOLDUCK_2] = {
         .species = SPECIES_GOLDUCK,
-        .moves = {MOVE_CROSS_CHOP, MOVE_SURF, MOVE_SWAGGER, MOVE_PSYCH_UP},
+        .moves = {MOVE_HONE_CLAWS, MOVE_RAZOR_SHELL, MOVE_ZEN_HEADBUTT, MOVE_ICE_PUNCH},
         .heldItem = ITEM_LUM_BERRY,
-        .ev = TRAINER_PARTY_EVS(0, 170, 0, 170, 170, 0),
-        .nature = NATURE_QUIRKY,
+        .ability = ABILITY_CLOUD_NINE,
+        .ev = TRAINER_PARTY_EVS(252, 252, 0, 0, 0, 0),
+        .nature = NATURE_ADAMANT,
         .ball = BALL_POKE
     },
     [FRONTIER_MON_RAPIDASH_2] = {
@@ -4884,10 +4886,11 @@ const struct TrainerMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_GOLDUCK_3] = {
         .species = SPECIES_GOLDUCK,
-        .moves = {MOVE_HYDRO_PUMP, MOVE_CROSS_CHOP, MOVE_BLIZZARD, MOVE_PROTECT},
-        .heldItem = ITEM_SHELL_BELL,
-        .ev = TRAINER_PARTY_EVS(0, 252, 0, 0, 252, 0),
-        .nature = NATURE_DOCILE,
+        .moves = {MOVE_RAIN_DANCE, MOVE_AQUA_CUTTER, MOVE_PSYCHO_CUT, MOVE_CROSS_CHOP},
+        .heldItem = ITEM_DAMP_ROCK,
+        .ability = ABILITY_SWIFT_SWIM,
+        .ev = TRAINER_PARTY_EVS(0, 252, 0, 252, 0, 0),
+        .nature = NATURE_ADAMANT,
         .ball = BALL_POKE
     },
     [FRONTIER_MON_RAPIDASH_3] = {
@@ -5652,10 +5655,11 @@ const struct TrainerMon gBattleFrontierMons[NUM_FRONTIER_MONS] =
     },
     [FRONTIER_MON_GOLDUCK_4] = {
         .species = SPECIES_GOLDUCK,
-        .moves = {MOVE_SURF, MOVE_CROSS_CHOP, MOVE_ICE_BEAM, MOVE_AERIAL_ACE},
+        .moves = {MOVE_AQUA_CUTTER, MOVE_PSYCHO_CUT, MOVE_LEAF_BLADE, MOVE_CROSS_CHOP},
         .heldItem = ITEM_SCOPE_LENS,
+        .ability = ABILITY_SHARPNESS,
         .ev = TRAINER_PARTY_EVS(0, 252, 0, 252, 0, 0),
-        .nature = NATURE_DOCILE,
+        .nature = NATURE_JOLLY,
         .ball = BALL_POKE
     },
     [FRONTIER_MON_RAPIDASH_4] = {

@@ -4956,10 +4956,10 @@ IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
 Golduck
 Level: 41
 IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
-- Fury Swipes
-- Disable
-- Confusion
-- Psych Up
+- Night Slash
+- Focus Energy
+- Psycho Cut
+- Razor Shell
 
 Manectric
 Level: 41
@@ -6719,12 +6719,11 @@ IVs: 0 Atk
 Golduck @ Mystic Water
 Ability: Swift Swim
 Level: 34
-Modest Nature
-IVs: 0 Atk
-- Surf
-- Psychic
-- Ice Beam
-- Calm Mind
+Adamant Nature
+- Focus Energy
+- Aqua Cutter
+- Psycho Cut
+- Ice Punch
 
 Pikachu @ Light Ball
 Ability: Lightning Rod
@@ -7205,12 +7204,11 @@ AI: Smart Trainer
 Golduck @ Damp Rock
 Ability: Swift Swim
 Level: 33
-Timid Nature
-IVs: 0 Atk
+Adamant Nature
 - Rain Dance
-- Scald
-- Psychic
-- Ice Beam
+- Aqua Cutter
+- Zen Headbutt
+- Ice Punch
 
 Seaking @ Mystic Water
 Ability: Swift Swim

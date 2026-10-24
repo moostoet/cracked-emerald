@@ -3400,11 +3400,11 @@
     ],
     "base": {
       "HP": 80,
-      "Attack": 82,
+      "Attack": 110,
       "Defense": 78,
-      "Sp. Attack": 95,
+      "Sp. Attack": 60,
       "Sp. Defense": 80,
-      "Speed": 85
+      "Speed": 95
     },
     "species": "Duck",
     "evolution": {},
@@ -3416,7 +3416,7 @@
         "Field"
       ],
       "ability": [
-        "Damp",
+        "Sharpness",
         "Cloud Nine",
         "Swift Swim"
       ]

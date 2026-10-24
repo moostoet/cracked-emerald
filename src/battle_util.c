@@ -3949,15 +3949,17 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
             break;
         case ABILITY_DRUNKEN_FIST:
             if (!gSpecialStatuses[gBattlerAttacker].attackerInParty
+             && !gSpecialStatuses[battler].drunkenFistActivated
              && IsBattlerAlive(gBattlerAttacker)
              && IsBattlerAlive(battler)
              && (CompareStat(battler, STAT_ATK, MAX_STAT_STAGE, CMP_LESS_THAN, gLastUsedAbility)
                  || CompareStat(gBattlerAttacker, STAT_ACC, MIN_STAT_STAGE, CMP_GREATER_THAN, gLastUsedAbility)
                  || GetBattlerAbility(gBattlerAttacker) == ABILITY_MIRROR_ARMOR)
              && !gBattleStruct->unableToUseMove
-             && IsBattlerTurnDamaged(gBattlerTarget, EXCLUDING_SUBSTITUTES)
-             && !CanBattlerAvoidContactEffects(gBattlerAttacker, gBattlerTarget, GetBattlerAbility(gBattlerAttacker), GetBattlerHoldEffect(gBattlerAttacker), move))
+             && IsBattlerTurnDamaged(battler, EXCLUDING_SUBSTITUTES)
+             && !CanBattlerAvoidContactEffects(gBattlerAttacker, battler, GetBattlerAbility(gBattlerAttacker), GetBattlerHoldEffect(gBattlerAttacker), move))
             {
+                gSpecialStatuses[battler].drunkenFistActivated = TRUE;
                 gEffectBattler = gBattlerAbility = battler;
                 SetStatChange(battler, STAT_ATK, 1);
                 SetStatChange(gBattlerAttacker, STAT_ACC, -1);

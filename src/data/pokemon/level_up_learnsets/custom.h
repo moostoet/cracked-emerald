@@ -1,0 +1,23 @@
+// Level-up learnsets for Cracked Emerald's custom species.
+// Included regardless of P_LVL_UP_LEARNSETS, because these species have a single learnset.
+
+#if P_FAMILY_SPINDA
+static const struct LevelUpMove sSpindaDrunkenLevelUpLearnset[] = {
+    LEVEL_UP_MOVE( 1, MOVE_TACKLE),
+    LEVEL_UP_MOVE( 1, MOVE_COPYCAT),
+    LEVEL_UP_MOVE( 5, MOVE_ROCK_SMASH),
+    LEVEL_UP_MOVE( 9, MOVE_TEETER_DANCE),
+    LEVEL_UP_MOVE(13, MOVE_FEINT_ATTACK),
+    LEVEL_UP_MOVE(17, MOVE_DIZZY_PUNCH),
+    LEVEL_UP_MOVE(21, MOVE_REVENGE),
+    LEVEL_UP_MOVE(25, MOVE_DRAIN_PUNCH),
+    LEVEL_UP_MOVE(29, MOVE_SUCKER_PUNCH),
+    LEVEL_UP_MOVE(33, MOVE_HAMMER_ARM),
+    LEVEL_UP_MOVE(37, MOVE_ZEN_HEADBUTT),
+    LEVEL_UP_MOVE(41, MOVE_SUPERPOWER),
+    LEVEL_UP_MOVE(45, MOVE_DOUBLE_EDGE),
+    LEVEL_UP_MOVE(49, MOVE_FLAIL),
+    LEVEL_UP_MOVE(53, MOVE_THRASH),
+    LEVEL_UP_END
+};
+#endif //P_FAMILY_SPINDA

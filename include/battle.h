@@ -134,7 +134,8 @@ struct SpecialStatus
     u8 resultMessagePrinted:1;
     u8 critMessagePrinted:1;
     u8 protectMessagePrinted:1;
-    u8 padding:5;
+    u8 drunkenFistActivated:1; // Drunken Fist triggers once per move, even on multi-hit moves
+    u8 padding:4;
 
     u8 gemParam:7;
     u8 gemBoost:1;

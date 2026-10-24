@@ -313,6 +313,16 @@ DewfordTown_Gym_Text_GymGuideAdvice:
 	.string "the ocean floor.\p"
 	.string "But it will get brighter after defeating\n"
 	.string "the TRAINERS in your way.\p"
+	.string "And watch out for the RISING TIDE!\p"
+	.string "The waves keep FIGHTING POKéMON on\n"
+	.string "their feet, but slow everyone else.\p"
+	.string "Beat every TRAINER in here, and the\n"
+	.string "waves will calm down.\p"
+	.string "One more thing: BRAWLY's SPINDA\n"
+	.string "rolls with the punches!\p"
+	.string "Every blow that touches it fires it up\n"
+	.string "and throws its attacker's aim off.\p"
+	.string "So hit it from a distance!\p"
 	.string "Hey, okay, go for it!$"
 
 DewfordTown_Gym_Text_GymGuidePostVictory:

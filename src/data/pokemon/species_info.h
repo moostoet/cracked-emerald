@@ -163,13 +163,14 @@ const struct SpeciesInfo gSpeciesInfo[] =
 #include "species_info/gen_8_families.h"
 #include "species_info/gen_9_families.h"
 
+#if P_FAMILY_SPINDA
         [SPECIES_SPINDA_DRUNKEN] = {
-            .baseHP = 83,
-            .baseAttack = 113,
-            .baseDefense = 107,
-            .baseSpAttack = 59,
-            .baseSpDefense = 83,
-            .baseSpeed = 83,
+            .baseHP = 80,
+            .baseAttack = 100,
+            .baseDefense = 100,
+            .baseSpAttack = 55,
+            .baseSpDefense = 80,
+            .baseSpeed = 85,
             .types = MON_TYPES(TYPE_NORMAL, TYPE_FIGHTING),
             .catchRate = 255,
             .expYield = 126,
@@ -197,8 +198,8 @@ const struct SpeciesInfo gSpeciesInfo[] =
             .trainerScale = 256,
             .trainerOffset = 0,
             .frontPic = gMonFrontPic_SpindaDrunken,
-            .frontPicSize = MON_COORDS_SIZE(48, 64),
-            .frontPicYOffset = 2,
+            .frontPicSize = MON_COORDS_SIZE(64, 64),
+            .frontPicYOffset = 7,
             .frontAnimFrames = ANIM_FRAMES(ANIMCMD_FRAME(0, 20), ANIMCMD_FRAME(1, 5), ANIMCMD_FRAME(0, 20), ANIMCMD_FRAME(1, 5), ANIMCMD_FRAME(0, 5), ANIMCMD_FRAME(1, 5), ANIMCMD_FRAME(0, 20), ),
             .frontAnimId = ANIM_FOUR_PETAL,
             .backPic = gMonBackPic_Spinda,
@@ -206,13 +207,14 @@ const struct SpeciesInfo gSpeciesInfo[] =
             .backPicYOffset = 4,
             .backAnimId = BACK_ANIM_CIRCLE_COUNTERCLOCKWISE,
             .palette = gMonPalette_SpindaDrunken,
-            .shinyPalette = gMonShinyPalette_Spinda,
+            .shinyPalette = gMonShinyPalette_SpindaDrunken,
             .iconSprite = gMonIcon_Spinda,
             .iconPalIndex = 1,
-            SHADOW(13, 8, SHADOW_SIZE_M) FOOTPRINT(Spinda) OVERWORLD(sPicTable_Spinda, SIZE_32x32, SHADOW_SIZE_M, TRACKS_FOOT, sAnimTable_Following, gOverworldPalette_Spinda, gShinyOverworldPalette_Spinda).levelUpLearnset = sSpindaLevelUpLearnset,
-            .teachableLearnset = sSpindaTeachableLearnset,
-            .eggMoveLearnset = sSpindaEggMoveLearnset,
+            SHADOW(13, 8, SHADOW_SIZE_M) FOOTPRINT(Spinda) OVERWORLD(sPicTable_Spinda, SIZE_32x32, SHADOW_SIZE_M, TRACKS_FOOT, sAnimTable_Following, gOverworldPalette_Spinda, gShinyOverworldPalette_Spinda).levelUpLearnset = sSpindaDrunkenLevelUpLearnset,
+            .teachableLearnset = sSpindaDrunkenTeachableLearnset,
+            .eggMoveLearnset = sSpindaDrunkenEggMoveLearnset,
         },
+#endif //P_FAMILY_SPINDA
 
         [SPECIES_EGG] = {
             .frontPic = gMonFrontPic_Egg,

@@ -49,6 +49,8 @@ const activeSpriteId = computed(() => activeForm.value?.spriteId ?? mon.value?.s
 const activeTypes = computed(() => activeForm.value?.types ?? mon.value?.types ?? [])
 const activeStats = computed(() => activeForm.value?.baseStats ?? mon.value?.baseStats ?? { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 })
 const activeAbilities = computed(() => activeForm.value?.abilities ?? mon.value?.abilities ?? [])
+const activeTeachableMoves = computed(() => activeForm.value?.teachableMoves ?? mon.value?.teachableMoves ?? [])
+const activeEggMoves = computed(() => activeForm.value?.eggMoves ?? mon.value?.eggMoves ?? [])
 
 const bst = computed(() => {
   const s = activeStats.value
@@ -93,7 +95,7 @@ const weightDisplay = computed(() => {
 
 const sortedLevelUpMoves = computed(() => {
   if (!mon.value) return []
-  return [...mon.value.levelUpMoves].sort((a, b) => a.level - b.level)
+  return [...(activeForm.value?.levelUpMoves ?? mon.value.levelUpMoves)].sort((a, b) => a.level - b.level)
 })
 
 const hasPrev = computed(() => {
@@ -373,7 +375,7 @@ onMounted(async () => {
         <TabsContent value="tm-tutor">
           <Card>
             <CardContent class="pt-6">
-              <div v-if="mon.teachableMoves.length === 0" class="text-sm text-muted-foreground py-4 text-center">
+              <div v-if="activeTeachableMoves.length === 0" class="text-sm text-muted-foreground py-4 text-center">
                 No TM or Tutor moves.
               </div>
               <div v-else class="overflow-x-auto">
@@ -388,7 +390,7 @@ onMounted(async () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableRow v-for="name in mon.teachableMoves" :key="name">
+                    <TableRow v-for="name in activeTeachableMoves" :key="name">
                       <TableCell>
                         <MovePopover :move-name="name" />
                       </TableCell>
@@ -412,7 +414,7 @@ onMounted(async () => {
         <TabsContent value="egg-moves">
           <Card>
             <CardContent class="pt-6">
-              <div v-if="mon.eggMoves.length === 0" class="text-sm text-muted-foreground py-4 text-center">
+              <div v-if="activeEggMoves.length === 0" class="text-sm text-muted-foreground py-4 text-center">
                 No egg moves.
               </div>
               <div v-else class="overflow-x-auto">
@@ -427,7 +429,7 @@ onMounted(async () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableRow v-for="name in mon.eggMoves" :key="name">
+                    <TableRow v-for="name in activeEggMoves" :key="name">
                       <TableCell>
                         <MovePopover :move-name="name" />
                       </TableCell>

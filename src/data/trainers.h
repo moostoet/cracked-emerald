@@ -14119,9 +14119,9 @@
             .moves = {
 #line 5267
                 MOVE_DRAIN_PUNCH,
-                MOVE_SING,
                 MOVE_DIZZY_PUNCH,
-                MOVE_STONE_EDGE,
+                MOVE_ROCK_TOMB,
+                MOVE_COUNTER,
             },
             },
             {

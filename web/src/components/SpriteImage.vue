@@ -45,7 +45,7 @@ const localUrl = computed(() => `${import.meta.env.BASE_URL}sprites/${props.spri
     v-else-if="fallbackStage === 2"
     :src="localUrl"
     :alt="name"
-    :class="[sizeClass[size ?? 'md'], 'object-contain image-rendering-pixelated']"
+    :class="[sizeClass[size ?? 'md'], 'object-cover object-top image-rendering-pixelated']"
     loading="lazy"
     @error="fallbackStage = 3"
   />

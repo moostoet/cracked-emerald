@@ -11,6 +11,10 @@ export interface PokemonForm {
     speed: number
   }
   abilities: (string | null)[]
+  // Present only when the form's learnset differs from the base species'
+  levelUpMoves?: LevelUpMove[]
+  teachableMoves?: string[]
+  eggMoves?: string[]
 }
 
 export interface Pokemon {

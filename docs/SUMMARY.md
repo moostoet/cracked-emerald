@@ -5,6 +5,7 @@
 - [Trainer teams through Wattson](./trainer-teams-through-wattson.md)
 - [Sunflora redesign](./sunflora-redesign.md)
 - [Golduck redesign](./golduck-redesign.md)
+- [Spinda-Drunken redesign](./spinda-drunken-redesign.md)
 - [Installation](./INSTALL.md)
     - [Setting up WSL1 (Legacy Portion)](./legacy_WSL1_INSTALL.md)
     - [ChromeOS](./install/chromeos/CHROME_OS.md)

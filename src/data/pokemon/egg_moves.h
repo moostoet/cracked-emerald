@@ -3026,6 +3026,17 @@ static const u16 sSpindaEggMoveLearnset[] = {
     MOVE_SPOTLIGHT,
     MOVE_UNAVAILABLE,
 };
+
+static const u16 sSpindaDrunkenEggMoveLearnset[] = {
+    MOVE_FAKE_OUT,
+    MOVE_ENCORE,
+    MOVE_MACH_PUNCH,
+    MOVE_DETECT,
+    MOVE_SMELLING_SALTS,
+    MOVE_BATON_PASS,
+    MOVE_PSYCHO_CUT,
+    MOVE_UNAVAILABLE,
+};
 #endif //P_FAMILY_SPINDA
 
 #if P_FAMILY_TRAPINCH

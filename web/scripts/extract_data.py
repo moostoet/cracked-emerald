@@ -377,7 +377,7 @@ def parse_shared_dex_text(repo_root):
 
 
 def parse_species_info(repo_root, species_ids, natdex_ids, move_names, ability_names, item_names_map):
-    """Parse all species info from gen_*_families.h files."""
+    """Parse all species info from gen_*_families.h files and custom species in species_info.h."""
     species_dir = os.path.join(repo_root, 'src', 'data', 'pokemon', 'species_info')
     pokemon_list = []
     learnset_map = defaultdict(list)  # variable name -> [(learnset_type, species_id), ...]
@@ -400,6 +400,29 @@ def parse_species_info(repo_root, species_ids, natdex_ids, move_names, ability_n
                                          move_names, ability_names, item_names_map,
                                          learnset_map, shared_dex_texts)
         pokemon_list.extend(entries)
+
+    # Custom species (e.g. SPECIES_SPINDA_DRUNKEN) are defined directly in
+    # species_info.h after the gen_*_families.h includes. SPECIES_NONE/EGG are
+    # skipped by parse_species_entries. Generation 0 is a placeholder; it is
+    # inherited from the species sharing the same natDexNum below.
+    info_path = os.path.join(repo_root, 'src', 'data', 'pokemon', 'species_info.h')
+    if os.path.isfile(info_path):
+        with open(info_path, 'r', encoding='utf-8', errors='replace') as f:
+            content = f.read()
+        print("  Parsing species_info.h (custom species)...")
+        parsed_ids = {p['id'] for p in pokemon_list}
+        gen_by_ndex = {}
+        for p in pokemon_list:
+            gen_by_ndex.setdefault(p['natDexNum'], p['generation'])
+        entries = parse_species_entries(content, 0, species_ids, natdex_ids,
+                                         move_names, ability_names, item_names_map,
+                                         learnset_map, shared_dex_texts)
+        for entry in entries:
+            if entry['id'] in parsed_ids:
+                continue
+            entry['generation'] = gen_by_ndex.get(entry['natDexNum'], 0)
+            pokemon_list.append(entry)
+            print(f"    Custom species {entry['id']} ({entry['spriteId']})")
 
     return pokemon_list, learnset_map
 
@@ -1232,12 +1255,14 @@ def parse_level_up_learnsets(repo_root, move_names):
     learnsets = {}
     learnset_dir = os.path.join(repo_root, 'src', 'data', 'pokemon', 'level_up_learnsets')
 
-    for gen_num in range(1, 10):
-        filepath = os.path.join(learnset_dir, f'gen_{gen_num}.h')
+    # custom.h holds the hack's custom species learnsets (always included by pokemon.c)
+    filenames = [f'gen_{gen_num}.h' for gen_num in range(1, 10)] + ['custom.h']
+    for filename in filenames:
+        filepath = os.path.join(learnset_dir, filename)
         if not os.path.isfile(filepath):
             continue
 
-        print(f"  Parsing level_up_learnsets/gen_{gen_num}.h...")
+        print(f"  Parsing level_up_learnsets/{filename}...")
         with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
             content = f.read()
 
@@ -3325,13 +3350,19 @@ def deduplicate_forms(pokemon_list):
             form_suffix_id = name_to_showdown_id(form_suffix) if form_suffix else ''
             form_sprite = f"{base_showdown}-{form_suffix_id}" if form_suffix_id else base_showdown
 
-            forms.append({
+            form_entry = {
                 'name': form_name,
                 'spriteId': form_sprite,
                 'types': form.get('types', []),
                 'baseStats': form.get('baseStats', {}),
                 'abilities': form.get('abilities', []),
-            })
+            }
+            # Learnsets are only emitted when the form has its own (non-empty,
+            # different) list; otherwise the page falls back to the base's.
+            for key in ('levelUpMoves', 'teachableMoves', 'eggMoves'):
+                if form.get(key) and form[key] != base.get(key):
+                    form_entry[key] = form[key]
+            forms.append(form_entry)
 
             ids_to_remove.add(form['id'])
             # Only remap cosmetic forms to base. Distinct forms (different

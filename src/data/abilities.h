@@ -2589,7 +2589,7 @@ const struct AbilityInfo gAbilitiesInfo[ABILITIES_COUNT] =
     [ABILITY_DRUNKEN_FIST] =
     {
         .name = _("Drunken Fist"),
-        .description = COMPOUND_STRING("Contact boosts Atk; lowers\nfoe's accuracy."),
+        .description = COMPOUND_STRING("Contact raises Atk, drops foe Acc."),
         .aiRating = 8,
     },
 

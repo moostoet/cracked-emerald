@@ -12236,14 +12236,15 @@ const u32 gObjectEventPic_Substitute[] = INCGFX_COMP("graphics/pokemon/question_
     const u16 gMonPalette_Spinda[] = INCGFX_U16("graphics/pokemon/spinda/normal.pal", ".gbapal");
     const u32 gMonBackPic_Spinda[] = INCGFX_U32("graphics/pokemon/spinda/back.png", ".4bpp.smol");
     const u16 gMonShinyPalette_Spinda[] = INCGFX_U16("graphics/pokemon/spinda/shiny.pal", ".gbapal");
-    const u32 gMonFrontPic_SpindaDrunken[] = INCGFX_U32("graphics/pokemon/spinda/drunken/anim_front.png", ".4bpp.lz");
-    const u16 gMonPalette_SpindaDrunken[] = INCGFX_U16("graphics/pokemon/spinda/drunken/normal.pal", ".gbapal");
 #else
     const u32 gMonFrontPic_Spinda[] = INCGFX_U32("graphics/pokemon/spinda/anim_front_gba.png", ".4bpp.smol");
     const u16 gMonPalette_Spinda[] = INCGFX_U16("graphics/pokemon/spinda/normal_gba.pal", ".gbapal");
     const u32 gMonBackPic_Spinda[] = INCGFX_U32("graphics/pokemon/spinda/back_gba.png", ".4bpp.smol");
     const u16 gMonShinyPalette_Spinda[] = INCGFX_U16("graphics/pokemon/spinda/shiny_gba.pal", ".gbapal");
 #endif //P_GBA_STYLE_SPECIES_GFX
+    const u32 gMonFrontPic_SpindaDrunken[] = INCGFX_U32("graphics/pokemon/spinda/drunken/anim_front.png", ".4bpp.lz");
+    const u16 gMonPalette_SpindaDrunken[] = INCGFX_U16("graphics/pokemon/spinda/drunken/normal.pal", ".gbapal");
+    const u16 gMonShinyPalette_SpindaDrunken[] = INCGFX_U16("graphics/pokemon/spinda/drunken/shiny.pal", ".gbapal");
 #if !P_GBA_STYLE_SPECIES_ICONS
     const u8 gMonIcon_Spinda[] = INCGFX_U8("graphics/pokemon/spinda/icon.png", ".4bpp.rlfast");
 #else

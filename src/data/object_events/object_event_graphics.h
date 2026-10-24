@@ -636,7 +636,7 @@ const u16 gObjectEventPic_ClefairyOld[] = INCGFX_U16("graphics/object_events/pic
 
 #if !IS_FRLG
 const u16 gObjectEventPal_NpcGreen[] = INCGFX_U16("graphics/object_events/palettes/npc_green.pal", ".gbapal");
-const u16 gObjectEventPic_Brock[] = INCGFX_U16("graphics/object_events/pics/people/brock.png", ".4bpp");
+const u16 gObjectEventPic_Brock[] = INCGFX_U16("graphics/object_events/pics/people/brock.png", ".4bpp", "-mwidth 2 -mheight 4");
 const u16 gObjectEventPal_Colress[] = INCGFX_U16("graphics/object_events/pics/people/colress.png", ".gbapal");
 const u32 gObjectEventPic_Colress[] = INCGFX_U32("graphics/object_events/pics/people/colress.png", ".4bpp", "-mwidth 2 -mheight 4");
 #endif // !IS_FRLG

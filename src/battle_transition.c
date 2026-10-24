@@ -28,6 +28,7 @@
 #include "constants/rgb.h"
 
 #define PALTAG_UNUSED_MUGSHOT 0x100A
+#define PALTAG_PLASMA_VS_PIC  0x100B
 
 #define B_TRANS_DMA_FLAGS (1 | ((DMA_SRC_INC | DMA_DEST_FIXED | DMA_REPEAT | DMA_16BIT | DMA_START_HBLANK | DMA_ENABLE) << 16))
 
@@ -128,6 +129,7 @@ static void Task_FrontierLogoWave(u8);
 static void Task_FrontierSquares(u8);
 static void Task_FrontierSquaresScroll(u8);
 static void Task_FrontierSquaresSpiral(u8);
+static void Task_Plasma(u8);
 static void VBlankCB_BattleTransition(void);
 static void VBlankCB_Swirl(void);
 static void HBlankCB_Swirl(void);
@@ -148,6 +150,7 @@ static void VBlankCB_WhiteBarsFade_Blend(void);
 static void HBlankCB_WhiteBarsFade(void);
 static void VBlankCB_AngledWipes(void);
 static void VBlankCB_Rayquaza(void);
+static void VBlankCB_Plasma(void);
 static bool8 Blur_Init(struct Task *);
 static bool8 Blur_Main(struct Task *);
 static bool8 Blur_End(struct Task *);
@@ -234,6 +237,22 @@ static bool8 Rayquaza_FadeToBlack(struct Task *);
 static bool8 Rayquaza_WaitFade(struct Task *);
 static bool8 Rayquaza_SetBlack(struct Task *);
 static bool8 Rayquaza_TriRing(struct Task *);
+static bool8 Plasma_Init(struct Task *);
+static bool8 Plasma_FadeToWhite(struct Task *);
+static bool8 Plasma_ShowGlyph(struct Task *);
+static bool8 Plasma_RevealGlyph(struct Task *);
+static bool8 Plasma_DrawStreak(struct Task *);
+static bool8 Plasma_GlyphFlash(struct Task *);
+static bool8 Plasma_ShowShield(struct Task *);
+static bool8 Plasma_RevealShield(struct Task *);
+static bool8 Plasma_ShieldFlash(struct Task *);
+static bool8 Plasma_RevealLightning(struct Task *);
+static bool8 Plasma_Lightning(struct Task *);
+static bool8 Plasma_LightningFadeOut(struct Task *);
+static bool8 Plasma_InitMugshots(struct Task *);
+static bool8 Plasma_RevealMugshots(struct Task *);
+static bool8 Plasma_StartMugshotSlides(struct Task *);
+static bool8 Plasma_FadeToBlack(struct Task *);
 static bool8 FrontierSquares_Init(struct Task *);
 static bool8 FrontierSquares_Draw(struct Task *);
 static bool8 FrontierSquares_Shrink(struct Task *);
@@ -293,6 +312,7 @@ static u8 sTestingTransitionState;
 static struct RectangularSpiralLine sRectangularSpiralLines[4];
 
 EWRAM_DATA static struct TransitionData *sTransitionData = NULL;
+EWRAM_DATA static const u16 *sPlasmaTilemap = NULL;
 
 static const u32 sBigPokeball_Tileset[] = INCGFX_U32("graphics/battle_transitions/big_pokeball.png", ".4bpp");
 static const u32 sPokeballTrail_Tileset[] = INCGFX_U32("graphics/battle_transitions/pokeball_trail.png", ".4bpp");
@@ -334,6 +354,15 @@ static const u32 sFrontierSquares_EmptyBg_Tileset[] = INCGFX_U32("graphics/battl
 static const u32 sFrontierSquares_Shrink1_Tileset[] = INCGFX_U32("graphics/battle_transitions/frontier_square_3.4bpp", ".smol");
 static const u32 sFrontierSquares_Shrink2_Tileset[] = INCGFX_U32("graphics/battle_transitions/frontier_square_4.4bpp", ".smol");
 static const u32 sFrontierSquares_Tilemap[] = INCBIN_U32("graphics/battle_transitions/frontier_squares.bin");
+static const u16 sTeamPlasmaGlyph_Palette[] = INCGFX_U16("graphics/battle_transitions/team_plasma_glyph.png", ".gbapal");
+static const u32 sTeamPlasmaGlyph_Tileset[] = INCGFX_U32("graphics/battle_transitions/team_plasma_glyph.png", ".4bpp.smol");
+static const u16 sTeamPlasmaGlyph_Tilemaps[] = INCBIN_U16("graphics/battle_transitions/team_plasma_glyph.bin");
+static const u16 sTeamPlasmaShield_Palette[] = INCGFX_U16("graphics/battle_transitions/team_plasma_shield.png", ".gbapal");
+static const u32 sTeamPlasmaShield_Tileset[] = INCGFX_U32("graphics/battle_transitions/team_plasma_shield.png", ".4bpp.smol");
+static const u16 sTeamPlasmaShield_Tilemaps[] = INCBIN_U16("graphics/battle_transitions/team_plasma_shield.bin");
+static const u16 sPlasmaMugshot_Palette[] = INCGFX_U16("graphics/battle_transitions/plasma_mugshot_bg.pal", ".gbapal");
+static const u16 sVsColress_Palette[] = INCGFX_U16("graphics/battle_transitions/vs_colress.png", ".gbapal");
+static const u32 sVsColress_Gfx[] = INCGFX_U32("graphics/battle_transitions/vs_colress.png", ".4bpp", "-mwidth 8 -mheight 8");
 
 // All battle transitions use the same intro
 static const TaskFunc sTasks_Intro[B_TRANSITION_COUNT] =
@@ -383,6 +412,7 @@ static const TaskFunc sTasks_Main[B_TRANSITION_COUNT] =
     [B_TRANSITION_FRONTIER_CIRCLES_CROSS_IN_SEQ] = Task_FrontierCirclesCrossInSeq,
     [B_TRANSITION_FRONTIER_CIRCLES_ASYMMETRIC_SPIRAL_IN_SEQ] = Task_FrontierCirclesAsymmetricSpiralInSeq,
     [B_TRANSITION_FRONTIER_CIRCLES_SYMMETRIC_SPIRAL_IN_SEQ] = Task_FrontierCirclesSymmetricSpiralInSeq,
+    [B_TRANSITION_PLASMA] = Task_Plasma,
 };
 
 static const TransitionStateFunc sTaskHandlers[] =
@@ -707,6 +737,35 @@ static const TransitionStateFunc sRayquaza_Funcs[] =
     Blackhole_GrowEnd
 };
 
+static const TransitionStateFunc sPlasma_Funcs[] =
+{
+    Plasma_Init,
+    Plasma_FadeToWhite,
+    Plasma_ShowGlyph,
+    Plasma_RevealGlyph,
+    Plasma_DrawStreak,
+    Plasma_GlyphFlash,
+    Plasma_ShowShield,
+    Plasma_RevealShield,
+    Plasma_ShieldFlash,
+    Plasma_RevealLightning,
+    Plasma_Lightning,
+    Plasma_LightningFadeOut,
+    // Only for opponents with VS art: the banner, slides and fade out of B_TRANSITION_MUGSHOT
+    Plasma_InitMugshots,
+    Plasma_RevealMugshots,
+    Mugshot_ShowBanner,
+    Plasma_StartMugshotSlides,
+    Mugshot_WaitStartPlayerSlide,
+    Mugshot_WaitPlayerSlide,
+    Mugshot_GradualWhiteFade,
+    Mugshot_InitFadeWhiteToBlack,
+    Mugshot_FadeToBlack,
+    Mugshot_End,
+    // Only for everyone else
+    Plasma_FadeToBlack
+};
+
 static const TransitionStateFunc sWhiteBarsFade_Funcs[] =
 {
     WhiteBarsFade_Init,
@@ -857,6 +916,69 @@ static const struct SpriteTemplate sSpriteTemplate_UnusedLass =
     .oam = &sOam_UnusedBrendanLass,
     .anims = sSpriteAnimTable_UnusedBrendanLass,
     .images = sImageTable_UnusedLass,
+    .callback = SpriteCB_MugshotTrainerPic
+};
+
+// B2W2-style VS art (128x64) shown in place of the trainer pic at the end of B_TRANSITION_PLASMA
+struct PlasmaVsPic
+{
+    enum TrainerPicID trainerPic;
+    struct SpriteFrameImage image;
+    const u16 *palette;
+};
+
+static const struct PlasmaVsPic sPlasmaVsPics[] =
+{
+    {TRAINER_PIC_COLRESS, {sVsColress_Gfx, sizeof(sVsColress_Gfx)}, sVsColress_Palette},
+};
+
+static const struct OamData sOam_PlasmaVsPic =
+{
+    .y = 0,
+    .affineMode = ST_OAM_AFFINE_OFF,
+    .objMode = ST_OAM_OBJ_NORMAL,
+    .bpp = ST_OAM_4BPP,
+    .shape = SPRITE_SHAPE(64x64),
+    .x = 0,
+    .size = SPRITE_SIZE(64x64),
+    .tileNum = 0,
+    .priority = 0,
+    .paletteNum = 0,
+};
+
+// The art is too wide for one sprite, so it is drawn as two 64x64 halves
+static const struct Subsprite sSubsprites_PlasmaVsPic[] =
+{
+    {.x = -64, .y = -32, .shape = SPRITE_SHAPE(64x64), .size = SPRITE_SIZE(64x64), .tileOffset = 0,  .priority = 0},
+    {.x =   0, .y = -32, .shape = SPRITE_SHAPE(64x64), .size = SPRITE_SIZE(64x64), .tileOffset = 64, .priority = 0},
+};
+
+static const struct SubspriteTable sSubspriteTable_PlasmaVsPic[] =
+{
+    {ARRAY_COUNT(sSubsprites_PlasmaVsPic), sSubsprites_PlasmaVsPic}
+};
+
+// A real first frame is what copies the art into VRAM: the pic has no sprite sheet
+// (TAG_NONE), and gDummySpriteAnimTable's END-only anim would leave its tiles blank
+static const union AnimCmd sAnim_PlasmaVsPic[] =
+{
+    ANIMCMD_FRAME(0, 1),
+    ANIMCMD_END
+};
+
+static const union AnimCmd *const sAnims_PlasmaVsPic[] =
+{
+    sAnim_PlasmaVsPic
+};
+
+static const struct SpriteTemplate sSpriteTemplate_PlasmaVsPic =
+{
+    .tileTag = TAG_NONE,
+    .paletteTag = PALTAG_PLASMA_VS_PIC,
+    .oam = &sOam_PlasmaVsPic,
+    .anims = sAnims_PlasmaVsPic,
+    .images = NULL, // Set from sPlasmaVsPics
+    .affineAnims = gDummySpriteAffineAnimTable,
     .callback = SpriteCB_MugshotTrainerPic
 };
 
@@ -3611,6 +3733,409 @@ static void VBlankCB_Rayquaza(void)
 #undef tTimer
 #undef tGrowSpeed
 #undef tFlag
+
+//---------------------
+// B_TRANSITION_PLASMA
+//---------------------
+
+// Recreates Team Plasma's emblem animation. A flash of white reveals the "P",
+// a streak of light draws a Z across it, a second flash brings in the full
+// shield, and lightning crackles out of it before everything washes out to
+// white. Opponents with VS art then get B_TRANSITION_MUGSHOT's banner with
+// their VS art and the player sliding in; everyone else just fades to black.
+// Each half of the emblem animation is a set of pre-rendered BG0 frames sharing
+// one tileset, which is swapped in while the screen is fully white.
+
+#define tTimer      data[1]
+#define tWhite      data[2] // White blend over every palette, in 1/16ths of a blend step
+#define tFrame      data[3]
+#define tFrameTimer data[4]
+
+// Shared with B_TRANSITION_MUGSHOT, whose states finish the transition when there are mugshots
+#define tSinIndex          data[1]
+#define tTopBannerX        data[2]
+#define tBottomBannerX     data[3]
+#define tOpponentSpriteAId data[11]
+#define tPlayerSpriteId    data[14]
+
+// Starting points that bring the 128px-wide pics to rest flush with the screen
+// edges once the mugshot slide (12px per frame, then slowing by 1) is done
+#define PLASMA_VS_PIC_START_X     310 // Slides left, stops at x 64
+#define PLASMA_PLAYER_PIC_START_X -70 // Slides right, stops at x 176
+
+#define PLASMA_TILEMAP_SIZE (32 * 20) // Entries per frame: the 20 visible rows of the 32-wide BG0 map
+#define PLASMA_GLYPH_FRAMES ((s32)(ARRAY_COUNT(sTeamPlasmaGlyph_Tilemaps) / PLASMA_TILEMAP_SIZE))   // The "P", then the streak
+#define PLASMA_SHIELD_FRAMES ((s32)(ARRAY_COUNT(sTeamPlasmaShield_Tilemaps) / PLASMA_TILEMAP_SIZE)) // The shield, then lightning
+
+#define PLASMA_WHITE_MAX (16 << 4)
+#define PLASMA_FADE_SPEED(frames) (PLASMA_WHITE_MAX / (frames))
+#define PLASMA_SCENE_DIM 6 // How far the overworld is darkened behind the emblem, out of 16
+#define PLASMA_STREAK_FRAME_TIME 2
+#define PLASMA_LIGHTNING_FRAME_TIME 3
+
+static void Task_Plasma(u8 taskId)
+{
+    while (sPlasma_Funcs[gTasks[taskId].tState](&gTasks[taskId]));
+}
+
+// Moves the white blend toward the target and applies it. Returns TRUE once it is there.
+static bool32 Plasma_FadeWhite(struct Task *task, s16 target, s16 speed)
+{
+    if (task->tWhite < target)
+        task->tWhite = min(task->tWhite + speed, target);
+    else
+        task->tWhite = max(task->tWhite - speed, target);
+    BlendPalettes(PALETTES_ALL, task->tWhite >> 4, RGB_WHITE);
+    return task->tWhite == target;
+}
+
+// The tilemap is copied in VBlank so a frame never tears
+static void Plasma_ShowFrame(struct Task *task, const u16 *tilemaps, s16 frame)
+{
+    task->tFrame = frame;
+    sPlasmaTilemap = &tilemaps[frame * PLASMA_TILEMAP_SIZE];
+}
+
+// Swaps in a phase's palette and first frame. Only done while the screen is fully white.
+static void Plasma_LoadPhase(struct Task *task, const u16 *palette, const u16 *tilemaps)
+{
+    LoadPalette(palette, BG_PLTT_ID(15), PLTT_SIZE_4BPP);
+    BlendPalettes(PALETTES_ALL, 16, RGB_WHITE);
+    task->tFrameTimer = 0;
+    Plasma_ShowFrame(task, tilemaps, 0);
+}
+
+// Loops through every shield frame after the first
+static void Plasma_AnimateLightning(struct Task *task)
+{
+    if (++task->tFrameTimer < PLASMA_LIGHTNING_FRAME_TIME)
+        return;
+    task->tFrameTimer = 0;
+    Plasma_ShowFrame(task, sTeamPlasmaShield_Tilemaps, task->tFrame % (PLASMA_SHIELD_FRAMES - 1) + 1);
+}
+
+static bool8 Plasma_Init(struct Task *task)
+{
+    u16 *tilemap, *tileset;
+
+    InitTransitionData();
+    ScanlineEffect_Clear();
+    sPlasmaTilemap = NULL;
+
+    SetGpuReg(REG_OFFSET_BG0HOFS, 0);
+    SetGpuReg(REG_OFFSET_BG0VOFS, 0);
+    ClearGpuRegBits(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0);
+    GetBg0TilesDst(&tilemap, &tileset);
+    CpuFill16(0, tilemap, BG_SCREEN_SIZE);
+    DecompressDataWithHeaderVram(sTeamPlasmaGlyph_Tileset, tileset);
+    SetVBlankCallback(VBlankCB_Plasma);
+
+    task->tState++;
+    return FALSE;
+}
+
+static bool8 Plasma_FadeToWhite(struct Task *task)
+{
+    if (Plasma_FadeWhite(task, PLASMA_WHITE_MAX, PLASMA_FADE_SPEED(12)))
+        task->tState++;
+    return FALSE;
+}
+
+// Under full white, darken the overworld so the emblem stands out, then put the "P" in place
+static bool8 Plasma_ShowGlyph(struct Task *task)
+{
+    if (task->tTimer++ == 0)
+    {
+        BlendPalettesFine(PALETTES_ALL & ~(1 << 15), gPlttBufferUnfaded, gPlttBufferUnfaded, PLASMA_SCENE_DIM, RGB_BLACK);
+        Plasma_LoadPhase(task, sTeamPlasmaGlyph_Palette, sTeamPlasmaGlyph_Tilemaps);
+    }
+    else if (task->tTimer > 4)
+    {
+        task->tTimer = 0;
+        task->tState++;
+    }
+    return FALSE;
+}
+
+static bool8 Plasma_RevealGlyph(struct Task *task)
+{
+    if (Plasma_FadeWhite(task, 0, PLASMA_FADE_SPEED(12)) && ++task->tTimer > 4)
+    {
+        task->tTimer = 0;
+        task->tState++;
+    }
+    return FALSE;
+}
+
+// A ball of light flies in from the right and draws a Z across the "P"
+static bool8 Plasma_DrawStreak(struct Task *task)
+{
+    if (task->tFrame < PLASMA_GLYPH_FRAMES - 1)
+    {
+        if (++task->tFrameTimer >= PLASMA_STREAK_FRAME_TIME)
+        {
+            task->tFrameTimer = 0;
+            Plasma_ShowFrame(task, sTeamPlasmaGlyph_Tilemaps, task->tFrame + 1);
+        }
+    }
+    else if (++task->tTimer > 12)
+    {
+        task->tTimer = 0;
+        task->tState++;
+    }
+    return FALSE;
+}
+
+static bool8 Plasma_GlyphFlash(struct Task *task)
+{
+    if (Plasma_FadeWhite(task, PLASMA_WHITE_MAX, PLASMA_FADE_SPEED(4)))
+        task->tState++;
+    return FALSE;
+}
+
+// Under full white, replace the "P" with the shield
+static bool8 Plasma_ShowShield(struct Task *task)
+{
+    if (task->tTimer++ == 0)
+    {
+        u16 *tilemap, *tileset;
+
+        GetBg0TilesDst(&tilemap, &tileset);
+        DecompressDataWithHeaderVram(sTeamPlasmaShield_Tileset, tileset);
+        Plasma_LoadPhase(task, sTeamPlasmaShield_Palette, sTeamPlasmaShield_Tilemaps);
+    }
+    else if (task->tTimer > 2)
+    {
+        task->tTimer = 0;
+        task->tState++;
+    }
+    return FALSE;
+}
+
+static bool8 Plasma_RevealShield(struct Task *task)
+{
+    if (Plasma_FadeWhite(task, 0, PLASMA_FADE_SPEED(20)) && ++task->tTimer > 8)
+    {
+        task->tTimer = 0;
+        task->tState++;
+    }
+    return FALSE;
+}
+
+static bool8 Plasma_ShieldFlash(struct Task *task)
+{
+    if (Plasma_FadeWhite(task, PLASMA_WHITE_MAX, PLASMA_FADE_SPEED(8)) && ++task->tTimer > 4)
+    {
+        // The first bolts are already there when the white clears
+        Plasma_ShowFrame(task, sTeamPlasmaShield_Tilemaps, 1);
+        task->tTimer = 0;
+        task->tState++;
+    }
+    return FALSE;
+}
+
+static bool8 Plasma_RevealLightning(struct Task *task)
+{
+    Plasma_AnimateLightning(task);
+    if (Plasma_FadeWhite(task, 0, PLASMA_FADE_SPEED(10)))
+        task->tState++;
+    return FALSE;
+}
+
+static bool8 Plasma_Lightning(struct Task *task)
+{
+    Plasma_AnimateLightning(task);
+    if (++task->tTimer > 40)
+    {
+        task->tTimer = 0;
+        task->tState++;
+    }
+    return FALSE;
+}
+
+static const struct PlasmaVsPic *Plasma_GetVsPic(void)
+{
+    u32 i;
+    enum TrainerPicID trainerPic;
+
+    // The banner only has room for one trainer on each side
+    if (TRAINER_BATTLE_PARAM.opponentB != TRAINER_NONE && gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
+        return NULL;
+    if (gPartnerTrainerId != TRAINER_PARTNER(PARTNER_NONE) && gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER)
+        return NULL;
+
+    trainerPic = GetTrainerPicFromId(TRAINER_BATTLE_PARAM.opponentA);
+    for (i = 0; i < ARRAY_COUNT(sPlasmaVsPics); i++)
+    {
+        if (sPlasmaVsPics[i].trainerPic == trainerPic)
+            return &sPlasmaVsPics[i];
+    }
+    return NULL;
+}
+
+static bool8 Plasma_LightningFadeOut(struct Task *task)
+{
+    Plasma_AnimateLightning(task);
+    if (Plasma_FadeWhite(task, PLASMA_WHITE_MAX, PLASMA_FADE_SPEED(12)))
+    {
+        if (Plasma_GetVsPic() != NULL)
+            task->tState++;
+        else
+            task->tState = ARRAY_COUNT(sPlasma_Funcs) - 1; // Plasma_FadeToBlack
+    }
+    return FALSE;
+}
+
+// The same layout as B_TRANSITION_MUGSHOT mirrored, so the VS art, which faces
+// right, sits on the left and looks across at the player
+static void Plasma_CreateMugshotPics(struct Task *task, const struct PlasmaVsPic *vsPic)
+{
+    struct SpriteTemplate template = sSpriteTemplate_PlasmaVsPic;
+    struct SpritePalette palette = {vsPic->palette, PALTAG_PLASMA_VS_PIC};
+    struct Sprite *player;
+
+    gReservedSpritePaletteCount = 10;
+    LoadSpritePalette(&palette);
+    template.images = &vsPic->image;
+    task->tOpponentSpriteAId = CreateSprite(&template, PLASMA_VS_PIC_START_X, 42, 0);
+    SetSubspriteTables(&gSprites[task->tOpponentSpriteAId], sSubspriteTable_PlasmaVsPic);
+    SetTrainerPicSlideDirection(task->tOpponentSpriteAId, 1);
+
+    gReservedSpritePaletteCount = 12;
+    task->tPlayerSpriteId = CreateTrainerSprite(PlayerGenderToFrontTrainerPicId(gSaveBlock2Ptr->playerGender),
+                                                PLASMA_PLAYER_PIC_START_X,
+                                                106,
+                                                0, NULL);
+    player = &gSprites[task->tPlayerSpriteId];
+    player->callback = SpriteCB_MugshotTrainerPic;
+    player->oam.affineMode = ST_OAM_AFFINE_DOUBLE;
+    player->oam.matrixNum = AllocOamMatrix();
+    player->oam.shape = SPRITE_SHAPE(64x32);
+    player->oam.size = SPRITE_SIZE(64x32);
+    CalcCenterToCornerVec(player, SPRITE_SHAPE(64x32), SPRITE_SIZE(64x32), ST_OAM_AFFINE_DOUBLE);
+    SetOamMatrixRotationScaling(player->oam.matrixNum, 512, 512, 0);
+    SetTrainerPicSlideDirection(task->tPlayerSpriteId, 0);
+}
+
+// Under full white, swap the emblem for the mugshot banner over a black screen.
+// The banner starts hidden behind a closed window, as in Mugshot_Init.
+static bool8 Plasma_InitMugshots(struct Task *task)
+{
+    s16 i, j;
+    u16 *tilemap, *tileset;
+    const u16 *mugshotsMap = sMugshotsTilemap;
+
+    // Nothing reaches the screen until it is all white again
+    gPaletteFade.bufferTransferDisabled = TRUE;
+    sPlasmaTilemap = NULL;
+    InitTransitionData();
+    ScanlineEffect_Clear();
+    BlendPalettesFine(PALETTES_ALL, gPlttBufferUnfaded, gPlttBufferUnfaded, 16, RGB_BLACK);
+    Plasma_CreateMugshotPics(task, Plasma_GetVsPic());
+
+    sTransitionData->WININ = WININ_WIN0_ALL;
+    sTransitionData->WINOUT = WINOUT_WIN01_BG1 | WINOUT_WIN01_BG2 | WINOUT_WIN01_BG3 | WINOUT_WIN01_OBJ | WINOUT_WIN01_CLR;
+    sTransitionData->WIN0V = DISPLAY_HEIGHT;
+    for (i = 0; i < DISPLAY_HEIGHT; i++)
+        gScanlineEffectRegBuffers[1][i] = (DISPLAY_WIDTH << 8) | (DISPLAY_WIDTH + 1);
+
+    GetBg0TilesDst(&tilemap, &tileset);
+    CpuSet(sEliteFour_Tileset, tileset, 0xF0);
+    for (i = 0; i < 20; i++)
+    {
+        for (j = 0; j < 32; j++, mugshotsMap++)
+            SET_TILE(tilemap, i, j, *mugshotsMap);
+    }
+    LoadPalette(sPlasmaMugshot_Palette, BG_PLTT_ID(15), PLTT_SIZE_4BPP);
+    BlendPalettes(PALETTES_ALL, 16, RGB_WHITE);
+    gPaletteFade.bufferTransferDisabled = FALSE;
+
+    EnableInterrupts(INTR_FLAG_HBLANK);
+    SetHBlankCallback(HBlankCB_Mugshots);
+    SetVBlankCallback(VBlankCB_Mugshots);
+
+    task->tState++;
+    return FALSE;
+}
+
+static bool8 Plasma_RevealMugshots(struct Task *task)
+{
+    if (Plasma_FadeWhite(task, 0, PLASMA_FADE_SPEED(8)))
+    {
+        // Mugshot_ShowBanner picks up from here
+        task->tSinIndex = 0;
+        task->tTopBannerX = 1;
+        task->tBottomBannerX = DISPLAY_WIDTH - 1;
+        task->tState++;
+    }
+    return FALSE;
+}
+
+// Mugshot_StartOpponentSlide, minus the second opponent and partner, and
+// keeping the slide directions set in Plasma_CreateMugshotPics
+static bool8 Plasma_StartMugshotSlides(struct Task *task)
+{
+    u8 i;
+
+    sTransitionData->VBlank_DMA = FALSE;
+
+    for (i = 0; i < DISPLAY_HEIGHT; i++)
+        gScanlineEffectRegBuffers[0][i] = DISPLAY_WIDTH;
+
+    task->tSinIndex = 0;
+    task->tTopBannerX = 0;
+    task->tBottomBannerX = 0;
+
+    sTransitionData->BG0HOFS_Lower -= 8;
+    sTransitionData->BG0HOFS_Upper += 8;
+
+    IncrementTrainerPicState(task->tOpponentSpriteAId);
+    PlaySE(SE_MUGSHOT);
+
+    task->tState++;
+    sTransitionData->VBlank_DMA++;
+    return FALSE;
+}
+
+// Goes from white to black through gray, then ends once black has reached the screen
+static bool8 Plasma_FadeToBlack(struct Task *task)
+{
+    if (task->tTimer > 16)
+    {
+        SetVBlankCallback(NULL);
+        FadeScreenBlack();
+        DestroyTask(FindTaskIdByFunc(task->func));
+    }
+    else
+    {
+        u16 gray = 31 - (31 * task->tTimer++) / 16;
+        CpuFill16(RGB(gray, gray, gray), gPlttBufferFaded, PLTT_SIZE);
+    }
+    return FALSE;
+}
+
+static void VBlankCB_Plasma(void)
+{
+    VBlankCB_BattleTransition();
+    if (sPlasmaTilemap != NULL)
+    {
+        u16 *tilemap, *tileset;
+
+        GetBg0TilesDst(&tilemap, &tileset);
+        DmaCopy16(3, sPlasmaTilemap, tilemap, PLASMA_TILEMAP_SIZE * sizeof(u16));
+        sPlasmaTilemap = NULL;
+    }
+}
+
+#undef tTimer
+#undef tWhite
+#undef tFrame
+#undef tFrameTimer
+#undef tSinIndex
+#undef tTopBannerX
+#undef tBottomBannerX
+#undef tOpponentSpriteAId
+#undef tPlayerSpriteId
 
 //------------------------------
 // B_TRANSITION_WHITE_BARS_FADE

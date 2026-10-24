@@ -19329,17 +19329,23 @@ Jolly Nature
 - Dragon Tail
 - Rock Tomb
 
-=== TRAINER_MAY_PLACEHOLDER ===
-Name: MAY
-Class: RS Protag
-Pic: RS May
-Gender: Female
+=== TRAINER_COLRESS_TEST ===
+Name: COLRESS
+Class: Scientist Frlg
+Pic: Colress
+Gender: Male
 Music: Male
 Double Battle: No
+AI: Smart Trainer
 
-Kyogre
-Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Klink
+Level: 10
+
+Elgyem
+Level: 10
+
+Magnemite
+Level: 11
 
 === TRAINER_HYDE ===
 Name: HYDE

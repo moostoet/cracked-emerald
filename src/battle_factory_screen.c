@@ -1554,8 +1554,8 @@ static void Select_Task_Exit(u8 taskId)
             {
                 u8 i;
 
-                gSpecialVar_0x8004 = PARTY_NOTHING_CHOSEN;
-                gSpecialVar_Result = PARTY_NOTHING_CHOSEN;
+                gSpecialVar_0x8004 = PARTY_SLOT_CANCEL;
+                gSpecialVar_Result = PARTY_SLOT_CANCEL;
                 for (i = 0; i < Select_GetSelectableMonsCount(); i++)
                 {
                     if (sFactorySelectScreen->mons[i].selectedId == 1)

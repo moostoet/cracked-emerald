@@ -1,5 +1,6 @@
 .include "sound/voicegroups/dummy.inc"
 .include "sound/voicegroups/countdown.inc"
+.include "sound/voicegroups/encounter_colress.inc"
 
 @ drumsets
 .include "sound/voicegroups/drumsets/rs.inc"

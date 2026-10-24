@@ -918,6 +918,10 @@ enum BattleTransition GetTrainerBattleTransition(void)
     u32 trainerId = SanitizeTrainerId(TRAINER_BATTLE_PARAM.opponentA);
     enum TrainerClassID trainerClass = GetTrainerClassFromId(TRAINER_BATTLE_PARAM.opponentA);
 
+    // Ahead of the mugshot check: this transition ends with its own mugshots
+    if (TRAINER_BATTLE_PARAM.opponentA == TRAINER_COLRESS_TEST)
+        return B_TRANSITION_PLASMA;
+
     if (DoesTrainerHaveMugshot(trainerId))
         return B_TRANSITION_MUGSHOT;
 

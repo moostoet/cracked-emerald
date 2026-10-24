@@ -5029,6 +5029,8 @@ u16 GetBattleBGM(void)
 
         if (TRAINER_BATTLE_PARAM.opponentA == TRAINER_STEVEN_GRANITE_CAVE)
             return MUS_VS_GYM_LEADER;
+        if (TRAINER_BATTLE_PARAM.opponentA == TRAINER_COLRESS_TEST)
+            return MUS_BATTLE_COLRESS;
 
         switch (trainerClass)
         {

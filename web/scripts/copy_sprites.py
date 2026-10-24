@@ -7,7 +7,9 @@ Usage: python3 copy_sprites.py [repo_root]
 
 import os
 import shutil
+import struct
 import sys
+import zlib
 
 
 def find_repo_root(hint=None):
@@ -51,6 +53,32 @@ def normalize_sprite_name(rel_parts):
         name = f"{name}-{form_normalized}"
 
     return name
+
+
+def make_index0_transparent(data):
+    """Return indexed PNG bytes with palette index 0 transparent, as the GBA draws it.
+
+    Most Pokemon sprites store their background as palette index 0 without a tRNS
+    chunk, so browsers would show it as a solid colour. PNGs that aren't indexed or
+    already define transparency are returned unchanged.
+    """
+    if data[25] != 3:  # IHDR colour type: 3 = indexed
+        return data
+    pos = 8
+    plte_end = None
+    while pos < len(data):
+        length, chunk_type = struct.unpack('>I4s', data[pos:pos + 8])
+        if chunk_type == b'tRNS':
+            return data
+        if chunk_type == b'PLTE':
+            plte_end = pos + 12 + length
+        if chunk_type == b'IDAT':
+            break
+        pos += 12 + length
+    if plte_end is None:
+        return data
+    trns = struct.pack('>I', 1) + b'tRNS' + b'\x00' + struct.pack('>I', zlib.crc32(b'tRNS\x00'))
+    return data[:plte_end] + trns + data[plte_end:]
 
 
 def copy_sprites(repo_root):
@@ -99,7 +127,10 @@ def copy_sprites(repo_root):
         dst_path = os.path.join(output_dir, f'{sprite_id}.png')
 
         try:
-            shutil.copy2(src_path, dst_path)
+            with open(src_path, 'rb') as src:
+                data = make_index0_transparent(src.read())
+            with open(dst_path, 'wb') as dst:
+                dst.write(data)
             copied += 1
         except Exception as e:
             print(f"  Error copying {src_path}: {e}")

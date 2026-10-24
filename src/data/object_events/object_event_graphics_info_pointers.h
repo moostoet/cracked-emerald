@@ -793,6 +793,7 @@ const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM
 #endif // IS_FRLG
 #if !IS_FRLG
     [OBJ_EVENT_GFX_BROCK]                    = &gObjectEventGraphicsInfo_Brock,
+    [OBJ_EVENT_GFX_COLRESS]                  = &gObjectEventGraphicsInfo_Colress,
 #endif // !IS_FRLG
 };
 

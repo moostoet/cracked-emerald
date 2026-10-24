@@ -2507,4 +2507,8 @@ static const struct SpriteFrameImage sPicTable_Brock[] = {
     overworld_frame(gObjectEventPic_Brock, 2, 4, 2),
     overworld_frame(gObjectEventPic_Brock, 2, 4, 2),
 };
+
+static const struct SpriteFrameImage sPicTable_Colress[] = {
+    overworld_ascending_frames(gObjectEventPic_Colress, 2, 4),
+};
 #endif // !IS_FRLG

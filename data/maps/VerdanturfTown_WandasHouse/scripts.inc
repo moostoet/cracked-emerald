@@ -83,12 +83,16 @@ VerdanturfTown_WandasHouse_EventScript_WallysAuntEverGrande::
 	end
 
 VerdanturfTown_WandasHouse_Text_StrongerSpeech:
-	.string "WALLY: I lost to you, {PLAYER}, but I'm\n"
-	.string "not feeling down anymore.\p"
-	.string "Because I have a new purpose in life.\n"
-	.string "Together with my RALTS, I'm going\l"
-	.string "to challenge POKéMON GYMS and become\l"
-	.string "a great TRAINER.\p"
+	.string "WALLY: Oh, {PLAYER}! You came!\p"
+	.string "I'm resting up here at my UNCLE's\n"
+	.string "before I set off again.\p"
+	.string "Losing to you in MAUVILLE stung a\n"
+	.string "little, but I'm not feeling down.\p"
+	.string "It just showed me how far I still\n"
+	.string "have to go.\p"
+	.string "GARDEVOIR and I are going to keep\n"
+	.string "winning BADGES until I become a\l"
+	.string "great TRAINER.\p"
 	.string "Please watch me, {PLAYER}.\n"
 	.string "I'm going to be stronger than you.\p"
 	.string "When I do, I'm going to challenge you\n"

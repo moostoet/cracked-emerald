@@ -6488,8 +6488,10 @@ s32 GetAllyStatChangeScore(enum BattlerId battlerAtk, enum BattlerId partner, en
      && HasBattlerSideUsedMoveWithEffect(foe, EFFECT_HAZE))
         return tempScore;
 
-    if (CanBattlerKOTargetIgnoringSturdy(partner, foe)
-     || CanBattlerKOTargetIgnoringSturdy(partner, GetPartnerBattler(foe)))
+    // Don't boost an ally that can already KO a foe this turn
+    enum BattlerId foePartner = GetPartnerBattler(foe);
+    if ((IsBattlerAlive(foe) && CanAIFaintTarget(partner, foe, 0))
+     || (IsBattlerAlive(foePartner) && CanAIFaintTarget(partner, foePartner, 0)))
         return tempScore;
 
     u32 numAdditionalEffects = GetMoveAdditionalEffectCount(move);
@@ -6512,6 +6514,10 @@ s32 GetAllyStatChangeScore(enum BattlerId battlerAtk, enum BattlerId partner, en
 
             if (stage > 0)
             {
+                // Like self-boosting, stop boosting an ally's stat at +4
+                if (gBattleMons[partner].statStages[stat] >= MAX_STAT_STAGE - 2)
+                    continue;
+
                 switch (stat)
                 {
                 case STAT_ATK:

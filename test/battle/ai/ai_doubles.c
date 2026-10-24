@@ -32,6 +32,29 @@ AI_DOUBLE_BATTLE_TEST("AI won't use a Weather changing move if partner already c
     }
 }
 
+AI_DOUBLE_BATTLE_TEST("AI only uses Coaching while its partner can't already KO a foe")
+{
+    u32 hp;
+
+    PARAMETRIZE { hp = 1; }
+    PARAMETRIZE { hp = 200; }
+
+    GIVEN {
+        ASSUME(GetMoveTarget(MOVE_COACHING) == TARGET_ALLY);
+        ASSUME(GetMoveCategory(MOVE_SCRATCH) == DAMAGE_CATEGORY_PHYSICAL);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_WOBBUFFET) { HP(hp); }
+        PLAYER(SPECIES_WOBBUFFET) { HP(hp); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_COACHING, MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_SCRATCH); }
+    } WHEN {
+        if (hp == 1)
+            TURN { SCORE_LT_VAL(opponentLeft, MOVE_COACHING, AI_SCORE_DEFAULT + 1, target:opponentRight); }
+        else
+            TURN { SCORE_GT_VAL(opponentLeft, MOVE_COACHING, AI_SCORE_DEFAULT, target:opponentRight); }
+    }
+}
+
 AI_DOUBLE_BATTLE_TEST("AI will not use Helping Hand if partner does not have any damage moves")
 {
     enum Move move1 = MOVE_NONE, move2 = MOVE_NONE, move3 = MOVE_NONE, move4 = MOVE_NONE;

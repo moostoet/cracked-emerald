@@ -3436,32 +3436,32 @@ Double Battle: No
 AI: Smart Trainer
 Starting Status: Rising Tide
 
-Timburr @ Flame Orb  
-Ability: Guts  
-Level: 24   
-Adamant Nature  
-- Drain Punch  
-- Facade  
-- Bulk Up  
-- Protect  
+Pancham @ Eviolite
+Ability: Scrappy
+Level: 23
+Adamant Nature
+- Low Sweep
+- Rock Tomb
+- Foul Play
+- Parting Shot
 
-Pancham @ Expert Belt  
-Ability: Mold Breaker  
-Level: 24   
-Adamant Nature  
-- Arm Thrust  
-- Circle Throw  
-- Crunch  
-- Parting Shot  
+Throh @ Sitrus Berry
+Ability: Inner Focus
+Level: 24
+Adamant Nature
+- Storm Throw
+- Rock Tomb
+- Ice Punch
+- Thunder Punch
 
-Hawlucha @ Sitrus Berry  
-Ability: Unburden  
-Level: 24   
-Jolly Nature  
-- Acrobatics  
-- Swords Dance  
-- Taunt  
-- Submission  
+Sawk @ Black Belt
+Ability: Sturdy
+Level: 24
+Adamant Nature
+- Brick Break
+- Low Sweep
+- Thunder Punch
+- Fire Punch
 
 === TRAINER_HITOSHI ===
 Name: HITOSHI
@@ -8747,32 +8747,33 @@ Double Battle: No
 AI: Smart Trainer
 Starting Status: Rising Tide
 
-Heracross @ Coba Berry  
-Ability: Swarm  
-Level: 24   
-Jolly Nature  
-- Rock Tomb  
-- Low Sweep  
-- Bug Bite  
-- Shadow Claw  
+Hitmontop @ Wide Lens
+Ability: Technician
+Level: 24
+Adamant Nature
+- Rapid Spin
+- High Jump Kick
+- Sucker Punch
+- Aerial Ace
 
-Kubfu @ Punching Glove  
-Ability: Inner Focus  
-Level: 24   
-Jolly Nature  
-- Brick Break  
-- Sucker Punch  
-- Fire Punch  
-- Ice Punch  
+Heracross @ Coba Berry
+Ability: Swarm
+Level: 24
+Adamant Nature
+- Swords Dance
+- Megahorn
+- Rock Blast
+- Revenge
 
-Throh @ Expert Belt  
-Ability: Inner Focus  
-Level: 24    
-Adamant Nature  
-- Rock Tomb  
-- Storm Throw  
-- Poison Jab  
-- Payback  
+Kubfu @ Leftovers
+Ability: Inner Focus
+Level: 24
+IVs: 0 Spe
+Brave Nature
+- Substitute
+- Focus Punch
+- Ice Punch
+- Thunder Punch
 
 === TRAINER_LAURA ===
 Name: LAURA
@@ -8784,31 +8785,33 @@ Double Battle: No
 AI: Smart Trainer
 Starting Status: Rising Tide
 
-Mienfoo @ Eviolite  
-Ability: Regenerator  
-Level: 23   
-Adamant Nature  
-- Fake Out  
-- Drain Punch  
-- Knock Off  
-- U-turn  
-
-Machoke @ Eviolite  
-Ability: Guts
-Adamant Nature  
-Level: 23    
-- Bulk Up  
-- Bullet Punch  
-- Brick Break  
-- Fire Punch  
-
-Gurdurr  
-Ability: Sheer Force  
-Level: 23    
-- Thunder Punch  
-- Ice Punch  
-- Drain Punch  
+Falinks @ Black Belt
+Ability: Defiant
+Level: 23
+Jolly Nature
+- Brick Break
 - Rock Slide
+- Body Slam
+- Protect
+
+Sneasel-Hisui @ Poison Barb
+Ability: Inner Focus
+Level: 23
+Jolly Nature
+- Night Slash
+- Poison Jab
+- Aerial Ace
+- Rock Smash
+
+Mienfoo @ Eviolite
+Ability: Inner Focus
+Level: 23
+EVs: 200 Spe
+Jolly Nature
+- Force Palm
+- Knock Off
+- Endure
+- Reversal
 
 === TRAINER_CYNDY_1 ===
 Name: CYNDY
@@ -12139,23 +12142,23 @@ Double Battle: No
 AI: Smart Trainer
 Starting Status: Rising Tide
 
-Primeape @ Muscle Band  
-Ability: Vital Spirit  
-Level: 24    
-Adamant Nature  
-- Brick Break  
-- Rock Slide  
-- U-turn  
-- Thunder Punch
+Tauros-Paldea-Aqua @ Sitrus Berry
+Ability: Intimidate
+Level: 24
+Jolly Nature
+- Double Kick
+- Aqua Jet
+- Rock Slide
+- Body Slam
 
-Scraggy @ Sitrus Berry  
-Ability: Moxie  
-Level: 24  
-Jolly Nature  
-- Jump Kick  
-- Crunch  
-- Ice Punch  
-- Drain Punch
+Kingler @ Muscle Band
+Ability: Hyper Cutter
+Level: 23
+Adamant Nature
+- Hammer Arm
+- Aqua Jet
+- Knock Off
+- Protect
 
 === TRAINER_LILITH ===
 Name: LILITH
@@ -12167,24 +12170,23 @@ Double Battle: No
 AI: Smart Trainer
 Starting Status: Rising Tide
 
-Riolu @ Eviolite  
-Ability: Prankster  
-Level: 24  
-Bold Nature  
-- Coaching  
-- Helping Hand  
-- Copycat  
-- Protect
+Riolu @ Eviolite
+Ability: Prankster
+Level: 24
+Impish Nature
+- Coaching
+- Rock Smash
+- Quick Attack
+- Detect
 
-
-Croagunk @ Focus Sash  
-Ability: Dry Skin  
-Level: 24    
-Adamant Nature  
-- Fake Out  
-- Revenge  
-- Sucker Punch  
-- Protect
+Flamigo @ Sharp Beak
+Ability: Costar
+Level: 24
+Jolly Nature
+- Double Kick
+- Aerial Ace
+- Feint
+- Detect
 
 === TRAINER_CRISTIAN ===
 Name: CRISTIAN
@@ -12196,23 +12198,24 @@ Double Battle: No
 AI: Smart Trainer
 Starting Status: Rising Tide
 
-Breloom @ Miracle Seed  
-Ability: Technician  
-Level: 24    
-Jolly Nature  
-- Mach Punch  
-- Bullet Seed  
-- Leech Seed  
-- Stun Spore  
+Stufful @ Leftovers
+Ability: Fluffy
+Level: 24
+IVs: 0 Spe
+Brave Nature
+- Bulk Up
+- Force Palm
+- Ice Punch
+- Payback
 
-Passimian @ Assault Vest  
-Ability: Defiant  
-Level: 24   
-Jolly Nature  
-- Brick Break  
-- Iron Head  
-- Knock Off  
-- Seed Bomb
+Scraggy @ Eviolite
+Ability: Moxie
+Level: 24
+Adamant Nature
+- Dragon Dance
+- Brick Break
+- Feint Attack
+- Thunder Punch
 
 === TRAINER_SYLVIA ===
 Name: SYLVIA

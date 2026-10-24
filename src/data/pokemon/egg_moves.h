@@ -3845,6 +3845,7 @@ static const u16 sRioluEggMoveLearnset[] = {
     MOVE_FOLLOW_ME,
     MOVE_CIRCLE_THROW,
     MOVE_METEOR_MASH,
+    MOVE_COACHING,
     MOVE_UNAVAILABLE,
 };
 #endif //P_FAMILY_RIOLU

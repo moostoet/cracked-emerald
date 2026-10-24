@@ -16,7 +16,7 @@ The reference teams are the existing edited trainers on `new-branch-updated-v2`:
 
 ## Paired encounters
 
-The parties retain their existing map and battle formats. Jerry/Janice and Sarah/Dawson combine support with physical offense. Isabel/Kaleb lead with Plus and Minus. In the rain-soaked Mauville Gym, Kirk/Vivian pair Kirk's screens and Taunt with Vivian's Swift Swim and Dry Skin fighters; Shawn/Angelo pair Sticky Web and Soak with sure-hit Thunder. Brandi/Aisha pair Psychic support with Fighting attackers.
+The parties retain their existing map and battle formats. Jerry/Janice and Sarah/Dawson combine support with physical offense. Isabel/Kaleb lead with Plus and Minus. On the Dewford Gym's Rising Tide, Brenden/Lilith pair Lilith's Prankster Coaching with Brenden's sea Pokémon, and her Costar Flamigo inherits the boosts. In the rain-soaked Mauville Gym, Kirk/Vivian pair Kirk's screens and Taunt with Vivian's Swift Swim and Dry Skin fighters; Shawn/Angelo pair Sticky Web and Soak with sure-hit Thunder. Brandi/Aisha pair Psychic support with Fighting attackers.
 
 Tyron's single-target Ground moves remain useful beside Celina's Grassy Terrain. Hayden's sun supports Bianca's Chlorophyll lead in their optional paired battle; his Fire moves do not hit allies. Anna & Meg open with Clefairy/Annihilape and have a slower Farigiraf/Hariyama reserve mode.
 
@@ -72,6 +72,12 @@ Wally's Donphan, Basculegion, and Gardevoir continue the Phanpy, white-striped B
 | Route 116 | Janice | Marill (17), Buneary (18) | Cute physical attackers combine priority, disruption, and the hack's Iron Fist Buneary. |
 | Route 116 | Sarah | Dolliv (17), Espurr (18) | A patient Lady uses Leech Seed support and a special attacker. |
 | Route 116 | Dawson | Linoone (17), Mightyena (18) | His familiar pets evolve into a pinch-berry attacker and an Intimidate partner. |
+| Dewford Gym | Takao | Pancham (23), Throh (24), Sawk (24) | Under the Rising Tide one Low Sweep or Rock Tomb lets his slow heavyweights strike first; Pancham's Parting Shot hands that edge to Throh before Sawk closes. |
+| Dewford Gym | Jocelyn | Hitmontop (24), Heracross (24), Kubfu (24) | Each fighter winds up before it strikes: Hitmontop speeds up with Rapid Spin, Heracross Swords Dances behind a Coba Berry or waits to Revenge, and a slow Kubfu throws Focus Punch from behind a Substitute. |
+| Dewford Gym | Laura | Falinks (23), Hisuian Sneasel (23), Mienfoo (23) | Mienfoo Endures your knockout hit and, faster than your tide-slowed team, answers with Reversal; Falinks and a Poison Barb Hisuian Sneasel clear the birds, Psychics, and Ghosts first. |
+| Dewford Gym | Brenden | Tauros-Paldea-Aqua (24), Kingler (23) | Fights beside Lilith: Intimidate Tauros-Aqua and Hyper Cutter Kingler take her Riolu's Coaching and strike past the tide with Aqua Jet. |
+| Dewford Gym | Lilith | Riolu (24), Flamigo (24) | Her Prankster Riolu Coaches Brenden's partner each turn until it can knock you out; when Riolu falls, Costar Flamigo copies those boosts. |
+| Dewford Gym | Cristian | Stufful (24), Scraggy (24) | A deliberately slow Fluffy Stufful soaks contact hits and Paybacks at double power, while Moxie Scraggy needs one Dragon Dance to outspeed your tide-slowed team. |
 | Dewford Gym / Leader | Brawly | Grapploct (26), Monferno (25), Spinda-Drunken (25), Hariyama (25), Lucario (26), Floatzel (27) | Each member has its own fighting style on a Rising Tide: Grapploct traps and poisons for Merciless critical hits, and the Water/Fighting Floatzel closes with Jet Punch. |
 | Route 110 | Edward | Musharna (32), Malamar (33) | Yawn opens a setup opportunity for Contrary Malamar. |
 | Route 110 | Jaclyn | Farigiraf (33), Veluza (34) | Priority denial supports a Calm Mind user, with a Sharpness attacker for physical coverage. |

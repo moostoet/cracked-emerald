@@ -6,7 +6,6 @@ Usage: python3 copy_sprites.py [repo_root]
 """
 
 import os
-import shutil
 import struct
 import sys
 import zlib
@@ -140,13 +139,16 @@ def copy_sprites(repo_root):
 
 
 def copy_trainer_sprites(repo_root):
-    """Bundle the same transparent portrait PNGs used by the ROM."""
+    """Bundle the portrait PNGs used by the ROM, with index 0 transparent as the GBA draws it."""
     source_dir = os.path.join(repo_root, 'graphics', 'trainers', 'front_pics')
     output_dir = os.path.join(repo_root, 'web', 'public', 'sprites', 'trainers')
     os.makedirs(output_dir, exist_ok=True)
     filenames = sorted(name for name in os.listdir(source_dir) if name.endswith('.png'))
     for filename in filenames:
-        shutil.copy2(os.path.join(source_dir, filename), os.path.join(output_dir, filename))
+        with open(os.path.join(source_dir, filename), 'rb') as src:
+            data = make_index0_transparent(src.read())
+        with open(os.path.join(output_dir, filename), 'wb') as dst:
+            dst.write(data)
     return len(filenames)
 
 
